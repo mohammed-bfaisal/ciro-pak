@@ -1,0 +1,106 @@
+[
+  {
+    "id": "isb-s1",
+    "source": "social",
+    "content": "G-10 markaz mein sadak dhas gayi hai, gaariyan andar gir rahi hain! CDA kahan hai? #IslamabadRoads",
+    "location": { "lat": 33.6910, "lng": 73.0150, "label": "G-10 Markaz, Islamabad" },
+    "timestamp": "2026-05-20T09:15:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.89,
+    "mentionVelocity": 14,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 67, "retweets": 145 }
+  },
+  {
+    "id": "isb-s2",
+    "source": "social",
+    "content": "Road collapse near G-10 confirmed — sinkhole approximately 4 meters wide. Traffic completely blocked on Khayaban-e-Iqbal.",
+    "location": { "lat": 33.6915, "lng": 73.0155, "label": "Khayaban-e-Iqbal, G-10" },
+    "timestamp": "2026-05-20T09:22:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.92,
+    "mentionVelocity": 19,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 89, "retweets": 178 }
+  },
+  {
+    "id": "isb-s3",
+    "source": "social",
+    "content": "Arey yaar G-10 mein kuch nahi hua, bas ek chhota sa gaddha hai road pe. Log exaggerate kar rahe hain",
+    "location": { "lat": 33.6910, "lng": 73.0150, "label": "G-10, Islamabad" },
+    "timestamp": "2026-05-20T08:50:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.08,
+    "mentionVelocity": 0,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 1, "retweets": 0 }
+  },
+  {
+    "id": "isb-s4",
+    "source": "social",
+    "content": "I-8 sector mein smog itna zyada hai ke saans lena mushkil. Schools band hone chahiye. AQI 400+ lag raha hai.",
+    "location": { "lat": 33.6700, "lng": 73.0800, "label": "I-8, Islamabad" },
+    "timestamp": "2026-05-20T10:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.78,
+    "mentionVelocity": 8,
+    "isFlagged": false,
+    "rawData": { "platform": "Facebook", "shares": 34, "comments": 45 }
+  },
+  {
+    "id": "isb-s5",
+    "source": "social",
+    "content": "Multiple children admitted to PIMS hospital from I-8 and I-9 with respiratory issues. Smog-related cases rising sharply.",
+    "location": { "lat": 33.6700, "lng": 73.0800, "label": "I-8/I-9, Islamabad" },
+    "timestamp": "2026-05-20T10:20:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.85,
+    "mentionVelocity": 6,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 56, "retweets": 98 }
+  },
+  {
+    "id": "isb-f1",
+    "source": "field_report",
+    "content": "CDA engineering team at G-10: Confirmed sinkhole 4.2m diameter, 2.8m deep. Caused by burst water main underneath. Two vehicles partially collapsed. No casualties. Area cordoned off.",
+    "location": { "lat": 33.6912, "lng": 73.0152, "label": "G-10 Markaz Sinkhole" },
+    "timestamp": "2026-05-20T09:40:00Z",
+    "credibilityScore": 0.93,
+    "urgencyScore": 0.88,
+    "isFlagged": false,
+    "rawData": { "reporter": "CDA Engineering Unit 7", "verified": true }
+  },
+  {
+    "id": "isb-f2",
+    "source": "field_report",
+    "content": "EPA Islamabad mobile unit: AQI reading at I-8/I-9 junction is 412. Visibility below 500m. Recommending school closures in I-8, I-9, I-10 sectors.",
+    "location": { "lat": 33.6700, "lng": 73.0800, "label": "I-8/I-9 Junction" },
+    "timestamp": "2026-05-20T10:30:00Z",
+    "credibilityScore": 0.92,
+    "urgencyScore": 0.82,
+    "isFlagged": false,
+    "rawData": { "reporter": "EPA Islamabad Unit 2", "verified": true }
+  },
+  {
+    "id": "isb-w1",
+    "source": "weather",
+    "content": "Islamabad: Temperature 28°C, Humidity 45%. Light winds 5km/h — poor dispersion conditions for pollutants. No rainfall expected.",
+    "location": { "lat": 33.6844, "lng": 73.0479, "label": "Islamabad" },
+    "timestamp": "2026-05-20T09:00:00Z",
+    "credibilityScore": 0.85,
+    "urgencyScore": 0.40,
+    "isFlagged": false,
+    "rawData": { "source": "OpenWeatherMap", "temp": 28, "humidity": 45, "wind_speed": 5 }
+  },
+  {
+    "id": "isb-t1",
+    "source": "traffic",
+    "content": "Major congestion — Khayaban-e-Iqbal near G-10 Markaz. Speed: 2km/h vs normal 45km/h. Cause: road collapse.",
+    "location": { "lat": 33.6910, "lng": 73.0150, "label": "Khayaban-e-Iqbal" },
+    "timestamp": "2026-05-20T09:30:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.72,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 2, "normal_speed": 45 }
+  }
+]

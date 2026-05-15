@@ -1,0 +1,106 @@
+[
+  {
+    "id": "khi-s1",
+    "source": "social",
+    "content": "Lyari nadi mein paani bhar gaya hai, ghar doob rahe hain. KBCA kuch karo! #KarachiFloods",
+    "location": { "lat": 24.8607, "lng": 67.0011, "label": "Lyari, Karachi" },
+    "timestamp": "2026-05-20T07:45:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.93,
+    "mentionVelocity": 18,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 45, "retweets": 89 }
+  },
+  {
+    "id": "khi-s2",
+    "source": "social",
+    "content": "Lyari riverbank breach confirmed near Chakiwara. Multiple families displaced. Emergency needed NOW",
+    "location": { "lat": 24.8621, "lng": 67.0034, "label": "Chakiwara, Lyari" },
+    "timestamp": "2026-05-20T07:58:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.91,
+    "mentionVelocity": 22,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 112, "retweets": 201 }
+  },
+  {
+    "id": "khi-s3",
+    "source": "social",
+    "content": "Lyari area bilkul theek hai yaar, media phir drama kar raha hai as usual. Maine abhi dekha sab normal",
+    "location": { "lat": 24.8607, "lng": 67.0011, "label": "Lyari, Karachi" },
+    "timestamp": "2026-05-20T07:12:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.05,
+    "mentionVelocity": 0,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 0, "retweets": 0 }
+  },
+  {
+    "id": "khi-s4",
+    "source": "social",
+    "content": "DHA Phase 8 mein extreme heat se 3 elderly log hospital le ja rahe hain. Bijli 6 ghante se nahi hai.",
+    "location": { "lat": 24.7971, "lng": 67.0747, "label": "DHA Phase 8, Karachi" },
+    "timestamp": "2026-05-20T08:30:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.87,
+    "mentionVelocity": 7,
+    "isFlagged": false,
+    "rawData": { "platform": "Facebook", "shares": 56, "comments": 34 }
+  },
+  {
+    "id": "khi-s5",
+    "source": "social",
+    "content": "Heatstroke cases coming into Aga Khan Hospital from DHA Phase 8 area. 4 patients so far, 2 critical",
+    "location": { "lat": 24.7971, "lng": 67.0747, "label": "DHA Phase 8, Karachi" },
+    "timestamp": "2026-05-20T08:44:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.92,
+    "mentionVelocity": 5,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 78, "retweets": 134 }
+  },
+  {
+    "id": "khi-f1",
+    "source": "field_report",
+    "content": "PDMA field unit at Lyari: confirmed riverbank breach at 3 points near Chakiwara. Water level 1.8m above danger mark. Approximately 200 families affected. NOT general flooding — breach is localised.",
+    "location": { "lat": 24.8614, "lng": 67.0022, "label": "Lyari Riverbank, Chakiwara" },
+    "timestamp": "2026-05-20T08:10:00Z",
+    "credibilityScore": 0.94,
+    "urgencyScore": 0.97,
+    "isFlagged": false,
+    "rawData": { "reporter": "PDMA Field Unit 3", "verified": true }
+  },
+  {
+    "id": "khi-f2",
+    "source": "field_report",
+    "content": "NEPRA inspection confirms DHA Phase 8 grid failure due to transformer overload from AC demand spike. Estimated repair: 4-6 hours.",
+    "location": { "lat": 24.7950, "lng": 67.0720, "label": "DHA Phase 8 Grid Station" },
+    "timestamp": "2026-05-20T09:05:00Z",
+    "credibilityScore": 0.91,
+    "urgencyScore": 0.78,
+    "isFlagged": false,
+    "rawData": { "reporter": "NEPRA Inspector ID-44", "verified": true }
+  },
+  {
+    "id": "khi-w1",
+    "source": "weather",
+    "content": "Heavy rainfall alert — Karachi. 38mm/hr. Flash flood watch active. Humidity 89%.",
+    "location": { "lat": 24.8607, "lng": 67.0011, "label": "Karachi" },
+    "timestamp": "2026-05-20T07:00:00Z",
+    "credibilityScore": 0.85,
+    "urgencyScore": 0.75,
+    "isFlagged": false,
+    "rawData": { "source": "OpenWeatherMap", "rain_mm_hr": 38, "humidity": 89, "temp": 34 }
+  },
+  {
+    "id": "khi-t1",
+    "source": "traffic",
+    "content": "Severe congestion — Lyari Expressway. Speed: 3km/h vs normal 60km/h. Cause: road flooding.",
+    "location": { "lat": 24.8607, "lng": 67.0011, "label": "Lyari Expressway" },
+    "timestamp": "2026-05-20T08:05:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.70,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 3, "normal_speed": 60 }
+  }
+]

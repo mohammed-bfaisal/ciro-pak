@@ -1,0 +1,55 @@
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import type { Signal } from '../../types';
+
+interface SourceDonutProps {
+  signals: Signal[];
+  size?: number;
+}
+
+const SOURCE_COLORS: Record<string, string> = {
+  social: '#60a5fa',
+  weather: '#f59e0b',
+  traffic: '#fb923c',
+  field_report: '#34d399',
+  sensor: '#a78bfa',
+  emergency_call: '#f87171',
+};
+
+export function SourceDonut({ signals, size = 120 }: SourceDonutProps) {
+  const counts: Record<string, number> = {};
+  signals.forEach((s) => {
+    counts[s.source] = (counts[s.source] || 0) + 1;
+  });
+
+  const data = Object.entries(counts).map(([source, count]) => ({
+    name: source.replace(/_/g, ' '),
+    value: count,
+    color: SOURCE_COLORS[source] || '#6b7280',
+  }));
+
+  return (
+    <div style={{ width: size, height: size + 30 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%" cy="45%"
+            innerRadius="45%"
+            outerRadius="75%"
+            dataKey="value"
+            stroke="none"
+          >
+            {data.map((entry, i) => (
+              <Cell key={i} fill={entry.color} />
+            ))}
+          </Pie>
+          <Legend
+            iconType="circle"
+            iconSize={6}
+            wrapperStyle={{ fontSize: '9px', color: '#a3a3a3' }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

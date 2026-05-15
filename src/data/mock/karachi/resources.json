@@ -1,0 +1,82 @@
+[
+  {
+    "id": "khi-r1",
+    "type": "rescue_team",
+    "label": "NDMA Rescue Unit Alpha",
+    "status": "available",
+    "location": { "lat": 24.8700, "lng": 67.0300, "label": "NDMA Station Karachi" },
+    "assignedCrisisId": null,
+    "capacity": 12,
+    "currentLoad": 0
+  },
+  {
+    "id": "khi-r2",
+    "type": "rescue_team",
+    "label": "NDMA Rescue Unit Bravo",
+    "status": "available",
+    "location": { "lat": 24.8550, "lng": 66.9900, "label": "NDMA West Station" },
+    "assignedCrisisId": null,
+    "capacity": 10,
+    "currentLoad": 0
+  },
+  {
+    "id": "khi-r3",
+    "type": "ambulance",
+    "label": "Edhi Ambulance KHI-07",
+    "status": "available",
+    "location": { "lat": 24.8500, "lng": 67.0100, "label": "Edhi Center Saddar" },
+    "assignedCrisisId": null,
+    "capacity": 4,
+    "currentLoad": 0
+  },
+  {
+    "id": "khi-r4",
+    "type": "police_unit",
+    "label": "Traffic Police Unit T-14",
+    "status": "available",
+    "location": { "lat": 24.8650, "lng": 67.0050, "label": "Traffic HQ Lyari" },
+    "assignedCrisisId": null,
+    "capacity": 6,
+    "currentLoad": 0
+  },
+  {
+    "id": "khi-r5",
+    "type": "water_tanker",
+    "label": "KW&SB Tanker WT-03",
+    "status": "available",
+    "location": { "lat": 24.8800, "lng": 67.0500, "label": "KW&SB Depot" },
+    "assignedCrisisId": null,
+    "capacity": 1,
+    "currentLoad": 0
+  },
+  {
+    "id": "khi-r6",
+    "type": "medical_outreach",
+    "label": "AKUH Mobile Medical Unit",
+    "status": "available",
+    "location": { "lat": 24.7900, "lng": 67.0700, "label": "Aga Khan Hospital" },
+    "assignedCrisisId": null,
+    "capacity": 8,
+    "currentLoad": 0
+  },
+  {
+    "id": "khi-r7",
+    "type": "fire_truck",
+    "label": "KMC Fire Engine F-22",
+    "status": "available",
+    "location": { "lat": 24.8450, "lng": 67.0200, "label": "Fire Station Saddar" },
+    "assignedCrisisId": null,
+    "capacity": 6,
+    "currentLoad": 0
+  },
+  {
+    "id": "khi-r8",
+    "type": "drone",
+    "label": "PDMA Recon Drone D-01",
+    "status": "available",
+    "location": { "lat": 24.8700, "lng": 67.0300, "label": "NDMA Station Karachi" },
+    "assignedCrisisId": null,
+    "capacity": 0,
+    "currentLoad": 0
+  }
+]

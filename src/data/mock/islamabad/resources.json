@@ -1,0 +1,82 @@
+[
+  {
+    "id": "isb-r1",
+    "type": "rescue_team",
+    "label": "NDMA Rescue Unit Charlie",
+    "status": "available",
+    "location": { "lat": 33.7000, "lng": 73.0500, "label": "NDMA Station Islamabad" },
+    "assignedCrisisId": null,
+    "capacity": 10,
+    "currentLoad": 0
+  },
+  {
+    "id": "isb-r2",
+    "type": "police_unit",
+    "label": "ICT Traffic Police Unit T-06",
+    "status": "available",
+    "location": { "lat": 33.6950, "lng": 73.0200, "label": "Traffic HQ G-10" },
+    "assignedCrisisId": null,
+    "capacity": 6,
+    "currentLoad": 0
+  },
+  {
+    "id": "isb-r3",
+    "type": "ambulance",
+    "label": "PIMS Ambulance ISB-03",
+    "status": "available",
+    "location": { "lat": 33.6900, "lng": 73.0480, "label": "PIMS Hospital" },
+    "assignedCrisisId": null,
+    "capacity": 4,
+    "currentLoad": 0
+  },
+  {
+    "id": "isb-r4",
+    "type": "fire_truck",
+    "label": "CDA Fire Engine F-11",
+    "status": "available",
+    "location": { "lat": 33.6850, "lng": 73.0100, "label": "Fire Station F-11" },
+    "assignedCrisisId": null,
+    "capacity": 6,
+    "currentLoad": 0
+  },
+  {
+    "id": "isb-r5",
+    "type": "medical_outreach",
+    "label": "PIMS Mobile Health Unit",
+    "status": "available",
+    "location": { "lat": 33.6900, "lng": 73.0480, "label": "PIMS Hospital" },
+    "assignedCrisisId": null,
+    "capacity": 8,
+    "currentLoad": 0
+  },
+  {
+    "id": "isb-r6",
+    "type": "water_tanker",
+    "label": "CDA Water Tanker WT-07",
+    "status": "available",
+    "location": { "lat": 33.7100, "lng": 73.0600, "label": "CDA Water Depot" },
+    "assignedCrisisId": null,
+    "capacity": 1,
+    "currentLoad": 0
+  },
+  {
+    "id": "isb-r7",
+    "type": "drone",
+    "label": "NDMA Recon Drone D-03",
+    "status": "available",
+    "location": { "lat": 33.7000, "lng": 73.0500, "label": "NDMA Station Islamabad" },
+    "assignedCrisisId": null,
+    "capacity": 0,
+    "currentLoad": 0
+  },
+  {
+    "id": "isb-r8",
+    "type": "ambulance",
+    "label": "Rescue 1122 ISB-12",
+    "status": "available",
+    "location": { "lat": 33.6800, "lng": 73.0300, "label": "Rescue 1122 Station G-11" },
+    "assignedCrisisId": null,
+    "capacity": 4,
+    "currentLoad": 0
+  }
+]
