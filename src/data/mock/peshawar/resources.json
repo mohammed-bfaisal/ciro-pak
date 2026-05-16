@@ -1,0 +1,9 @@
+[
+  { "id": "pew-r1", "type": "rescue_team", "label": "Rescue 1122 KP Unit PEW-Alpha", "status": "available", "location": { "lat": 34.0150, "lng": 71.5249, "label": "Rescue 1122 Station Peshawar" }, "assignedCrisisId": null, "capacity": 12, "currentLoad": 0 },
+  { "id": "pew-r2", "type": "police_unit", "label": "KP Police City Division PEW-07", "status": "available", "location": { "lat": 34.0150, "lng": 71.5249, "label": "KP Police HQ Peshawar" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
+  { "id": "pew-r3", "type": "ambulance", "label": "Hayatabad Medical Complex PEW-05", "status": "available", "location": { "lat": 34.0100, "lng": 71.4700, "label": "Hayatabad Medical Complex" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
+  { "id": "pew-r4", "type": "ambulance", "label": "Lady Reading Hospital PEW-09", "status": "available", "location": { "lat": 34.0150, "lng": 71.5600, "label": "Lady Reading Hospital" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
+  { "id": "pew-r5", "type": "medical_outreach", "label": "KP-PDMA Mobile Health Unit PEW-MH1", "status": "available", "location": { "lat": 34.0150, "lng": 71.5249, "label": "KP-PDMA Command Peshawar" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
+  { "id": "pew-r6", "type": "water_tanker", "label": "PESCO Relief Tanker PEW-WT1", "status": "available", "location": { "lat": 34.0200, "lng": 71.5300, "label": "PESCO Depot Peshawar" }, "assignedCrisisId": null, "capacity": 1, "currentLoad": 0 },
+  { "id": "pew-r7", "type": "drone", "label": "KP Safe Cities Drone KPS-PEW-02", "status": "available", "location": { "lat": 34.0150, "lng": 71.5249, "label": "Safe City Command Peshawar" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
+]
