@@ -1,0 +1,377 @@
+{
+  "/home/mbf/Desktop/projs/ciro-pak/capacitor.config.ts": {
+    "mtime": 1778925407.6200051,
+    "ast_hash": "f032689830f8b2f0f332cb852229637d",
+    "semantic_hash": "f032689830f8b2f0f332cb852229637d"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/eslint.config.js": {
+    "mtime": 1778925407.6200051,
+    "ast_hash": "0355276bc79439afe3c53e3a2470ca1e",
+    "semantic_hash": "0355276bc79439afe3c53e3a2470ca1e"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/package.json": {
+    "mtime": 1778925407.6209836,
+    "ast_hash": "27241642f44d754caaabb79d47e45aa5",
+    "semantic_hash": "27241642f44d754caaabb79d47e45aa5"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/postcss.config.js": {
+    "mtime": 1778925407.6209836,
+    "ast_hash": "ef3ba2a81ba19f8ea5ddf625521e96f0",
+    "semantic_hash": "ef3ba2a81ba19f8ea5ddf625521e96f0"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/tailwind.config.ts": {
+    "mtime": 1778925407.6265364,
+    "ast_hash": "8c253c135718f66047a3a3148f438660",
+    "semantic_hash": "8c253c135718f66047a3a3148f438660"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/tsconfig.app.json": {
+    "mtime": 1778925407.6265364,
+    "ast_hash": "136630b5accce1ca50663df229534a26",
+    "semantic_hash": "136630b5accce1ca50663df229534a26"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/tsconfig.json": {
+    "mtime": 1778925407.6265364,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": "a3d39fa780ebff65444de257f291ce6c"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/tsconfig.node.json": {
+    "mtime": 1778925407.6265364,
+    "ast_hash": "70bdd0a673bcfc0e828080b306e7c680",
+    "semantic_hash": "70bdd0a673bcfc0e828080b306e7c680"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/vite.config.ts": {
+    "mtime": 1778925407.6265364,
+    "ast_hash": "de93cdbf9bc2420bececc402ac69a612",
+    "semantic_hash": "de93cdbf9bc2420bececc402ac69a612"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/App.tsx": {
+    "mtime": 1778925407.6221285,
+    "ast_hash": "26a113139bd8f3b27b04a6ba87da7165",
+    "semantic_hash": "26a113139bd8f3b27b04a6ba87da7165"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/main.tsx": {
+    "mtime": 1778925407.6251123,
+    "ast_hash": "7316f645e30b5a305afe97866ba7a0ac",
+    "semantic_hash": "7316f645e30b5a305afe97866ba7a0ac"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/agents/resourceAllocator.ts": {
+    "mtime": 1778925407.6223843,
+    "ast_hash": "2daebdbf460395b969c4e83abeba6530",
+    "semantic_hash": "2daebdbf460395b969c4e83abeba6530"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/agents/signalFusion.ts": {
+    "mtime": 1778925407.6223843,
+    "ast_hash": "5b9387f4628cdb1bc110d594fb3fbda1",
+    "semantic_hash": "5b9387f4628cdb1bc110d594fb3fbda1"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/agents/actionSimulator.ts": {
+    "mtime": 1778943461.81772,
+    "ast_hash": "e9aea4c5b20fe22e5ddb40a4216971c7",
+    "semantic_hash": "e9aea4c5b20fe22e5ddb40a4216971c7"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/agents/crisisDetector.ts": {
+    "mtime": 1778943461.8293216,
+    "ast_hash": "20c077816e6908e85affbee79d8e85f3",
+    "semantic_hash": "20c077816e6908e85affbee79d8e85f3"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/agents/orchestrator.ts": {
+    "mtime": 1778943461.8323216,
+    "ast_hash": "dc5864c381ef58c020deda53b2f5de15",
+    "semantic_hash": "dc5864c381ef58c020deda53b2f5de15"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/agents/stakeholderNotifier.ts": {
+    "mtime": 1778943461.8332787,
+    "ast_hash": "b53d63806768cd123df7b00e2d2e5318",
+    "semantic_hash": "b53d63806768cd123df7b00e2d2e5318"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/api/weather.ts": {
+    "mtime": 1778943461.8332787,
+    "ast_hash": "5b4599ceea89a9c9b57bd6773899ed1f",
+    "semantic_hash": "5b4599ceea89a9c9b57bd6773899ed1f"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/cards/CrisisCard.tsx": {
+    "mtime": 1778925407.6231184,
+    "ast_hash": "a1d6aa80e65199d9679a529136316619",
+    "semantic_hash": "a1d6aa80e65199d9679a529136316619"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/cards/ResourceCard.tsx": {
+    "mtime": 1778925407.6232224,
+    "ast_hash": "a92e4333960af02324e906b126d5dfdf",
+    "semantic_hash": "a92e4333960af02324e906b126d5dfdf"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/cards/SignalCard.tsx": {
+    "mtime": 1778925407.6232224,
+    "ast_hash": "c4016086099c09217514621cf1f17a7a",
+    "semantic_hash": "c4016086099c09217514621cf1f17a7a"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/charts/ConfidenceSparkline.tsx": {
+    "mtime": 1778925407.6232224,
+    "ast_hash": "68ea3bc1be56dcd8fded8283aa8f1504",
+    "semantic_hash": "68ea3bc1be56dcd8fded8283aa8f1504"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/charts/ResourceBar.tsx": {
+    "mtime": 1778925407.62341,
+    "ast_hash": "36259cb2ad53470188f51bbe1d9c15fa",
+    "semantic_hash": "36259cb2ad53470188f51bbe1d9c15fa"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/charts/SeverityGauge.tsx": {
+    "mtime": 1778925407.62341,
+    "ast_hash": "3c8ecf0b54f0e39ae17293f1352faf8a",
+    "semantic_hash": "3c8ecf0b54f0e39ae17293f1352faf8a"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/charts/SourceDonut.tsx": {
+    "mtime": 1778925407.62341,
+    "ast_hash": "9ec8d7490478d75f5b96da4e03af7cc4",
+    "semantic_hash": "9ec8d7490478d75f5b96da4e03af7cc4"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/layout/BottomNav.tsx": {
+    "mtime": 1778925407.62341,
+    "ast_hash": "c8cda957c227d73f3bdb5ae58b6fcd27",
+    "semantic_hash": "c8cda957c227d73f3bdb5ae58b6fcd27"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/layout/Sidebar.tsx": {
+    "mtime": 1778925407.6236532,
+    "ast_hash": "61f177a372fb81a30a3e48a146177cbb",
+    "semantic_hash": "61f177a372fb81a30a3e48a146177cbb"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/layout/Shell.tsx": {
+    "mtime": 1778943461.8399181,
+    "ast_hash": "2326407a84b18447bc07efe0e6905be2",
+    "semantic_hash": "2326407a84b18447bc07efe0e6905be2"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/layout/TopBar.tsx": {
+    "mtime": 1778943461.8399181,
+    "ast_hash": "17c12ea7d67e655ddc3a6892647a5a63",
+    "semantic_hash": "17c12ea7d67e655ddc3a6892647a5a63"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/map/CiroMap.tsx": {
+    "mtime": 1778943461.8483217,
+    "ast_hash": "687021f586fce8d91ca3869e255f2fe0",
+    "semantic_hash": "687021f586fce8d91ca3869e255f2fe0"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/panels/CrisisPanel.tsx": {
+    "mtime": 1778925407.6236532,
+    "ast_hash": "394efe7161888ca7fdc759f36ff7c2ee",
+    "semantic_hash": "394efe7161888ca7fdc759f36ff7c2ee"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/panels/SignalFeed.tsx": {
+    "mtime": 1778925407.6240516,
+    "ast_hash": "ea315c96ad314726233665442b94b9dd",
+    "semantic_hash": "ea315c96ad314726233665442b94b9dd"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/trace/PipelineTimeline.tsx": {
+    "mtime": 1778925407.6240516,
+    "ast_hash": "6917daf19580b6cb7dea0decf7cefc1a",
+    "semantic_hash": "6917daf19580b6cb7dea0decf7cefc1a"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/trace/TerminalLog.tsx": {
+    "mtime": 1778925407.6242282,
+    "ast_hash": "a0f79bca1e66deb81c77e8e1929dba97",
+    "semantic_hash": "a0f79bca1e66deb81c77e8e1929dba97"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/ui/Badge.tsx": {
+    "mtime": 1778925407.6242282,
+    "ast_hash": "f60954a62b9fb8dadb8bf43d3494d88e",
+    "semantic_hash": "f60954a62b9fb8dadb8bf43d3494d88e"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/ui/CredibilityBar.tsx": {
+    "mtime": 1778925407.6243658,
+    "ast_hash": "131ab726ba02edd70fdb9b40fa71de98",
+    "semantic_hash": "131ab726ba02edd70fdb9b40fa71de98"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/components/ui/GlassPanel.tsx": {
+    "mtime": 1778925407.6243658,
+    "ast_hash": "ea208e96078877fa27a5203588b721b1",
+    "semantic_hash": "ea208e96078877fa27a5203588b721b1"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/constants/colors.ts": {
+    "mtime": 1778925407.6243658,
+    "ast_hash": "d3a2282733e3474f5b229463ec640fe6",
+    "semantic_hash": "d3a2282733e3474f5b229463ec640fe6"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/constants/mapStyles.ts": {
+    "mtime": 1778925407.6245842,
+    "ast_hash": "50d99434518f831ec02151dbb14b6d97",
+    "semantic_hash": "50d99434518f831ec02151dbb14b6d97"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/constants/typography.ts": {
+    "mtime": 1778925407.6245842,
+    "ast_hash": "7232fc4ce32ca1e48fa322c4ba30010e",
+    "semantic_hash": "7232fc4ce32ca1e48fa322c4ba30010e"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/data/mock/islamabad/resources.json": {
+    "mtime": 1778925407.624707,
+    "ast_hash": "a7cd682e997772f85ab8bebf4bf6f6aa",
+    "semantic_hash": "a7cd682e997772f85ab8bebf4bf6f6aa"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/data/mock/islamabad/scenario.ts": {
+    "mtime": 1778925407.6248088,
+    "ast_hash": "2db660c3bfbdbd0959f2b21ab33e6f1f",
+    "semantic_hash": "2db660c3bfbdbd0959f2b21ab33e6f1f"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/data/mock/islamabad/signals.json": {
+    "mtime": 1778925407.6248088,
+    "ast_hash": "1d5565a9e57e020ed3bc287ee6bfd63b",
+    "semantic_hash": "1d5565a9e57e020ed3bc287ee6bfd63b"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/data/mock/karachi/resources.json": {
+    "mtime": 1778925407.6248088,
+    "ast_hash": "2d225108b54d1633c5e3a9a6fdaf98f4",
+    "semantic_hash": "2d225108b54d1633c5e3a9a6fdaf98f4"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/data/mock/karachi/scenario.ts": {
+    "mtime": 1778925407.6251123,
+    "ast_hash": "a9f34c555ba7ba683d8e87c564983859",
+    "semantic_hash": "a9f34c555ba7ba683d8e87c564983859"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/data/mock/karachi/signals.json": {
+    "mtime": 1778925407.6251123,
+    "ast_hash": "09750f63311c11b1606bcb1913248d47",
+    "semantic_hash": "09750f63311c11b1606bcb1913248d47"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/ComparePage.tsx": {
+    "mtime": 1778925407.6251123,
+    "ast_hash": "fa3aef1c4e0818006cd332cfd3877d3a",
+    "semantic_hash": "fa3aef1c4e0818006cd332cfd3877d3a"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/CrisesPage.tsx": {
+    "mtime": 1778925407.6256025,
+    "ast_hash": "810393df498c2acd97495bce269cc4f7",
+    "semantic_hash": "810393df498c2acd97495bce269cc4f7"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/Dashboard.tsx": {
+    "mtime": 1778925407.6256025,
+    "ast_hash": "a6e96be948ed20abd1f21d9f821e79f5",
+    "semantic_hash": "a6e96be948ed20abd1f21d9f821e79f5"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/ReplayPage.tsx": {
+    "mtime": 1778925407.6256025,
+    "ast_hash": "9953ffb9a963a211260b7fef95ed440e",
+    "semantic_hash": "9953ffb9a963a211260b7fef95ed440e"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/ResourcesPage.tsx": {
+    "mtime": 1778925407.6256025,
+    "ast_hash": "83f6a8fe252fc53032ceb77a7c554117",
+    "semantic_hash": "83f6a8fe252fc53032ceb77a7c554117"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/SignalsPage.tsx": {
+    "mtime": 1778925407.6256025,
+    "ast_hash": "cd1e5a34d5510a6b7c73d43ff6920fbe",
+    "semantic_hash": "cd1e5a34d5510a6b7c73d43ff6920fbe"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/WhatIfPage.tsx": {
+    "mtime": 1778925407.6256025,
+    "ast_hash": "325bb88304defb1f816a0d5997d81a04",
+    "semantic_hash": "325bb88304defb1f816a0d5997d81a04"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/pages/TracePage.tsx": {
+    "mtime": 1778943461.8543217,
+    "ast_hash": "6a5515d55174ea1681c5d265e76530e1",
+    "semantic_hash": "6a5515d55174ea1681c5d265e76530e1"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/store/crisisStore.ts": {
+    "mtime": 1778925407.6256025,
+    "ast_hash": "10126acdf6a5762330f71484ed130ce2",
+    "semantic_hash": "10126acdf6a5762330f71484ed130ce2"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/store/resourceStore.ts": {
+    "mtime": 1778925407.6259837,
+    "ast_hash": "c6d1e384c99c3c3a7a993fbf6bda782d",
+    "semantic_hash": "c6d1e384c99c3c3a7a993fbf6bda782d"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/store/signalStore.ts": {
+    "mtime": 1778925407.6259837,
+    "ast_hash": "b7f8ff2ab39919c10e04a2d9cb096eb3",
+    "semantic_hash": "b7f8ff2ab39919c10e04a2d9cb096eb3"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/store/traceStore.ts": {
+    "mtime": 1778943461.8543217,
+    "ast_hash": "41676f1d899fe65c3420271d963afdc2",
+    "semantic_hash": "41676f1d899fe65c3420271d963afdc2"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/types/index.ts": {
+    "mtime": 1778943461.8653216,
+    "ast_hash": "0f94fb8e16dba3c8ec3e141f5b050ad3",
+    "semantic_hash": "0f94fb8e16dba3c8ec3e141f5b050ad3"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/utils/formatting.ts": {
+    "mtime": 1778925407.6259837,
+    "ast_hash": "53caeaad046f7a95d8b2acc0997987d7",
+    "semantic_hash": "53caeaad046f7a95d8b2acc0997987d7"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/utils/geo.ts": {
+    "mtime": 1778925407.6265364,
+    "ast_hash": "45e85bd926149381c0bdf805fac7b98c",
+    "semantic_hash": "45e85bd926149381c0bdf805fac7b98c"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/.claude/settings.local.json": {
+    "mtime": 1778944555.1559515,
+    "ast_hash": "f636dca80a1f62b843446462682cce9c",
+    "semantic_hash": "f636dca80a1f62b843446462682cce9c"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/README.md": {
+    "mtime": 1778925407.6200051,
+    "ast_hash": "f6e3faf55d738cf2affe1b44195f27cf",
+    "semantic_hash": "f6e3faf55d738cf2affe1b44195f27cf"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/index.html": {
+    "mtime": 1778925407.6200051,
+    "ast_hash": "3ff0aac1a8ae54e77564a2ae9c798aad",
+    "semantic_hash": "3ff0aac1a8ae54e77564a2ae9c798aad"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/.agents/rules/graphify.md": {
+    "mtime": 1778929355.3523934,
+    "ast_hash": "1926e27ae34f71eff4de2777e41d52be",
+    "semantic_hash": "1926e27ae34f71eff4de2777e41d52be"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/.agents/workflows/graphify.md": {
+    "mtime": 1778929355.352556,
+    "ast_hash": "afa1ffc01aa56ac681c7335686f44767",
+    "semantic_hash": "afa1ffc01aa56ac681c7335686f44767"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/docs/SPEC_v2.md": {
+    "mtime": 1778936184.4145958,
+    "ast_hash": "f04c6315a6c771655cfce3c2c11a4b17",
+    "semantic_hash": "f04c6315a6c771655cfce3c2c11a4b17"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/docs/WORKPLAN_v2.md": {
+    "mtime": 1778936269.0347323,
+    "ast_hash": "821aad7ddfa2e647ec6b03216b31c1d5",
+    "semantic_hash": "821aad7ddfa2e647ec6b03216b31c1d5"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/challenges.pdf": {
+    "mtime": 1778930444.0479662,
+    "ast_hash": "e01f882ff631b73ebcd5f5d2eb1de431",
+    "semantic_hash": "e01f882ff631b73ebcd5f5d2eb1de431"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/faqs.pdf": {
+    "mtime": 1778930444.019588,
+    "ast_hash": "88fc3b65b48ad746757e18b566e5eed1",
+    "semantic_hash": "88fc3b65b48ad746757e18b566e5eed1"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/public/favicon.svg": {
+    "mtime": 1778925407.6209836,
+    "ast_hash": "7e840862161341271697daa99a40d76b",
+    "semantic_hash": "7e840862161341271697daa99a40d76b"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/public/icons.svg": {
+    "mtime": 1778925407.6221285,
+    "ast_hash": "3b4fcfcf393eca4d264dca4a4663bc37",
+    "semantic_hash": "3b4fcfcf393eca4d264dca4a4663bc37"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/assets/hero.png": {
+    "mtime": 1778925407.6223843,
+    "ast_hash": "aead493361b27e7510691c5d7072dfc1",
+    "semantic_hash": "aead493361b27e7510691c5d7072dfc1"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/assets/react.svg": {
+    "mtime": 1778925407.6228914,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": "f0402b67b6ce880f65666bb49e841696"
+  },
+  "/home/mbf/Desktop/projs/ciro-pak/src/assets/vite.svg": {
+    "mtime": 1778925407.6228914,
+    "ast_hash": "9960a24288958394ac50e57ff638b036",
+    "semantic_hash": "9960a24288958394ac50e57ff638b036"
+  }
+}
