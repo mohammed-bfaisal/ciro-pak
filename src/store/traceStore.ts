@@ -1,11 +1,21 @@
 import { create } from 'zustand';
 import type { City, Workplan, WorkplanPhase } from '../types';
 
+export type PipelineMode = 'idle' | 'briefing' | 'running' | 'paused' | 'complete';
+
+// Module-level resolver — avoids storing non-serializable functions in Zustand state
+let _gateResolve: (() => void) | null = null;
+
 interface TraceState {
   workplan: Workplan | null;
   isRunning: boolean;
   currentPhase: string | null;
   logs: string[];
+  // Pipeline state machine
+  pipelineMode: PipelineMode;
+  currentPhaseIndex: number;
+  pendingCity: City | null;
+
   startSession: (city: City) => void;
   startPhase: (name: string, tasks: string[]) => void;
   log: (message: string) => void;
@@ -13,6 +23,11 @@ interface TraceState {
   failPhase: (name: string) => void;
   finalise: () => void;
   reset: () => void;
+  // Gate actions
+  openBriefing: (city: City) => void;
+  dismissBriefing: () => void;
+  pauseAtGate: (phaseIndex: number) => void;
+  resumeFromGate: () => void;
 }
 
 export const useTraceStore = create<TraceState>((set) => ({
@@ -20,6 +35,24 @@ export const useTraceStore = create<TraceState>((set) => ({
   isRunning: false,
   currentPhase: null,
   logs: [],
+  pipelineMode: 'idle',
+  currentPhaseIndex: 0,
+  pendingCity: null,
+
+  openBriefing: (city) => set({ pipelineMode: 'briefing', pendingCity: city }),
+
+  dismissBriefing: () => set({ pipelineMode: 'idle', pendingCity: null }),
+
+  pauseAtGate: (phaseIndex) => set({ pipelineMode: 'paused', currentPhaseIndex: phaseIndex }),
+
+  resumeFromGate: () => {
+    set({ pipelineMode: 'running' });
+    if (_gateResolve) {
+      const resolve = _gateResolve;
+      _gateResolve = null;
+      resolve();
+    }
+  },
 
   startSession: (city) => {
     const sessionId = `ciro-${city}-${Date.now()}`;
@@ -39,6 +72,8 @@ export const useTraceStore = create<TraceState>((set) => ({
         },
       },
       isRunning: true,
+      pipelineMode: 'running',
+      currentPhaseIndex: 0,
       logs: [],
       currentPhase: null,
     });
@@ -114,9 +149,26 @@ export const useTraceStore = create<TraceState>((set) => ({
         ? { ...state.workplan, completedAt: new Date().toISOString() }
         : state.workplan,
       isRunning: false,
+      pipelineMode: 'complete',
       logs: [...state.logs, `[${ts}] ═══ Pipeline Complete ═══`],
     }));
   },
 
-  reset: () => set({ workplan: null, isRunning: false, currentPhase: null, logs: [] }),
+  reset: () => set({
+    workplan: null,
+    isRunning: false,
+    currentPhase: null,
+    logs: [],
+    pipelineMode: 'idle',
+    currentPhaseIndex: 0,
+    pendingCity: null,
+  }),
 }));
+
+// Suspends the pipeline coroutine until resumeFromGate() is called or auto-advance fires
+export function waitForGate(phaseIndex: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    _gateResolve = resolve;
+    useTraceStore.getState().pauseAtGate(phaseIndex);
+  });
+}
