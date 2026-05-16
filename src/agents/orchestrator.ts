@@ -166,6 +166,7 @@ export async function runCIROPipeline(city: City) {
     trace.log('No conflicting signals — classification confirmed accurate');
   }
   trace.completePhase('False Alarm Correction', PHASE_DELAYS.correction);
+  await waitForGate(7);
 
   trace.finalise();
 
