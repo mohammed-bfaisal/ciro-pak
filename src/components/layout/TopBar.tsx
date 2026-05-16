@@ -5,6 +5,7 @@ import { colors } from '../../constants/colors';
 import type { City } from '../../types';
 import { useTraceStore } from '../../store/traceStore';
 import { runCIROPipeline } from '../../agents/orchestrator';
+import { CITIES_BY_PROVINCE, CITY_REGISTRY } from '../../data/cities';
 
 export function TopBar() {
   const [city, setCity] = useState<City>('karachi');
@@ -58,8 +59,13 @@ export function TopBar() {
             border: `1px solid ${colors.borderDefault}`,
           }}
         >
-          <option value="karachi">🏙️ Karachi</option>
-          <option value="islamabad">🏛️ Islamabad</option>
+          {Object.entries(CITIES_BY_PROVINCE).map(([province, cityIds]) => (
+            <optgroup key={province} label={province}>
+              {cityIds.map((id) => (
+                <option key={id} value={id}>{CITY_REGISTRY[id].label}</option>
+              ))}
+            </optgroup>
+          ))}
         </select>
       </div>
 
