@@ -100,17 +100,30 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         });
       }
 
-      // Add signal pin markers
-      signals.forEach((signal) => {
+      // Add signal pin markers with entrance pulse
+      signals.forEach((signal, idx) => {
+        const color = getCredColor(signal.credibilityScore);
         const el = document.createElement('div');
-        el.style.width = '10px';
-        el.style.height = '10px';
-        el.style.borderRadius = '50%';
-        el.style.background = getCredColor(signal.credibilityScore);
-        el.style.border = '2px solid rgba(0,0,0,0.3)';
+        el.style.position = 'relative';
+        el.style.width = '14px';
+        el.style.height = '14px';
         el.style.cursor = 'pointer';
-        el.style.boxShadow = `0 0 6px ${getCredColor(signal.credibilityScore)}`;
         el.title = `${signal.source}: ${signal.content.slice(0, 50)}...`;
+        el.innerHTML = `
+          <div style="
+            position:absolute;inset:0;border-radius:50%;
+            background:${color}33;border:1.5px solid ${color}88;
+            animation:signal-pulse 2s ease-out ${idx * 80}ms both;
+          "></div>
+          <div style="
+            position:absolute;top:50%;left:50%;
+            transform:translate(-50%,-50%);
+            width:7px;height:7px;border-radius:50%;
+            background:${color};
+            box-shadow:0 0 5px ${color};
+            animation:signal-arrive 0.4s ease-out ${idx * 80}ms both;
+          "></div>
+        `;
 
         const marker = new maplibregl.Marker({ element: el })
           .setLngLat([signal.location.lng, signal.location.lat])
