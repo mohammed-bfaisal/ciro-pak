@@ -1,11 +1,10 @@
 import type { Crisis, Action, StakeholderMessage, City } from '../types';
-import { getKarachiMessages } from '../data/mock/karachi/scenario';
-import { getIslamabadMessages } from '../data/mock/islamabad/scenario';
+import { SCENARIO_REGISTRY } from '../data/mock';
 
 export function stakeholderAgent(
   _crises: Crisis[],
   _actions: Action[],
   city: City
 ): StakeholderMessage[] {
-  return city === 'karachi' ? getKarachiMessages() : getIslamabadMessages();
+  return SCENARIO_REGISTRY[city].getMessages();
 }

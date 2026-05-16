@@ -8,12 +8,8 @@ import { resourceAllocationAgent } from './resourceAllocator';
 import { actionSimulatorAgent } from './actionSimulator';
 import { stakeholderAgent } from './stakeholderNotifier';
 import { fetchWeather } from '../api/weather';
-import type { City, Signal, Resource } from '../types';
-
-import karachiSignals from '../data/mock/karachi/signals.json';
-import karachiResources from '../data/mock/karachi/resources.json';
-import islamabadSignals from '../data/mock/islamabad/signals.json';
-import islamabadResources from '../data/mock/islamabad/resources.json';
+import { SCENARIO_REGISTRY } from '../data/mock';
+import type { City } from '../types';
 
 const PHASE_DELAYS = {
   ingestion:   800,
@@ -29,23 +25,14 @@ function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function loadSignals(city: City): Signal[] {
-  const raw = city === 'karachi' ? karachiSignals : islamabadSignals;
-  return raw as Signal[];
-}
-
-function loadResources(city: City): Resource[] {
-  const raw = city === 'karachi' ? karachiResources : islamabadResources;
-  return raw as Resource[];
-}
-
 export async function runCIROPipeline(city: City) {
   const trace = useTraceStore.getState();
   const signals = useSignalStore.getState();
   const crisisStore = useCrisisStore.getState();
   const resourceStore = useResourceStore.getState();
 
-  // Reset all stores
+  const scenario = SCENARIO_REGISTRY[city];
+
   signals.reset();
   crisisStore.reset();
   resourceStore.reset();
@@ -61,12 +48,11 @@ export async function runCIROPipeline(city: City) {
     `Loading ${city} traffic data...`,
   ]);
 
-  const rawSignals = loadSignals(city);
+  const rawSignals = scenario.signals;
   const weather = await fetchWeather(city);
   const allSignals = [...rawSignals, weather];
   signals.setRaw(allSignals);
 
-  // Stream signals into UI one by one with 600ms delay
   for (const signal of allSignals) {
     await delay(600);
     useSignalStore.getState().addSignal(signal);
@@ -116,7 +102,7 @@ export async function runCIROPipeline(city: City) {
   ]);
   await delay(PHASE_DELAYS.allocation);
 
-  const resources = loadResources(city);
+  const resources = scenario.resources;
   useResourceStore.getState().setResources(resources);
 
   const allocations = resourceAllocationAgent(crises, resources);
@@ -146,8 +132,7 @@ export async function runCIROPipeline(city: City) {
   const messages = stakeholderAgent(crises, actions, city);
   messages.forEach((m) => {
     trace.log(`${m.audience}: ${m.subject} → ${m.status}`);
-    // Attach messages to crises
-    const crisis = crises.find(() => true); // Messages apply to relevant crises
+    const crisis = crises.find(() => true);
     if (crisis) {
       crisis.stakeholderMessages = [...(crisis.stakeholderMessages || []), m];
     }
@@ -162,22 +147,22 @@ export async function runCIROPipeline(city: City) {
   ]);
   await delay(PHASE_DELAYS.correction);
 
-  if (city === 'karachi') {
-    trace.log('khi-c1 initial alert scope overstated (city-wide flood)');
-    trace.log('Field report khi-f1 (0.94): breach limited to Chakiwara only');
-    trace.log('Retraction SMS drafted → SENT → delivered');
-    trace.log('Classification refined: "general flood" → "localised riverbank breach"');
+  // Each city scenario includes a correction note in its agent reasoning
+  const primaryCrisis = crises[0];
+  if (primaryCrisis) {
+    trace.log(`${primaryCrisis.id} initial alert reviewed against field verification`);
+    trace.log(`Verification status: ${primaryCrisis.verificationStatus.toUpperCase()}`);
+    trace.log(`Confidence trajectory: ${primaryCrisis.confidenceHistory.map(h => `${h.t}→${(h.v * 100).toFixed(0)}%`).join(', ')}`);
+  }
+  if (crises.some(c => c.conflictingSignalIds.length > 0)) {
+    trace.log('Conflicting signals flagged — partial retraction issued');
   } else {
-    trace.log('isb-c1 initial classification: road collapse');
-    trace.log('Field report isb-f1 (0.93): sinkhole caused by burst water main');
-    trace.log('Correction issued: "road collapse" → "sinkhole/water main failure"');
-    trace.log('Media notification sent with corrected information');
+    trace.log('No conflicting signals — classification confirmed accurate');
   }
   trace.completePhase('False Alarm Correction', PHASE_DELAYS.correction);
 
   trace.finalise();
 
-  // Update crises with actions and messages
   crises.forEach((c) => {
     useCrisisStore.getState().updateCrisis(c.id, {
       actions: c.actions,

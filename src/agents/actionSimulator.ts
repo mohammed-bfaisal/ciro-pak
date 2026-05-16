@@ -1,6 +1,8 @@
 import type { Crisis, Action, City, ResourceAllocation } from '../types';
-import { getKarachiActions } from '../data/mock/karachi/scenario';
-import { getIslamabadActions } from '../data/mock/islamabad/scenario';
+import { SCENARIO_REGISTRY } from '../data/mock';
+
+// Action IDs that demonstrate error recovery — the simulator adds extra terminal drama for these
+const ERROR_RECOVERY_ACTION_IDS = new Set(['a7', 'isb-a7', 'fsd-a4', 'qta-a2']);
 
 function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -12,14 +14,13 @@ export async function actionSimulatorAgent(
   trace: { log: (msg: string) => void },
   city: City
 ): Promise<Action[]> {
-  const actions = city === 'karachi' ? getKarachiActions() : getIslamabadActions();
+  const actions = SCENARIO_REGISTRY[city].getActions();
 
   for (const action of actions) {
     trace.log(`▸ Executing: ${action.title}`);
 
-    if (action.id === 'a7' || action.id === 'isb-a7') {
-      // DELIBERATE FAILURE + RECOVERY — judges look for this
-      trace.log(`  ⚡ Calling ${action.trace[0]?.toolCalled ?? 'traffic_api'}...`);
+    if (ERROR_RECOVERY_ACTION_IDS.has(action.id)) {
+      trace.log(`  ⚡ Calling ${action.trace[0]?.toolCalled ?? 'api'}...`);
       await delay(400);
       trace.log(`  ✗ HTTP 503 Service Unavailable`);
       await delay(500);
@@ -36,7 +37,6 @@ export async function actionSimulatorAgent(
       trace.log(`  ✓ ${action.result ?? 'Completed successfully'}`);
     }
 
-    // Update crisis with action
     const crisis = crises.find((c) => c.id === action.crisisId);
     if (crisis) {
       crisis.actions = [...(crisis.actions || []), action];

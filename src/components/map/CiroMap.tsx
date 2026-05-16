@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { DARK_STYLE, CITY_COORDS } from '../../constants/mapStyles';
+import { DARK_STYLE } from '../../constants/mapStyles';
+import { CITY_REGISTRY } from '../../data/cities';
 import { useSignalStore } from '../../store/signalStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { getCrisisColor, getCredColor } from '../../constants/colors';
@@ -26,8 +27,8 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     mapInstance.current = new maplibregl.Map({
       container: mapRef.current,
       style: DARK_STYLE,
-      center: CITY_COORDS[city].center,
-      zoom: CITY_COORDS[city].zoom,
+      center: [CITY_REGISTRY[city].lng, CITY_REGISTRY[city].lat],
+      zoom: CITY_REGISTRY[city].zoom,
       attributionControl: false,
     });
 
@@ -41,8 +42,8 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   useEffect(() => {
     if (!mapInstance.current) return;
     mapInstance.current.flyTo({
-      center: CITY_COORDS[city].center,
-      zoom: CITY_COORDS[city].zoom,
+      center: [CITY_REGISTRY[city].lng, CITY_REGISTRY[city].lat],
+      zoom: CITY_REGISTRY[city].zoom,
       duration: 1500,
     });
   }, [city]);
