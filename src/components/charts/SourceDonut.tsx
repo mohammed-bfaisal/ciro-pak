@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import type { Signal } from '../../types';
 
 interface SourceDonutProps {
@@ -28,28 +28,58 @@ export function SourceDonut({ signals, size = 120 }: SourceDonutProps) {
   }));
 
   return (
-    <div style={{ width: size, height: size + 30 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%" cy="45%"
-            innerRadius="45%"
-            outerRadius="75%"
-            dataKey="value"
-            stroke="none"
+    <div style={{ width: size }}>
+      {/* Donut chart — fixed square, no built-in legend */}
+      <div style={{ width: size, height: size }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius="45%"
+              outerRadius="75%"
+              dataKey="value"
+              stroke="none"
+            >
+              {data.map((entry, i) => (
+                <Cell key={i} fill={entry.color} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Custom legend — wraps naturally without clipping */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '3px 8px',
+          justifyContent: 'center',
+          marginTop: 4,
+        }}
+      >
+        {data.map((entry) => (
+          <div
+            key={entry.name}
+            style={{ display: 'flex', alignItems: 'center', gap: 3 }}
           >
-            {data.map((entry, i) => (
-              <Cell key={i} fill={entry.color} />
-            ))}
-          </Pie>
-          <Legend
-            iconType="circle"
-            iconSize={6}
-            wrapperStyle={{ fontSize: '9px', color: '#a3a3a3' }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: entry.color,
+                flexShrink: 0,
+              }}
+            />
+            <span style={{ fontSize: 9, color: '#a3a3a3', whiteSpace: 'nowrap' }}>
+              {entry.name}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 import { getSeverityColor } from '../../constants/colors';
 import type { Severity } from '../../types';
 
@@ -7,41 +6,60 @@ interface SeverityGaugeProps {
   size?: number;
 }
 
-const severityValues: Record<Severity, number> = {
-  low: 25,
-  medium: 50,
-  high: 75,
-  critical: 100,
+const severityPct: Record<Severity, number> = {
+  low: 0.25,
+  medium: 0.5,
+  high: 0.75,
+  critical: 1,
 };
 
 export function SeverityGauge({ severity, size = 80 }: SeverityGaugeProps) {
   const color = getSeverityColor(severity);
-  const value = severityValues[severity];
+  const pct = severityPct[severity];
 
-  const data = [{ name: severity, value, fill: color }];
+  const cx = size / 2;
+  const cy = size * 0.54;
+  const r = size * 0.36;
+  const strokeW = 7;
+  const circ = Math.PI * r;
+  const offset = circ * (1 - pct);
+  const svgH = cy + strokeW / 2 + 2;
 
   return (
-    <div style={{ width: size, height: size }} className="relative">
-      <ResponsiveContainer width="100%" height="100%">
-        <RadialBarChart
-          cx="50%" cy="50%"
-          innerRadius="65%" outerRadius="100%"
-          startAngle={180} endAngle={0}
-          data={data}
-          barSize={6}
-        >
-          <RadialBar
-            dataKey="value"
-            cornerRadius={10}
-            background={{ fill: 'rgba(255,255,255,0.06)' }}
-          />
-        </RadialBarChart>
-      </ResponsiveContainer>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[10px] font-bold uppercase" style={{ color }}>
-          {severity}
-        </span>
-      </div>
+    <div style={{ width: size, textAlign: 'center' }}>
+      <svg width={size} height={svgH} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+        {/* Track */}
+        <path
+          d={`M ${cx - r},${cy} A ${r},${r} 0 0,1 ${cx + r},${cy}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.07)"
+          strokeWidth={strokeW}
+          strokeLinecap="round"
+        />
+        {/* Fill */}
+        <path
+          d={`M ${cx - r},${cy} A ${r},${r} 0 0,1 ${cx + r},${cy}`}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeW}
+          strokeLinecap="round"
+          strokeDasharray={circ}
+          strokeDashoffset={offset}
+          style={{ filter: `drop-shadow(0 0 5px ${color}99)` }}
+        />
+      </svg>
+      <span style={{
+        display: 'block',
+        fontSize: 9,
+        fontWeight: 700,
+        color,
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+        lineHeight: 1,
+        marginTop: 3,
+      }}>
+        {severity}
+      </span>
     </div>
   );
 }

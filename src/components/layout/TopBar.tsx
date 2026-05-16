@@ -1,19 +1,41 @@
-import { useState } from 'react';
-import { Activity, Play, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
+import { Activity, Play, Loader2, MapPin, ChevronDown, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { colors } from '../../constants/colors';
 import type { City } from '../../types';
 import { useTraceStore } from '../../store/traceStore';
+import { useCityStore } from '../../store/cityStore';
 import { runCIROPipeline } from '../../agents/orchestrator';
 
+const CITIES: { key: City; label: string; sub: string }[] = [
+  { key: 'karachi',   label: 'Karachi',   sub: 'Sindh · 16.5M' },
+  { key: 'islamabad', label: 'Islamabad', sub: 'Capital · 1.1M' },
+];
+
 export function TopBar() {
-  const [city, setCity] = useState<City>('karachi');
+  const city    = useCityStore((s) => s.city);
+  const setCity = useCityStore((s) => s.setCity);
   const isRunning = useTraceStore((s) => s.isRunning);
+  const [open, setOpen] = useState(false);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleRun = async () => {
     if (isRunning) return;
     await runCIROPipeline(city);
   };
+
+  const current = CITIES.find((c) => c.key === city)!;
 
   return (
     <header
@@ -45,22 +67,74 @@ export function TopBar() {
         </div>
       </div>
 
-      {/* Center: City selector */}
-      <div className="flex items-center gap-2">
-        <select
+      {/* Center: Custom city selector */}
+      <div className="relative" ref={dropRef}>
+        <button
           id="city-selector"
-          value={city}
-          onChange={(e) => setCity(e.target.value as City)}
-          className="px-3 py-1.5 rounded-lg text-sm font-medium border-0 outline-none cursor-pointer"
+          onClick={() => setOpen((v) => !v)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150"
           style={{
-            background: colors.raised,
+            background: open ? colors.overlay : colors.raised,
             color: colors.textPrimary,
-            border: `1px solid ${colors.borderDefault}`,
+            border: `1px solid ${open ? colors.borderStrong : colors.borderDefault}`,
+            minWidth: 148,
           }}
         >
-          <option value="karachi">🏙️ Karachi</option>
-          <option value="islamabad">🏛️ Islamabad</option>
-        </select>
+          <MapPin size={13} style={{ color: colors.amber, flexShrink: 0 }} />
+          <span className="flex-1 text-left">{current.label}</span>
+          <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }}>
+            <ChevronDown size={13} style={{ color: colors.textDim }} />
+          </motion.div>
+        </button>
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, y: -4, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.97 }}
+              transition={{ duration: 0.14 }}
+              className="absolute top-full mt-1.5 left-0 right-0 rounded-xl overflow-hidden z-50"
+              style={{
+                background: 'rgba(26,26,26,0.98)',
+                border: `1px solid ${colors.borderStrong}`,
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+              }}
+            >
+              {CITIES.map((c) => {
+                const active = c.key === city;
+                return (
+                  <button
+                    key={c.key}
+                    onClick={() => { setCity(c.key); setOpen(false); }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors duration-100"
+                    style={{
+                      background: active ? colors.amberMuted : 'transparent',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!active) (e.currentTarget as HTMLElement).style.background = colors.overlay;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.background = active ? colors.amberMuted : 'transparent';
+                    }}
+                  >
+                    <MapPin size={12} style={{ color: active ? colors.amber : colors.textDim, flexShrink: 0 }} />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium leading-none mb-0.5" style={{ color: active ? colors.amber : colors.textPrimary }}>
+                        {c.label}
+                      </div>
+                      <div className="text-[10px] leading-none" style={{ color: colors.textDim }}>
+                        {c.sub}
+                      </div>
+                    </div>
+                    {active && <Check size={12} style={{ color: colors.amber, flexShrink: 0 }} />}
+                  </button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Right: Run button */}

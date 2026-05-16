@@ -1,20 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CiroMap } from '../components/map/CiroMap';
 import { SignalFeed } from '../components/panels/SignalFeed';
 import { CrisisPanel } from '../components/panels/CrisisPanel';
 import { GlassPanel } from '../components/ui/GlassPanel';
 import { useCrisisStore } from '../store/crisisStore';
 import { useSignalStore } from '../store/signalStore';
+import { useCityStore } from '../store/cityStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
 
 export function Dashboard() {
-  const [city] = useState<'karachi' | 'islamabad'>('karachi');
+  const city = useCityStore((s) => s.city);
   const [showSignals, setShowSignals] = useState(false);
   const selectedCrisisId = useCrisisStore((s) => s.selectedCrisisId);
   const selectCrisis = useCrisisStore((s) => s.selectCrisis);
   const signalCount = useSignalStore((s) => s.signals.length);
   const crisisCount = useCrisisStore((s) => s.crises.length);
+
+  // Close both panels whenever the city changes
+  useEffect(() => {
+    selectCrisis(null);
+    setShowSignals(false);
+  }, [city]);
 
   return (
     <div className="absolute inset-0">
