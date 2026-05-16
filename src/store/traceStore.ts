@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { City, Workplan, WorkplanPhase } from '../types';
+import type { City, Workplan, WorkplanPhase, TraceStep } from '../types';
 
 export type PipelineMode = 'idle' | 'briefing' | 'running' | 'paused' | 'complete';
 
@@ -15,6 +15,8 @@ interface TraceState {
   pipelineMode: PipelineMode;
   currentPhaseIndex: number;
   pendingCity: City | null;
+  activeTraceStep: TraceStep | null;
+  setActiveTraceStep: (step: TraceStep | null) => void;
 
   startSession: (city: City) => void;
   startPhase: (name: string, tasks: string[]) => void;
@@ -38,6 +40,9 @@ export const useTraceStore = create<TraceState>((set) => ({
   pipelineMode: 'idle',
   currentPhaseIndex: 0,
   pendingCity: null,
+  activeTraceStep: null,
+
+  setActiveTraceStep: (step) => set({ activeTraceStep: step }),
 
   openBriefing: (city) => set({ pipelineMode: 'briefing', pendingCity: city }),
 
@@ -162,6 +167,7 @@ export const useTraceStore = create<TraceState>((set) => ({
     pipelineMode: 'idle',
     currentPhaseIndex: 0,
     pendingCity: null,
+    activeTraceStep: null,
   }),
 }));
 

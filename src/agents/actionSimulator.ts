@@ -1,5 +1,6 @@
 import type { Crisis, Action, City, ResourceAllocation } from '../types';
 import { SCENARIO_REGISTRY } from '../data/mock';
+import { useTraceStore } from '../store/traceStore';
 
 // Action IDs that demonstrate error recovery — the simulator adds extra terminal drama for these
 const ERROR_RECOVERY_ACTION_IDS = new Set(['a7', 'isb-a7', 'fsd-a4', 'qta-a2']);
@@ -17,6 +18,9 @@ export async function actionSimulatorAgent(
   const actions = SCENARIO_REGISTRY[city].getActions();
 
   for (const action of actions) {
+    if (action.trace[0]) {
+      useTraceStore.getState().setActiveTraceStep(action.trace[0]);
+    }
     trace.log(`▸ Executing: ${action.title}`);
 
     if (ERROR_RECOVERY_ACTION_IDS.has(action.id)) {
