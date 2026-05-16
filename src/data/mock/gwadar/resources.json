@@ -1,0 +1,9 @@
+[
+  { "id": "gwd-r1", "type": "rescue_team", "label": "Pakistan Coast Guard Rescue Unit GWD-Alpha", "status": "available", "location": { "lat": 25.1216, "lng": 62.3254, "label": "PCG Station Gwadar" }, "assignedCrisisId": null, "capacity": 14, "currentLoad": 0 },
+  { "id": "gwd-r2", "type": "rescue_team", "label": "NDMA Balochistan Unit GWD-RRT", "status": "available", "location": { "lat": 25.1216, "lng": 62.3254, "label": "NDMA Station Gwadar" }, "assignedCrisisId": null, "capacity": 12, "currentLoad": 0 },
+  { "id": "gwd-r3", "type": "ambulance", "label": "District Hospital Gwadar GWD-03", "status": "available", "location": { "lat": 25.1200, "lng": 62.3230, "label": "District Hospital Gwadar" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
+  { "id": "gwd-r4", "type": "police_unit", "label": "Gwadar Levies Force GWD-Lev5", "status": "available", "location": { "lat": 25.1216, "lng": 62.3254, "label": "Levies Force Gwadar" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
+  { "id": "gwd-r5", "type": "medical_outreach", "label": "PDMA Balochistan Mobile GWD-MH1", "status": "available", "location": { "lat": 25.1216, "lng": 62.3254, "label": "PDMA Office Gwadar" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
+  { "id": "gwd-r6", "type": "water_tanker", "label": "GDA Emergency Water Tanker GWT-06", "status": "available", "location": { "lat": 25.1180, "lng": 62.3200, "label": "GDA Water Depot Gwadar" }, "assignedCrisisId": null, "capacity": 1, "currentLoad": 0 },
+  { "id": "gwd-r7", "type": "drone", "label": "PCG Maritime Recon Drone GWD-D01", "status": "available", "location": { "lat": 25.1216, "lng": 62.3254, "label": "PCG Command Gwadar" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
+]

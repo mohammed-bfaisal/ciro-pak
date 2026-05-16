@@ -1,0 +1,104 @@
+[
+  {
+    "id": "qta-s1",
+    "source": "social",
+    "content": "Quetta mein zamin kaanpi! Sariab Road ke paas makaan gir gaye — log bahar nikal aaye hain. Bari awaaz thi, khouf ka aalam hai. #QuettaEarthquake",
+    "location": { "lat": 30.1600, "lng": 66.9600, "label": "Sariab Road, Quetta" },
+    "timestamp": "2026-05-20T04:15:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.93,
+    "mentionVelocity": 31,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 245, "retweets": 512 }
+  },
+  {
+    "id": "qta-s2",
+    "source": "social",
+    "content": "Earthquake 5.8 Quetta confirmed by PMD. Wazir Muhammad Road and Brewery Road buildings showing cracks. CMH is overwhelmed with injured. Please send NDMA immediately.",
+    "location": { "lat": 30.1798, "lng": 66.9750, "label": "Quetta City" },
+    "timestamp": "2026-05-20T04:30:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.92,
+    "mentionVelocity": 28,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 312, "retweets": 634 }
+  },
+  {
+    "id": "qta-s3",
+    "source": "social",
+    "content": "N-25 highway Mastung section mein barfbaari se rasta band ho gaya hai — sath mei ab earthquake bhi aa gaya. Quetta se Karachi jane wale phas gaye hain. #N25Blocked",
+    "location": { "lat": 29.8000, "lng": 66.8500, "label": "N-25 Highway, Mastung" },
+    "timestamp": "2026-05-20T05:30:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.82,
+    "mentionVelocity": 16,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 134, "retweets": 267 }
+  },
+  {
+    "id": "qta-f1",
+    "source": "field_report",
+    "content": "Balochistan PDMA Emergency Report: Earthquake M5.8, depth 8km, epicentre Sariab area. 14 buildings partially collapsed in Sariab Road, Wazir Muhammad Road. 38 injured, 4 critical at CMH Quetta. 6 fatalities confirmed. 200 families displaced.",
+    "location": { "lat": 30.1600, "lng": 66.9600, "label": "Sariab Road, Quetta" },
+    "timestamp": "2026-05-20T05:00:00Z",
+    "credibilityScore": 0.95,
+    "urgencyScore": 0.97,
+    "isFlagged": false,
+    "rawData": { "reporter": "Balochistan PDMA Emergency Cell", "verified": true, "magnitude": 5.8, "fatalities": 6 }
+  },
+  {
+    "id": "qta-f2",
+    "source": "field_report",
+    "content": "NHA Balochistan: N-25 highway blocked at km-82 near Mastung — 1.8m snowfall + earthquake-triggered rockfall. 34 vehicles stranded including 6 passenger buses. Temperature -3°C. Levies Force on scene. Snowplough dispatched — ETA 4 hours.",
+    "location": { "lat": 29.8000, "lng": 66.8500, "label": "N-25 km-82, Mastung" },
+    "timestamp": "2026-05-20T06:00:00Z",
+    "credibilityScore": 0.94,
+    "urgencyScore": 0.86,
+    "isFlagged": false,
+    "rawData": { "reporter": "NHA Balochistan ABT-5", "verified": true, "snowfall_m": 1.8, "vehicles_stranded": 34 }
+  },
+  {
+    "id": "qta-n1",
+    "source": "sensor",
+    "content": "PMDFC Seismic Station QTA-SZ1: M5.8 event at 04:12:34 UTC. Depth 8.2km. Epicentre 30.17°N 66.96°E (Sariab). PGA: 0.31g at QTA station. 7 aftershocks M>2.5 in 90 minutes. Building collapse risk remains elevated.",
+    "location": { "lat": 30.1798, "lng": 66.9750, "label": "PMDFC Seismic Station QTA-SZ1" },
+    "timestamp": "2026-05-20T04:20:00Z",
+    "credibilityScore": 0.95,
+    "urgencyScore": 0.96,
+    "isFlagged": false,
+    "rawData": { "source": "PMDFC_QTA_SZ1", "magnitude": 5.8, "pga_g": 0.31, "aftershocks": 7 }
+  },
+  {
+    "id": "qta-t1",
+    "source": "traffic",
+    "content": "N-25 Quetta-Karachi highway — full closure. Speed 0km/h. Snowfall + rockfall. No alternate heavy vehicle route. Temperature -3°C on roadway.",
+    "location": { "lat": 29.8000, "lng": 66.8500, "label": "N-25 Mastung Section" },
+    "timestamp": "2026-05-20T06:15:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.80,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 0, "normal_speed": 90, "temp_c": -3 }
+  },
+  {
+    "id": "qta-e1",
+    "source": "emergency_call",
+    "content": "Levies Force Quetta: 61 earthquake emergency calls in 90 minutes. 14 confirmed building collapses. 38 injured at CMH. Rescue teams stretched — requesting NDMA national support.",
+    "location": { "lat": 30.1798, "lng": 66.9750, "label": "Quetta City" },
+    "timestamp": "2026-05-20T05:45:00Z",
+    "credibilityScore": 0.92,
+    "urgencyScore": 0.97,
+    "isFlagged": false,
+    "rawData": { "source": "LeviesForce_Quetta", "calls_90min": 61, "collapses": 14 }
+  },
+  {
+    "id": "qta-w1",
+    "source": "weather",
+    "content": "Quetta: Earthquake 5.8 recorded. -2°C, 15cm snowfall ongoing. Aftershock risk + freezing temperatures compound rescue difficulty. No improvement expected for 24 hours.",
+    "location": { "lat": 30.1798, "lng": 66.9750, "label": "Quetta" },
+    "timestamp": "2026-05-20T04:30:00Z",
+    "credibilityScore": 0.85,
+    "urgencyScore": 0.90,
+    "isFlagged": false,
+    "rawData": { "source": "OpenWeatherMap", "temp": -2, "snowfall_cm": 15, "seismic_alert": true }
+  }
+]

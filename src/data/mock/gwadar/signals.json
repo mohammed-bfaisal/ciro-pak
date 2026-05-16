@@ -1,0 +1,104 @@
+[
+  {
+    "id": "gwd-s1",
+    "source": "social",
+    "content": "Gwadar mein cyclone YUKI ki warning aa gayi hai! Samandar ka pani andar aa raha hai. Koh-e-Batil ke paas machhwaron ke ghar doob rahe hain. Foran nikal jao! #GwadarCyclone",
+    "location": { "lat": 25.1300, "lng": 62.3350, "label": "Koh-e-Batil, Gwadar" },
+    "timestamp": "2026-05-20T10:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.96,
+    "mentionVelocity": 34,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 389, "retweets": 812 }
+  },
+  {
+    "id": "gwd-s2",
+    "source": "social",
+    "content": "Cyclone YUKI is a Category 2 storm making landfall near Gwadar — storm surge 3.5m expected. Coastal areas being evacuated. Port closed. Airport suspended. LEAVE NOW if you are in Gwadar east bay.",
+    "location": { "lat": 25.1216, "lng": 62.3254, "label": "Gwadar Port" },
+    "timestamp": "2026-05-20T10:20:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.97,
+    "mentionVelocity": 41,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 567, "retweets": 1234 }
+  },
+  {
+    "id": "gwd-s3",
+    "source": "social",
+    "content": "Gwadar mein paani ki qillat itni zyada hai ke ek mahina ho gaya pipe mein paani nahi aaya. Tanker mafia mehnga paani bech raha hai. Yeh bhi emergency hai. #GwadarWater",
+    "location": { "lat": 25.1216, "lng": 62.3254, "label": "Gwadar City" },
+    "timestamp": "2026-05-20T08:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.80,
+    "mentionVelocity": 14,
+    "isFlagged": false,
+    "rawData": { "platform": "Facebook", "shares": 89, "comments": 156 }
+  },
+  {
+    "id": "gwd-f1",
+    "source": "field_report",
+    "content": "PMD Cyclone Warning Centre: SEVERE CYCLONIC STORM YUKI — landfall imminent near Gwadar. Current position: 80km SW of Gwadar, moving NE at 22km/h. Maximum sustained winds 130km/h. Storm surge 3.2-3.8m above normal tide expected on east coast. Immediate evacuation of all coastal areas within 5km ordered.",
+    "location": { "lat": 25.1216, "lng": 62.3254, "label": "Gwadar Coastal Zone" },
+    "timestamp": "2026-05-20T10:00:00Z",
+    "credibilityScore": 0.97,
+    "urgencyScore": 0.99,
+    "isFlagged": false,
+    "rawData": { "reporter": "PMD Cyclone Warning Centre", "verified": true, "wind_kmh": 130, "surge_m": 3.5 }
+  },
+  {
+    "id": "gwd-f2",
+    "source": "field_report",
+    "content": "GDA Gwadar: Water supply crisis declared. Koh-e-Batil reservoir at 4% capacity. 85,000 residents have had no piped water for 34 days. Tanker supply insufficient — 120L per family per week available vs minimum 350L required. Dysentery cases rising in eastern quarters.",
+    "location": { "lat": 25.1216, "lng": 62.3254, "label": "Gwadar Water Authority" },
+    "timestamp": "2026-05-20T08:30:00Z",
+    "credibilityScore": 0.94,
+    "urgencyScore": 0.85,
+    "isFlagged": false,
+    "rawData": { "reporter": "GDA Water Authority", "verified": true, "reservoir_pct": 4, "days_no_pipe": 34 }
+  },
+  {
+    "id": "gwd-t1",
+    "source": "traffic",
+    "content": "Coastal Highway Gwadar exit — gridlock. Speed 2km/h (normal 80km/h). Mass cyclone evacuation underway. Airport road also blocked.",
+    "location": { "lat": 25.1350, "lng": 62.3400, "label": "Coastal Highway, Gwadar" },
+    "timestamp": "2026-05-20T10:30:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.85,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 2, "normal_speed": 80 }
+  },
+  {
+    "id": "gwd-n1",
+    "source": "sensor",
+    "content": "Pakistan Coast Guard Buoy PCGB-GWD-03: Wave height 4.8m (normal 1.2m). Barometric pressure 948 hPa (extreme low). Wind 128km/h sustained. Storm surge beginning on coastal sensors. Buoy integrity warning.",
+    "location": { "lat": 25.0500, "lng": 62.2800, "label": "PCG Buoy PCGB-GWD-03" },
+    "timestamp": "2026-05-20T10:15:00Z",
+    "credibilityScore": 0.94,
+    "urgencyScore": 0.99,
+    "isFlagged": false,
+    "rawData": { "source": "PCGB_GWD03", "wave_height_m": 4.8, "pressure_hpa": 948, "wind_kmh": 128 }
+  },
+  {
+    "id": "gwd-e1",
+    "source": "emergency_call",
+    "content": "Pakistan Coast Guard Gwadar: 48 evacuation requests from coastal fishing settlements. Koh-e-Batil fishing colony unable to self-evacuate — elderly and disabled residents require assistance.",
+    "location": { "lat": 25.1300, "lng": 62.3350, "label": "Koh-e-Batil Fishing Colony" },
+    "timestamp": "2026-05-20T10:25:00Z",
+    "credibilityScore": 0.93,
+    "urgencyScore": 0.99,
+    "isFlagged": false,
+    "rawData": { "source": "PCG_Gwadar", "evacuation_requests": 48, "unable_to_self_evacuate": true }
+  },
+  {
+    "id": "gwd-w1",
+    "source": "weather",
+    "content": "Gwadar: Cyclone YUKI approaching. Wind 130km/h, storm surge 3.2m. Sea state: phenomenal. No safe navigation. Landfall in 3-4 hours.",
+    "location": { "lat": 25.1216, "lng": 62.3254, "label": "Gwadar" },
+    "timestamp": "2026-05-20T10:00:00Z",
+    "credibilityScore": 0.85,
+    "urgencyScore": 0.98,
+    "isFlagged": false,
+    "rawData": { "source": "OpenWeatherMap", "wind_speed": 130, "storm_surge_m": 3.2, "cyclone": "YUKI" }
+  }
+]
