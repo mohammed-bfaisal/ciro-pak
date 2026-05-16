@@ -1,9 +1,0 @@
-[
-  { "id": "bwp-r1", "type": "rescue_team", "label": "Rescue 1122 Unit BHP-3", "status": "available", "location": { "lat": 29.3956, "lng": 71.6836, "label": "Rescue 1122 Station Bahawalpur" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
-  { "id": "bwp-r2", "type": "ambulance", "label": "Victoria Hospital Ambulance BHP-04", "status": "available", "location": { "lat": 29.3850, "lng": 71.6750, "label": "Victoria Hospital Bahawalpur" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
-  { "id": "bwp-r3", "type": "ambulance", "label": "Civil Hospital Bahawalpur BHP-07", "status": "available", "location": { "lat": 29.3900, "lng": 71.6800, "label": "Civil Hospital Bahawalpur" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
-  { "id": "bwp-r4", "type": "medical_outreach", "label": "PDMA South Punjab Mobile BHP-MH2", "status": "available", "location": { "lat": 29.3956, "lng": 71.6836, "label": "PDMA Office Bahawalpur" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
-  { "id": "bwp-r5", "type": "police_unit", "label": "Bahawalpur Traffic Police BP-08", "status": "available", "location": { "lat": 29.3956, "lng": 71.6836, "label": "Traffic HQ Bahawalpur" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
-  { "id": "bwp-r6", "type": "fire_truck", "label": "Bahawalpur Fire Brigade BF-05", "status": "available", "location": { "lat": 29.3920, "lng": 71.6800, "label": "Fire Station Bahawalpur" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
-  { "id": "bwp-r7", "type": "drone", "label": "PDMA Recon Drone SP-BHP-01", "status": "available", "location": { "lat": 29.3956, "lng": 71.6836, "label": "PDMA Command Bahawalpur" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
-]

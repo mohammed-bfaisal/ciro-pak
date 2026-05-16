@@ -1,9 +1,0 @@
-[
-  { "id": "abt-r1", "type": "rescue_team", "label": "Rescue 1122 KP Unit ABT-1", "status": "available", "location": { "lat": 34.1463, "lng": 73.2117, "label": "Rescue 1122 Station Abbottabad" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
-  { "id": "abt-r2", "type": "rescue_team", "label": "NDMA Rapid Response Team ABT-RRT", "status": "available", "location": { "lat": 34.1463, "lng": 73.2117, "label": "NDMA Station Abbottabad" }, "assignedCrisisId": null, "capacity": 12, "currentLoad": 0 },
-  { "id": "abt-r3", "type": "ambulance", "label": "Ayub Medical Complex ABT-06", "status": "available", "location": { "lat": 34.1500, "lng": 73.2000, "label": "Ayub Medical Complex Abbottabad" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
-  { "id": "abt-r4", "type": "police_unit", "label": "Abbottabad Traffic Police ATP-03", "status": "available", "location": { "lat": 34.1463, "lng": 73.2117, "label": "Traffic HQ Abbottabad" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
-  { "id": "abt-r5", "type": "medical_outreach", "label": "ERRA Mobile Medical Team ABT-MH2", "status": "available", "location": { "lat": 34.1463, "lng": 73.2117, "label": "ERRA Office Abbottabad" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
-  { "id": "abt-r6", "type": "fire_truck", "label": "Abbottabad Fire Brigade ABF-02", "status": "available", "location": { "lat": 34.1450, "lng": 73.2100, "label": "Fire Station Abbottabad" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
-  { "id": "abt-r7", "type": "drone", "label": "NDMA Recon Drone ABT-D01", "status": "available", "location": { "lat": 34.1463, "lng": 73.2117, "label": "NDMA Command Abbottabad" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
-]

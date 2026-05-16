@@ -1,9 +1,0 @@
-[
-  { "id": "skt-r1", "type": "rescue_team", "label": "Rescue 1122 Unit SKT-1", "status": "available", "location": { "lat": 32.4945, "lng": 74.5229, "label": "Rescue 1122 Station Sialkot" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
-  { "id": "skt-r2", "type": "police_unit", "label": "Sialkot Traffic Police SP-06", "status": "available", "location": { "lat": 32.4945, "lng": 74.5229, "label": "Traffic HQ Sialkot" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
-  { "id": "skt-r3", "type": "ambulance", "label": "Allama Iqbal Memorial Hospital SKT-03", "status": "available", "location": { "lat": 32.4880, "lng": 74.5180, "label": "Allama Iqbal Memorial Hospital" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
-  { "id": "skt-r4", "type": "fire_truck", "label": "Sialkot Fire Brigade SF-04", "status": "available", "location": { "lat": 32.4950, "lng": 74.5200, "label": "Fire Station Sialkot" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
-  { "id": "skt-r5", "type": "water_tanker", "label": "WASA Sialkot Clean Water Tanker WS-01", "status": "available", "location": { "lat": 32.4920, "lng": 74.5250, "label": "WASA Depot Sialkot" }, "assignedCrisisId": null, "capacity": 1, "currentLoad": 0 },
-  { "id": "skt-r6", "type": "medical_outreach", "label": "DHQ Sialkot Mobile Unit SKT-MH1", "status": "available", "location": { "lat": 32.4880, "lng": 74.5180, "label": "DHQ Hospital Sialkot" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
-  { "id": "skt-r7", "type": "drone", "label": "Punjab Safe Cities Drone PSC-SKT-01", "status": "available", "location": { "lat": 32.4945, "lng": 74.5229, "label": "Safe City Command Sialkot" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
-]

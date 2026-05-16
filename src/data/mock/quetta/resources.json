@@ -1,9 +1,0 @@
-[
-  { "id": "qta-r1", "type": "rescue_team", "label": "NDMA Rescue Team QTA-Alpha", "status": "available", "location": { "lat": 30.1798, "lng": 66.9750, "label": "NDMA Station Quetta" }, "assignedCrisisId": null, "capacity": 14, "currentLoad": 0 },
-  { "id": "qta-r2", "type": "rescue_team", "label": "Balochistan Levies Rescue Unit QL-07", "status": "available", "location": { "lat": 30.1750, "lng": 66.9700, "label": "Levies Force HQ Quetta" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
-  { "id": "qta-r3", "type": "ambulance", "label": "CMH Quetta Ambulance QTA-04", "status": "available", "location": { "lat": 30.1820, "lng": 66.9780, "label": "CMH Quetta" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
-  { "id": "qta-r4", "type": "ambulance", "label": "Civil Hospital Quetta QTA-08", "status": "available", "location": { "lat": 30.1700, "lng": 66.9650, "label": "Civil Hospital Quetta" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
-  { "id": "qta-r5", "type": "medical_outreach", "label": "PDMA Balochistan Mobile MED-QTA-1", "status": "available", "location": { "lat": 30.1798, "lng": 66.9750, "label": "PDMA Office Quetta" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
-  { "id": "qta-r6", "type": "police_unit", "label": "Quetta Traffic Police QTP-05", "status": "available", "location": { "lat": 30.1798, "lng": 66.9750, "label": "Traffic HQ Quetta" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
-  { "id": "qta-r7", "type": "drone", "label": "NDMA Recon Drone QTA-D02", "status": "available", "location": { "lat": 30.1798, "lng": 66.9750, "label": "NDMA Command Quetta" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
-]

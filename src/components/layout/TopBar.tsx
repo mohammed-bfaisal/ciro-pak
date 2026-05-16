@@ -4,16 +4,15 @@ import { motion } from 'framer-motion';
 import { colors } from '../../constants/colors';
 import type { City } from '../../types';
 import { useTraceStore } from '../../store/traceStore';
-import { CITIES_BY_PROVINCE, CITY_REGISTRY } from '../../data/cities';
+import { runCIROPipeline } from '../../agents/orchestrator';
 
 export function TopBar() {
   const [city, setCity] = useState<City>('karachi');
   const isRunning = useTraceStore((s) => s.isRunning);
-  const openBriefing = useTraceStore((s) => s.openBriefing);
 
-  const handleRun = () => {
+  const handleRun = async () => {
     if (isRunning) return;
-    openBriefing(city);
+    await runCIROPipeline(city);
   };
 
   return (
@@ -59,13 +58,8 @@ export function TopBar() {
             border: `1px solid ${colors.borderDefault}`,
           }}
         >
-          {Object.entries(CITIES_BY_PROVINCE).map(([province, cityIds]) => (
-            <optgroup key={province} label={province}>
-              {cityIds.map((id) => (
-                <option key={id} value={id}>{CITY_REGISTRY[id].label}</option>
-              ))}
-            </optgroup>
-          ))}
+          <option value="karachi">🏙️ Karachi</option>
+          <option value="islamabad">🏛️ Islamabad</option>
         </select>
       </div>
 

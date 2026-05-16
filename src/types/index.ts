@@ -9,13 +9,7 @@ export type CrisisType =
 
 export type Severity = 'low' | 'medium' | 'high' | 'critical';
 export type CrisisStatus = 'detecting' | 'active' | 'responding' | 'resolved' | 'false_alarm';
-export type City =
-  | 'karachi' | 'islamabad'
-  | 'lahore' | 'rawalpindi' | 'faisalabad' | 'multan'
-  | 'gujranwala' | 'sialkot' | 'bahawalpur' | 'sargodha'
-  | 'peshawar' | 'abbottabad'
-  | 'quetta' | 'gwadar'
-  | 'hyderabad' | 'sukkur';
+export type City = 'karachi' | 'islamabad';
 
 export interface GeoPoint {
   lat: number;

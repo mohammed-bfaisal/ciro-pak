@@ -1,7 +1,5 @@
 import { PipelineTimeline } from '../components/trace/PipelineTimeline';
 import { TerminalLog } from '../components/trace/TerminalLog';
-import { AgentMonologue } from '../components/pipeline/AgentMonologue';
-import { PhaseGate } from '../components/pipeline/PhaseGate';
 import { colors } from '../constants/colors';
 import { useTraceStore } from '../store/traceStore';
 
@@ -22,12 +20,6 @@ export function TracePage() {
       {/* Pipeline timeline */}
       <div className="border-b" style={{ borderColor: colors.borderDefault }}>
         <PipelineTimeline />
-      </div>
-
-      {/* Agent monologue + phase gate */}
-      <div className="px-4 py-2 space-y-2">
-        <AgentMonologue />
-        <PhaseGate />
       </div>
 
       {/* Terminal log */}

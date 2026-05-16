@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
-import { ScenarioBriefing } from '../pipeline/ScenarioBriefing';
 
 interface ShellProps {
   children: ReactNode;
@@ -29,8 +28,6 @@ export function Shell({ children }: ShellProps) {
       <div className="desktop:hidden fixed bottom-0 left-0 right-0 z-50">
         <BottomNav />
       </div>
-      {/* Global pipeline overlays */}
-      <ScenarioBriefing />
     </div>
   );
 }
