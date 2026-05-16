@@ -1,0 +1,72 @@
+[
+  {
+    "id": "mtn-r1",
+    "type": "rescue_team",
+    "label": "Rescue 1122 Unit Multan-3",
+    "status": "available",
+    "location": { "lat": 30.1900, "lng": 71.4800, "label": "Rescue 1122 Station Multan" },
+    "assignedCrisisId": null,
+    "capacity": 10,
+    "currentLoad": 0
+  },
+  {
+    "id": "mtn-r2",
+    "type": "ambulance",
+    "label": "Civil Hospital Ambulance MTN-05",
+    "status": "available",
+    "location": { "lat": 30.1980, "lng": 71.4760, "label": "Civil Hospital Multan" },
+    "assignedCrisisId": null,
+    "capacity": 4,
+    "currentLoad": 0
+  },
+  {
+    "id": "mtn-r3",
+    "type": "ambulance",
+    "label": "Nishtar Hospital Ambulance MTN-09",
+    "status": "available",
+    "location": { "lat": 30.2100, "lng": 71.4700, "label": "Nishtar Hospital Multan" },
+    "assignedCrisisId": null,
+    "capacity": 4,
+    "currentLoad": 0
+  },
+  {
+    "id": "mtn-r4",
+    "type": "medical_outreach",
+    "label": "PDMA South Punjab Mobile Health Unit",
+    "status": "available",
+    "location": { "lat": 30.1575, "lng": 71.5249, "label": "PDMA Office Multan" },
+    "assignedCrisisId": null,
+    "capacity": 12,
+    "currentLoad": 0
+  },
+  {
+    "id": "mtn-r5",
+    "type": "police_unit",
+    "label": "Multan Traffic Police Unit MP-11",
+    "status": "available",
+    "location": { "lat": 30.1575, "lng": 71.5249, "label": "Traffic HQ Multan" },
+    "assignedCrisisId": null,
+    "capacity": 6,
+    "currentLoad": 0
+  },
+  {
+    "id": "mtn-r6",
+    "type": "water_tanker",
+    "label": "WASA Multan Cooling Tanker WM-04",
+    "status": "available",
+    "location": { "lat": 30.1700, "lng": 71.5000, "label": "WASA Depot Multan" },
+    "assignedCrisisId": null,
+    "capacity": 1,
+    "currentLoad": 0
+  },
+  {
+    "id": "mtn-r7",
+    "type": "drone",
+    "label": "PDMA Recon Drone South Punjab SP-02",
+    "status": "available",
+    "location": { "lat": 30.1575, "lng": 71.5249, "label": "PDMA Command Multan" },
+    "assignedCrisisId": null,
+    "capacity": 0,
+    "currentLoad": 0
+  }
+]

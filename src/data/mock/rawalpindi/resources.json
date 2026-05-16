@@ -1,0 +1,72 @@
+[
+  {
+    "id": "rwp-r1",
+    "type": "rescue_team",
+    "label": "Rescue 1122 Unit RWP-Alpha",
+    "status": "available",
+    "location": { "lat": 33.6100, "lng": 73.0400, "label": "Rescue 1122 Station Saddar" },
+    "assignedCrisisId": null,
+    "capacity": 12,
+    "currentLoad": 0
+  },
+  {
+    "id": "rwp-r2",
+    "type": "police_unit",
+    "label": "Rawalpindi Traffic Police Unit RP-07",
+    "status": "available",
+    "location": { "lat": 33.6007, "lng": 73.0679, "label": "Traffic HQ Rawalpindi" },
+    "assignedCrisisId": null,
+    "capacity": 8,
+    "currentLoad": 0
+  },
+  {
+    "id": "rwp-r3",
+    "type": "ambulance",
+    "label": "Holy Family Hospital Ambulance RWP-04",
+    "status": "available",
+    "location": { "lat": 33.5997, "lng": 73.0502, "label": "Holy Family Hospital" },
+    "assignedCrisisId": null,
+    "capacity": 4,
+    "currentLoad": 0
+  },
+  {
+    "id": "rwp-r4",
+    "type": "fire_truck",
+    "label": "Rawalpindi Fire Brigade Engine RF-09",
+    "status": "available",
+    "location": { "lat": 33.6000, "lng": 73.0550, "label": "Fire Station Rawalpindi" },
+    "assignedCrisisId": null,
+    "capacity": 6,
+    "currentLoad": 0
+  },
+  {
+    "id": "rwp-r5",
+    "type": "water_tanker",
+    "label": "WASA RWP Dewatering Unit WD-05",
+    "status": "available",
+    "location": { "lat": 33.6050, "lng": 73.0400, "label": "WASA Depot Rawalpindi" },
+    "assignedCrisisId": null,
+    "capacity": 1,
+    "currentLoad": 0
+  },
+  {
+    "id": "rwp-r6",
+    "type": "medical_outreach",
+    "label": "DHQ Hospital Mobile Unit RWP-2",
+    "status": "available",
+    "location": { "lat": 33.5997, "lng": 73.0502, "label": "DHQ Hospital Rawalpindi" },
+    "assignedCrisisId": null,
+    "capacity": 8,
+    "currentLoad": 0
+  },
+  {
+    "id": "rwp-r7",
+    "type": "drone",
+    "label": "Punjab Safe Cities Drone PSC-RWP-03",
+    "status": "available",
+    "location": { "lat": 33.6007, "lng": 73.0679, "label": "Safe City Command Rawalpindi" },
+    "assignedCrisisId": null,
+    "capacity": 0,
+    "currentLoad": 0
+  }
+]

@@ -1,0 +1,104 @@
+[
+  {
+    "id": "bwp-s1",
+    "source": "social",
+    "content": "Bahawalpur mein aandhi aa gayi hai — Circular Road pe kuch nazar nahi aa raha! Gaari band kar li hai. Rehat ka chowk bilkul andheray mein hai. #BahawalpurSandstorm",
+    "location": { "lat": 29.3930, "lng": 71.6780, "label": "Circular Road, Bahawalpur" },
+    "timestamp": "2026-05-20T14:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.87,
+    "mentionVelocity": 19,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 112, "retweets": 234 }
+  },
+  {
+    "id": "bwp-s2",
+    "source": "social",
+    "content": "Sandstorm visibility zero in Bahawalpur. Multiple road accidents on Multan Road. Airport has suspended flights. Dust is entering homes — cover water and food immediately.",
+    "location": { "lat": 29.3956, "lng": 71.6836, "label": "Bahawalpur City" },
+    "timestamp": "2026-05-20T14:15:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.84,
+    "mentionVelocity": 14,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 87, "retweets": 178 }
+  },
+  {
+    "id": "bwp-s3",
+    "source": "social",
+    "content": "Victoria Hospital Bahawalpur mein emergency bhar gayi hai — do roz se zyada marez aa rahe hain, bed nahi hain. Kuch bachon ko floor par rakha hai. Ambulance bhi nahi mil rahi.",
+    "location": { "lat": 29.3850, "lng": 71.6750, "label": "Victoria Hospital, Bahawalpur" },
+    "timestamp": "2026-05-20T10:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.88,
+    "mentionVelocity": 17,
+    "isFlagged": false,
+    "rawData": { "platform": "Facebook", "shares": 102, "comments": 187 }
+  },
+  {
+    "id": "bwp-f1",
+    "source": "field_report",
+    "content": "PMD Bahawalpur: Severe sandstorm — sustained winds 68km/h, gusts 90km/h from SW Cholistan direction. Visibility 50 metres. PM10: 1,800 µg/m³ (threshold: 150). Airport NOTAM issued. Road closures on Multan Road and Yazman Road.",
+    "location": { "lat": 29.3956, "lng": 71.6836, "label": "Bahawalpur" },
+    "timestamp": "2026-05-20T14:05:00Z",
+    "credibilityScore": 0.93,
+    "urgencyScore": 0.88,
+    "isFlagged": false,
+    "rawData": { "reporter": "PMD Bahawalpur Station", "verified": true, "wind_kmh": 68, "pm10": 1800 }
+  },
+  {
+    "id": "bwp-f2",
+    "source": "field_report",
+    "content": "DHO Bahawalpur: Victoria Hospital at 148% capacity. 210 patients vs 142 beds. 38 children on floor mats. Respiratory admissions from sandstorm AQI + seasonal gastroenteritis simultaneously overloading the facility. Punjab Health Dept alerted.",
+    "location": { "lat": 29.3850, "lng": 71.6750, "label": "Victoria Hospital, Bahawalpur" },
+    "timestamp": "2026-05-20T11:00:00Z",
+    "credibilityScore": 0.92,
+    "urgencyScore": 0.89,
+    "isFlagged": false,
+    "rawData": { "reporter": "DHO Bahawalpur", "verified": true, "capacity_pct": 148 }
+  },
+  {
+    "id": "bwp-t1",
+    "source": "traffic",
+    "content": "Multan Road, Bahawalpur — zero visibility. Speed 0km/h (normal 80km/h). 4 accidents reported in sandstorm. Road closed by traffic police.",
+    "location": { "lat": 29.4050, "lng": 71.6900, "label": "Multan Road, Bahawalpur" },
+    "timestamp": "2026-05-20T14:10:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.77,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 0, "normal_speed": 80, "accidents": 4 }
+  },
+  {
+    "id": "bwp-n1",
+    "source": "sensor",
+    "content": "PDMA Bahawalpur Environmental Monitor BHP-04: PM10 reading 1,842 µg/m³ (12× threshold). PM2.5: 689 µg/m³. Wind direction: SW 68km/h. Sandstorm origin: Cholistan Desert — no precipitation expected.",
+    "location": { "lat": 29.3956, "lng": 71.6836, "label": "PDMA Monitor BHP-04" },
+    "timestamp": "2026-05-20T14:00:00Z",
+    "credibilityScore": 0.88,
+    "urgencyScore": 0.89,
+    "isFlagged": false,
+    "rawData": { "source": "PDMA_BHP04", "pm10": 1842, "pm25": 689, "wind_kmh": 68 }
+  },
+  {
+    "id": "bwp-e1",
+    "source": "emergency_call",
+    "content": "Rescue 1122 Bahawalpur: 14 accident calls on Multan Road in 1 hour during sandstorm. 6 injuries — 2 serious. Road accident tally rising.",
+    "location": { "lat": 29.4050, "lng": 71.6900, "label": "Multan Road Accident Zone" },
+    "timestamp": "2026-05-20T14:30:00Z",
+    "credibilityScore": 0.90,
+    "urgencyScore": 0.85,
+    "isFlagged": false,
+    "rawData": { "source": "Rescue1122_BHP", "accident_calls": 14, "injuries": 6, "serious": 2 }
+  },
+  {
+    "id": "bwp-w1",
+    "source": "weather",
+    "content": "Bahawalpur: Sandstorm warning. Wind 68km/h SW, gusts 90km/h. Visibility 50m. Temperature 41°C. No rain expected.",
+    "location": { "lat": 29.3956, "lng": 71.6836, "label": "Bahawalpur" },
+    "timestamp": "2026-05-20T14:00:00Z",
+    "credibilityScore": 0.85,
+    "urgencyScore": 0.78,
+    "isFlagged": false,
+    "rawData": { "source": "OpenWeatherMap", "temp": 41, "wind_speed": 68, "visibility_m": 50 }
+  }
+]

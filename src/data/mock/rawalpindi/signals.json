@@ -1,0 +1,106 @@
+[
+  {
+    "id": "rwp-s1",
+    "source": "social",
+    "content": "Leh Nullah bhar gaya hai! Peshawar Morr ke paas ghar doob rahe hain. WASA kahan hai? Log chhat par charh gaye hain! #RawalpindiFlood",
+    "location": { "lat": 33.6200, "lng": 72.9900, "label": "Leh Nullah, Peshawar Morr" },
+    "timestamp": "2026-05-20T06:30:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.94,
+    "mentionVelocity": 28,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 178, "retweets": 342 }
+  },
+  {
+    "id": "rwp-s2",
+    "source": "social",
+    "content": "Leh Nullah overflow confirmed — water reaching Saddar. Murree Road near Chandni Chowk completely submerged. Multiple families trapped. Rescue teams needed urgently.",
+    "location": { "lat": 33.5950, "lng": 73.0350, "label": "Saddar, Rawalpindi" },
+    "timestamp": "2026-05-20T06:48:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.92,
+    "mentionVelocity": 33,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 224, "retweets": 409 }
+  },
+  {
+    "id": "rwp-s3",
+    "source": "social",
+    "content": "Rawalpindi thoda sa paani aa gaya hai bas. Har saal yahi hota hai. Koi bari baat nahi. Pani kat jayega.",
+    "location": { "lat": 33.6007, "lng": 73.0679, "label": "Rawalpindi" },
+    "timestamp": "2026-05-20T06:10:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.06,
+    "mentionVelocity": 0,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 1, "retweets": 0 }
+  },
+  {
+    "id": "rwp-s4",
+    "source": "social",
+    "content": "Gas ki bau aa rahi hai Commercial Market Raja Bazaar ke paas! SNGPL ko call kiya — busy hai. Log darr rahe hain. Ignition mat karo koi! #GasLeak",
+    "location": { "lat": 33.6050, "lng": 73.0600, "label": "Raja Bazaar, Rawalpindi" },
+    "timestamp": "2026-05-20T08:10:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.90,
+    "mentionVelocity": 19,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 112, "retweets": 267 }
+  },
+  {
+    "id": "rwp-s5",
+    "source": "social",
+    "content": "Gas pipeline rupture near Liaquat Bagh — SNGPL crews on scene. Area evacuated 200m radius. No ignition reported yet. Stay away.",
+    "location": { "lat": 33.6060, "lng": 73.0620, "label": "Liaquat Bagh Area" },
+    "timestamp": "2026-05-20T08:25:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.88,
+    "mentionVelocity": 14,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 87, "retweets": 198 }
+  },
+  {
+    "id": "rwp-f1",
+    "source": "field_report",
+    "content": "NDMA Rawalpindi Rapid Response: Leh Nullah breach at Peshawar Morr bridge abutment. Water 1.6m above danger mark. 180 families displaced. 3 rescue boats deployed. Holly Trinity Church area inundated.",
+    "location": { "lat": 33.6200, "lng": 72.9900, "label": "Leh Nullah Breach Point" },
+    "timestamp": "2026-05-20T07:00:00Z",
+    "credibilityScore": 0.94,
+    "urgencyScore": 0.93,
+    "isFlagged": false,
+    "rawData": { "reporter": "NDMA RWP Unit Alpha", "verified": true }
+  },
+  {
+    "id": "rwp-f2",
+    "source": "field_report",
+    "content": "SNGPL Emergency Team: DN-4 inch pipeline ruptured near Liaquat Bagh underpass. Gas pressure confirmed — methane dispersing. 200m evacuation zone established. Cut-off valve activated — isolation in progress. ETA: 45 minutes.",
+    "location": { "lat": 33.6055, "lng": 73.0615, "label": "Liaquat Bagh Gas Rupture" },
+    "timestamp": "2026-05-20T08:30:00Z",
+    "credibilityScore": 0.95,
+    "urgencyScore": 0.91,
+    "isFlagged": false,
+    "rawData": { "reporter": "SNGPL Emergency Unit RWP-2", "verified": true }
+  },
+  {
+    "id": "rwp-t1",
+    "source": "traffic",
+    "content": "Murree Road near Chandni Chowk — complete blockage. Speed 0km/h (normal 55km/h). Flooding + emergency vehicles blocking all lanes.",
+    "location": { "lat": 33.5950, "lng": 73.0350, "label": "Murree Road, Chandni Chowk" },
+    "timestamp": "2026-05-20T07:15:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.78,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 0, "normal_speed": 55 }
+  },
+  {
+    "id": "rwp-e1",
+    "source": "emergency_call",
+    "content": "Rescue 1122 RWP dispatch: 38 flood rescue calls in 90 minutes. 12 confirmed stranded on rooftops in Dhoke Syedan. Boat rescue ongoing.",
+    "location": { "lat": 33.6180, "lng": 72.9950, "label": "Dhoke Syedan, Rawalpindi" },
+    "timestamp": "2026-05-20T07:30:00Z",
+    "credibilityScore": 0.91,
+    "urgencyScore": 0.95,
+    "isFlagged": false,
+    "rawData": { "source": "Rescue1122_Dispatch_RWP", "calls_per_90min": 38, "stranded": 12 }
+  }
+]

@@ -1,0 +1,105 @@
+[
+  {
+    "id": "fsd-s1",
+    "source": "social",
+    "content": "D-Ground industrial area mein factory se dhuan nikal raha hai — aankhein jal rahi hain, saans lena mushkil. Kaafi log ghar se bhar gaye hain. Chemical smell bhi aa rahi hai! #FaisalabadChemical",
+    "location": { "lat": 31.4180, "lng": 73.0900, "label": "D-Ground Industrial Zone, Faisalabad" },
+    "timestamp": "2026-05-20T08:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.87,
+    "mentionVelocity": 21,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 98, "retweets": 203 }
+  },
+  {
+    "id": "fsd-s2",
+    "source": "social",
+    "content": "Chemical spill at D-Ground factory confirmed. Workers evacuated. Toxic fumes spreading toward Susan Road residential area. Rescue teams on the way. STAY INDOORS near Sitara Chemical.",
+    "location": { "lat": 31.4200, "lng": 73.0950, "label": "Sitara Chemical, D-Ground" },
+    "timestamp": "2026-05-20T08:18:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.90,
+    "mentionVelocity": 27,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 167, "retweets": 311 }
+  },
+  {
+    "id": "fsd-s3",
+    "source": "social",
+    "content": "Ghar mein bijli nahi 6 ghante se! Clock Tower area. Is garmi mein 45 degree hai aur fan nahi chalta. Koi budhay aur bachay ko kuch ho gaya toh FESCO zimmedar hoga!",
+    "location": { "lat": 31.4180, "lng": 73.0790, "label": "Clock Tower Area, Faisalabad" },
+    "timestamp": "2026-05-20T10:30:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.85,
+    "mentionVelocity": 16,
+    "isFlagged": false,
+    "rawData": { "platform": "Facebook", "shares": 88, "comments": 124 }
+  },
+  {
+    "id": "fsd-s4",
+    "source": "social",
+    "content": "3 heatstroke patients brought to DHQ Faisalabad from Clock Tower vicinity. No power = no fans = people collapsing. More cases expected if FESCO doesn't restore by sundown.",
+    "location": { "lat": 31.4190, "lng": 73.0810, "label": "DHQ Hospital Faisalabad" },
+    "timestamp": "2026-05-20T11:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.88,
+    "mentionVelocity": 12,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 134, "retweets": 289 }
+  },
+  {
+    "id": "fsd-f1",
+    "source": "field_report",
+    "content": "Rescue 1122 Faisalabad Unit 5: Confirmed chemical spill at Sitara Chemical Plant, D-Ground. Chlorine gas release — 400m exclusion zone established. 47 workers evacuated, 8 with respiratory symptoms transported to Allied Hospital. Fire Brigade on scene with HazMat team.",
+    "location": { "lat": 31.4195, "lng": 73.0940, "label": "Sitara Chemical Plant, D-Ground" },
+    "timestamp": "2026-05-20T08:35:00Z",
+    "credibilityScore": 0.93,
+    "urgencyScore": 0.92,
+    "isFlagged": false,
+    "rawData": { "reporter": "Rescue 1122 Unit 5-FSD", "verified": true }
+  },
+  {
+    "id": "fsd-f2",
+    "source": "field_report",
+    "content": "FESCO Emergency Ops: 132kV feeder fault at Gulshan Colony substation. Estimated 80,000 consumers without power in Clock Tower, Jinnah Colony, People's Colony. Repair crew dispatched — ETA 4 hours. Heatwave exacerbating health risk.",
+    "location": { "lat": 31.4180, "lng": 73.0790, "label": "Clock Tower Substation Zone" },
+    "timestamp": "2026-05-20T11:15:00Z",
+    "credibilityScore": 0.92,
+    "urgencyScore": 0.86,
+    "isFlagged": false,
+    "rawData": { "reporter": "FESCO Emergency Ops", "verified": true }
+  },
+  {
+    "id": "fsd-t1",
+    "source": "traffic",
+    "content": "Susan Road near D-Ground — blocked by emergency vehicles. Speed 0km/h (normal 60km/h). Chemical spill exclusion zone overlaps main arterial road.",
+    "location": { "lat": 31.4180, "lng": 73.0920, "label": "Susan Road near D-Ground" },
+    "timestamp": "2026-05-20T08:40:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.73,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 0, "normal_speed": 60 }
+  },
+  {
+    "id": "fsd-n1",
+    "source": "sensor",
+    "content": "PEECA Air Quality Sensor FSD-04 (D-Ground): Chlorine gas reading 18 ppm (threshold: 1 ppm). PM2.5: 412. Sensor buffer full — data upload delayed 8 minutes.",
+    "location": { "lat": 31.4185, "lng": 73.0935, "label": "PEECA Sensor Station D-Ground" },
+    "timestamp": "2026-05-20T08:20:00Z",
+    "credibilityScore": 0.88,
+    "urgencyScore": 0.95,
+    "isFlagged": false,
+    "rawData": { "source": "PEECA_sensor_FSD04", "chlorine_ppm": 18, "pm25": 412, "threshold_ppm": 1 }
+  },
+  {
+    "id": "fsd-w1",
+    "source": "weather",
+    "content": "Faisalabad: 45°C, humidity 18%, wind 4km/h. Extreme heat advisory active. Light winds mean chemical plume will not disperse quickly.",
+    "location": { "lat": 31.4504, "lng": 73.1350, "label": "Faisalabad" },
+    "timestamp": "2026-05-20T08:00:00Z",
+    "credibilityScore": 0.85,
+    "urgencyScore": 0.82,
+    "isFlagged": false,
+    "rawData": { "source": "OpenWeatherMap", "temp": 45, "humidity": 18, "wind_speed": 4 }
+  }
+]

@@ -1,0 +1,104 @@
+[
+  {
+    "id": "skt-s1",
+    "source": "social",
+    "content": "River Aik ne Sialkot bypass ke paas band tod di! Paris Road aur airport road ke ghar doob rahe hain. Bahut teez barish ke baad pani barhta ja raha hai. #SialkotFlood",
+    "location": { "lat": 32.5100, "lng": 74.5400, "label": "River Aik, Sialkot Bypass" },
+    "timestamp": "2026-05-20T07:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.89,
+    "mentionVelocity": 22,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 134, "retweets": 277 }
+  },
+  {
+    "id": "skt-s2",
+    "source": "social",
+    "content": "River Aik breach confirmed near Sialkot bypass. Wazirabad Road under water. Industrial effluent also mixing with floodwater from leather factories — strong smell.",
+    "location": { "lat": 32.5090, "lng": 74.5380, "label": "Sialkot Bypass / Wazirabad Road" },
+    "timestamp": "2026-05-20T07:18:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.87,
+    "mentionVelocity": 16,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 98, "retweets": 203 }
+  },
+  {
+    "id": "skt-s3",
+    "source": "social",
+    "content": "Wazirabad Road mein industrial discharge ki wajah se paani black ho gaya hai. Leather factory effluent directly River Aik mein ja raha tha. Yeh bahut badi mushkil hai.",
+    "location": { "lat": 32.4945, "lng": 74.5229, "label": "Wazirabad Road, Sialkot" },
+    "timestamp": "2026-05-20T08:30:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.78,
+    "mentionVelocity": 11,
+    "isFlagged": false,
+    "rawData": { "platform": "Facebook", "shares": 56, "comments": 89 }
+  },
+  {
+    "id": "skt-f1",
+    "source": "field_report",
+    "content": "PDMA Punjab — Sialkot: River Aik breach confirmed at Bypass crossing. Water 1.2m above danger mark. 120 families displaced in Paris Road / Badiana Road area. Rescue boats deployed. No casualties reported yet.",
+    "location": { "lat": 32.5100, "lng": 74.5400, "label": "River Aik Breach, Sialkot Bypass" },
+    "timestamp": "2026-05-20T07:30:00Z",
+    "credibilityScore": 0.93,
+    "urgencyScore": 0.91,
+    "isFlagged": false,
+    "rawData": { "reporter": "PDMA Punjab Unit SKT-1", "verified": true }
+  },
+  {
+    "id": "skt-f2",
+    "source": "field_report",
+    "content": "SEPA Sialkot Inspector: Industrial effluent from leather tanneries on Wazirabad Road discharging directly into River Aik — chromium VI detected at 8× safe limit. Mixing with floodwater spreading contamination downstream. 5 factories issued immediate stop-work notice.",
+    "location": { "lat": 32.4900, "lng": 74.5150, "label": "Leather Industrial Zone, Wazirabad Road" },
+    "timestamp": "2026-05-20T08:45:00Z",
+    "credibilityScore": 0.94,
+    "urgencyScore": 0.82,
+    "isFlagged": false,
+    "rawData": { "reporter": "SEPA Sialkot Inspector", "verified": true, "chromium_vi_multiplier": 8 }
+  },
+  {
+    "id": "skt-t1",
+    "source": "traffic",
+    "content": "Sialkot Airport Road near bypass — partial closure. Speed 3km/h (normal 70km/h). Floodwater across road surface. Heavy vehicles diverted.",
+    "location": { "lat": 32.5050, "lng": 74.5300, "label": "Airport Road, Sialkot" },
+    "timestamp": "2026-05-20T07:45:00Z",
+    "credibilityScore": 0.80,
+    "urgencyScore": 0.73,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "speed_kmh": 3, "normal_speed": 70 }
+  },
+  {
+    "id": "skt-e1",
+    "source": "emergency_call",
+    "content": "Rescue 1122 Sialkot: 24 flood rescue calls — 9 families confirmed stranded on Paris Road near bypass. Boat operations ongoing.",
+    "location": { "lat": 32.5100, "lng": 74.5400, "label": "Paris Road Flood Zone" },
+    "timestamp": "2026-05-20T08:00:00Z",
+    "credibilityScore": 0.91,
+    "urgencyScore": 0.92,
+    "isFlagged": false,
+    "rawData": { "source": "Rescue1122_SKT", "calls": 24, "stranded_families": 9 }
+  },
+  {
+    "id": "skt-w1",
+    "source": "weather",
+    "content": "Sialkot: 28mm/hr rain, 24°C, humidity 88%. River Aik is at bank-full stage — any additional rain will worsen breach.",
+    "location": { "lat": 32.4945, "lng": 74.5229, "label": "Sialkot" },
+    "timestamp": "2026-05-20T07:00:00Z",
+    "credibilityScore": 0.85,
+    "urgencyScore": 0.70,
+    "isFlagged": false,
+    "rawData": { "source": "OpenWeatherMap", "rain_mm_hr": 28, "humidity": 88, "temp": 24 }
+  },
+  {
+    "id": "skt-n1",
+    "source": "sensor",
+    "content": "River Aik Water Quality Sensor SKT-WQ02: Chromium VI: 480 µg/L (safe limit: 50 µg/L). Dissolved oxygen critically low. Industrial contamination confirmed — water unsafe for any use downstream.",
+    "location": { "lat": 32.4880, "lng": 74.5100, "label": "River Aik Sensor Station SKT-WQ02" },
+    "timestamp": "2026-05-20T09:00:00Z",
+    "credibilityScore": 0.89,
+    "urgencyScore": 0.84,
+    "isFlagged": false,
+    "rawData": { "source": "RiverAik_WQ02", "chromium_vi_ug_L": 480, "safe_limit": 50 }
+  }
+]

@@ -1,0 +1,9 @@
+[
+  { "id": "sgd-r1", "type": "rescue_team", "label": "Rescue 1122 Unit SGD-2", "status": "available", "location": { "lat": 32.0830, "lng": 72.6748, "label": "Rescue 1122 Station Sargodha" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
+  { "id": "sgd-r2", "type": "police_unit", "label": "Sargodha Traffic Police SGP-05", "status": "available", "location": { "lat": 32.0830, "lng": 72.6748, "label": "Traffic HQ Sargodha" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
+  { "id": "sgd-r3", "type": "ambulance", "label": "DHQ Sargodha Ambulance SGD-04", "status": "available", "location": { "lat": 32.0780, "lng": 72.6700, "label": "DHQ Hospital Sargodha" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
+  { "id": "sgd-r4", "type": "water_tanker", "label": "WASA Sargodha Dewatering SGW-03", "status": "available", "location": { "lat": 32.0850, "lng": 72.6780, "label": "WASA Depot Sargodha" }, "assignedCrisisId": null, "capacity": 1, "currentLoad": 0 },
+  { "id": "sgd-r5", "type": "medical_outreach", "label": "PDMA Punjab Mobile SGD-MH1", "status": "available", "location": { "lat": 32.0830, "lng": 72.6748, "label": "PDMA Office Sargodha" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
+  { "id": "sgd-r6", "type": "fire_truck", "label": "Sargodha Fire Brigade SGF-03", "status": "available", "location": { "lat": 32.0820, "lng": 72.6730, "label": "Fire Station Sargodha" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
+  { "id": "sgd-r7", "type": "drone", "label": "PDMA Recon Drone Punjab SGD-D01", "status": "available", "location": { "lat": 32.0830, "lng": 72.6748, "label": "PDMA Command Sargodha" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
+]
