@@ -23,15 +23,25 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
+    const container = mapRef.current;
+
     mapInstance.current = new maplibregl.Map({
-      container: mapRef.current,
+      container,
       style: DARK_STYLE,
       center: CITY_COORDS[city].center,
       zoom: CITY_COORDS[city].zoom,
       attributionControl: false,
     });
 
+    // Redraw when the container is resized (handles Capacitor layout shifts,
+    // orientation changes, and initial paint timing issues).
+    const observer = new ResizeObserver(() => {
+      mapInstance.current?.resize();
+    });
+    observer.observe(container);
+
     return () => {
+      observer.disconnect();
       mapInstance.current?.remove();
       mapInstance.current = null;
     };

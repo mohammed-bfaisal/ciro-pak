@@ -17,7 +17,7 @@ export function Dashboard() {
   const crisisCount = useCrisisStore((s) => s.crises.length);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="absolute inset-0">
       {/* Map fills entire viewport */}
       <CiroMap city={city} onCrisisClick={(id) => selectCrisis(id)} />
 
