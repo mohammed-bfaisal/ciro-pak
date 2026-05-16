@@ -1,4 +1,4 @@
-import { useTraceStore } from '../store/traceStore';
+import { useTraceStore, waitForGate } from '../store/traceStore';
 import { useSignalStore } from '../store/signalStore';
 import { useCrisisStore } from '../store/crisisStore';
 import { useResourceStore } from '../store/resourceStore';
@@ -59,6 +59,7 @@ export async function runCIROPipeline(city: City) {
     trace.log(`Ingested: ${signal.source} — "${signal.content.slice(0, 60)}..."`);
   }
   trace.completePhase('Signal Ingestion', PHASE_DELAYS.ingestion);
+  await waitForGate(1);
 
   // ═══ PHASE 2 — Signal Fusion ═══
   trace.startPhase('Signal Fusion', [
@@ -76,6 +77,7 @@ export async function runCIROPipeline(city: City) {
     trace.log(`Scored ${s.id} (${s.source}): credibility ${s.credibilityScore.toFixed(2)}${flag}`);
   });
   trace.completePhase('Signal Fusion', PHASE_DELAYS.fusion);
+  await waitForGate(2);
 
   // ═══ PHASE 3 — Crisis Detection ═══
   trace.startPhase('Crisis Detection', [
@@ -93,6 +95,7 @@ export async function runCIROPipeline(city: City) {
     );
   });
   trace.completePhase('Crisis Detection', PHASE_DELAYS.detection);
+  await waitForGate(3);
 
   // ═══ PHASE 4 — Resource Allocation ═══
   trace.startPhase('Resource Allocation', [
@@ -111,6 +114,7 @@ export async function runCIROPipeline(city: City) {
     trace.log(`Assigned ${a.resourceId} → Crisis ${a.crisisId}: ${a.reasoning}`);
   });
   trace.completePhase('Resource Allocation', PHASE_DELAYS.allocation);
+  await waitForGate(4);
 
   // ═══ PHASE 5 — Action Execution ═══
   trace.startPhase('Action Execution', [
@@ -121,6 +125,7 @@ export async function runCIROPipeline(city: City) {
 
   const actions = await actionSimulatorAgent(crises, allocations, trace, city);
   trace.completePhase('Action Execution', PHASE_DELAYS.execution);
+  await waitForGate(5);
 
   // ═══ PHASE 6 — Stakeholder Notifications ═══
   trace.startPhase('Stakeholder Notifications', [
@@ -138,6 +143,7 @@ export async function runCIROPipeline(city: City) {
     }
   });
   trace.completePhase('Stakeholder Notifications', PHASE_DELAYS.notify);
+  await waitForGate(6);
 
   // ═══ PHASE 7 — False Alarm Correction ═══
   trace.startPhase('False Alarm Correction', [

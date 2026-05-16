@@ -59,9 +59,7 @@ export function PhaseGate() {
     resumeFromGate();
   };
 
-  const completedPhase = workplan?.phases.find((p) => p.status === 'complete' && workplan.phases.indexOf(p) === currentPhaseIndex - 1);
   const phaseName = workplan?.phases[currentPhaseIndex - 1]?.name ?? `Phase ${currentPhaseIndex}`;
-  const progressPct = paused ? (1 - countdown / (AUTO_ADVANCE_MS / 1000)) * 100 : ((AUTO_ADVANCE_MS / 1000 - countdown) / (AUTO_ADVANCE_MS / 1000)) * 100;
 
   return (
     <AnimatePresence>
@@ -94,7 +92,7 @@ export function PhaseGate() {
           <div className="px-4 py-3 flex items-center gap-3">
             {/* Phase label */}
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium" style={{ color: colors.textMuted }}>
+              <div className="text-xs font-medium" style={{ color: colors.textDim }}>
                 Phase complete
               </div>
               <div className="text-sm font-semibold truncate" style={{ color: colors.textPrimary }}>
@@ -105,7 +103,7 @@ export function PhaseGate() {
             {/* Countdown or paused indicator */}
             <div
               className="text-xs font-mono w-10 text-center"
-              style={{ color: paused ? colors.textMuted : colors.amber }}
+              style={{ color: paused ? colors.textDim : colors.amber }}
             >
               {paused ? 'PAUSED' : `${countdown.toFixed(1)}s`}
             </div>

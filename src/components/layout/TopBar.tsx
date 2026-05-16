@@ -4,16 +4,18 @@ import { motion } from 'framer-motion';
 import { colors } from '../../constants/colors';
 import type { City } from '../../types';
 import { useTraceStore } from '../../store/traceStore';
-import { runCIROPipeline } from '../../agents/orchestrator';
 import { CITIES_BY_PROVINCE, CITY_REGISTRY } from '../../data/cities';
 
 export function TopBar() {
   const [city, setCity] = useState<City>('karachi');
-  const isRunning = useTraceStore((s) => s.isRunning);
+  const { isRunning, openBriefing } = useTraceStore((s) => ({
+    isRunning: s.isRunning,
+    openBriefing: s.openBriefing,
+  }));
 
-  const handleRun = async () => {
+  const handleRun = () => {
     if (isRunning) return;
-    await runCIROPipeline(city);
+    openBriefing(city);
   };
 
   return (

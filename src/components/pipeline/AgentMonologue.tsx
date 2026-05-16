@@ -86,7 +86,7 @@ export function AgentMonologue() {
               Agent Reasoning
             </span>
             {currentPhase && (
-              <span className="ml-auto text-xs" style={{ color: colors.textMuted }}>
+              <span className="ml-auto text-xs" style={{ color: colors.textDim }}>
                 {currentPhase}
               </span>
             )}
@@ -95,7 +95,7 @@ export function AgentMonologue() {
           {/* Phase description */}
           {phaseDesc && !activeTraceStep && (
             <div className="flex gap-2 mb-3">
-              <Terminal size={12} style={{ color: colors.textMuted, marginTop: 2, flexShrink: 0 }} />
+              <Terminal size={12} style={{ color: colors.textDim, marginTop: 2, flexShrink: 0 }} />
               <p className="text-xs leading-relaxed" style={{ color: colors.textSecondary }}>
                 {phaseDesc}
               </p>
@@ -106,7 +106,7 @@ export function AgentMonologue() {
           {runningPhase && !activeTraceStep && (
             <div className="space-y-1 mb-1">
               {runningPhase.tasks.map((task, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs" style={{ color: colors.textMuted }}>
+                <div key={i} className="flex items-center gap-2 text-xs" style={{ color: colors.textDim }}>
                   <motion.span
                     animate={{ opacity: [0.4, 1, 0.4] }}
                     transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.2 }}

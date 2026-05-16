@@ -63,7 +63,7 @@ export function ScenarioBriefing() {
             <button
               onClick={dismissBriefing}
               className="absolute top-4 right-4 p-1.5 rounded-lg opacity-50 hover:opacity-100 transition-opacity"
-              style={{ color: colors.textMuted }}
+              style={{ color: colors.textDim }}
             >
               <X size={16} />
             </button>
@@ -77,7 +77,7 @@ export function ScenarioBriefing() {
                 <Shield size={20} style={{ color: colors.amber }} />
               </div>
               <div>
-                <div className="text-xs font-medium tracking-widest uppercase" style={{ color: colors.textMuted }}>
+                <div className="text-xs font-medium tracking-widest uppercase" style={{ color: colors.textDim }}>
                   Crisis Intelligence System
                 </div>
                 <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>
@@ -96,7 +96,7 @@ export function ScenarioBriefing() {
                   <div className="text-2xl font-bold mb-0.5" style={{ color: colors.textPrimary }}>
                     {meta.label}
                   </div>
-                  <div className="text-sm" style={{ color: colors.textMuted }}>{meta.province}</div>
+                  <div className="text-sm" style={{ color: colors.textDim }}>{meta.province}</div>
                 </div>
                 <span
                   className="px-2.5 py-1 rounded-full text-xs font-bold tracking-wider shrink-0"
@@ -113,7 +113,7 @@ export function ScenarioBriefing() {
               <div className="font-semibold text-sm mb-2" style={{ color: colors.textSecondary }}>
                 {meta.scenarioTitle}
               </div>
-              <div className="text-xs" style={{ color: colors.textMuted }}>
+              <div className="text-xs" style={{ color: colors.textDim }}>
                 {meta.scenarioHint}
               </div>
             </div>
@@ -122,7 +122,7 @@ export function ScenarioBriefing() {
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle size={12} style={{ color: colors.amber }} />
-                <span className="text-xs font-medium tracking-wider uppercase" style={{ color: colors.textMuted }}>
+                <span className="text-xs font-medium tracking-wider uppercase" style={{ color: colors.textDim }}>
                   What the agent will do
                 </span>
               </div>
