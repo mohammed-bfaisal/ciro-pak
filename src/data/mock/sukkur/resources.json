@@ -1,0 +1,9 @@
+[
+  { "id": "skr-r1", "type": "rescue_team", "label": "Rescue 1122 Sindh Unit SKR-Alpha", "status": "available", "location": { "lat": 27.7052, "lng": 68.8574, "label": "Rescue 1122 Station Sukkur" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
+  { "id": "skr-r2", "type": "rescue_team", "label": "NDMA Sindh Flood Response SKR-FRT", "status": "available", "location": { "lat": 27.7052, "lng": 68.8574, "label": "NDMA Office Sukkur" }, "assignedCrisisId": null, "capacity": 14, "currentLoad": 0 },
+  { "id": "skr-r3", "type": "ambulance", "label": "Sukkur Govt Hospital SKR-Amb01", "status": "available", "location": { "lat": 27.7000, "lng": 68.8500, "label": "Sukkur Government Hospital" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
+  { "id": "skr-r4", "type": "ambulance", "label": "Al-Khidmat Foundation SKR-Amb02", "status": "available", "location": { "lat": 27.7050, "lng": 68.8550, "label": "Al-Khidmat Sukkur" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
+  { "id": "skr-r5", "type": "police_unit", "label": "Sukkur Police SKR-Pol3", "status": "available", "location": { "lat": 27.7052, "lng": 68.8574, "label": "Sukkur Police HQ" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
+  { "id": "skr-r6", "type": "water_tanker", "label": "SIDA Emergency Water Tanker SKR-WT01", "status": "available", "location": { "lat": 27.7080, "lng": 68.8600, "label": "SIDA Depot Sukkur" }, "assignedCrisisId": null, "capacity": 1, "currentLoad": 0 },
+  { "id": "skr-r7", "type": "drone", "label": "Sindh Safe Cities Drone SKR-D01", "status": "available", "location": { "lat": 27.7052, "lng": 68.8574, "label": "Safe City Command Sukkur" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
+]

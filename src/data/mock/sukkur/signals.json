@@ -1,0 +1,104 @@
+[
+  {
+    "id": "skr-s1",
+    "source": "social",
+    "content": "Sukkur Barrage ke gates khol diye gaye hain! Paani tezi se aa raha hai — Rohri side mein paani gharon mein ghus gaya. Log apna saman le ke bhaag rahe hain. #SukkurFlood #IndusRiver",
+    "location": { "lat": 27.7052, "lng": 68.8574, "label": "Sukkur Barrage, Indus River" },
+    "timestamp": "2026-05-20T06:30:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.88,
+    "mentionVelocity": 31,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 211, "retweets": 389 }
+  },
+  {
+    "id": "skr-s2",
+    "source": "social",
+    "content": "Sukkur Barrage reading 850,000 cusecs! That's above high flood level. Rohri, Saleh Pat and downstream villages flooding fast. NDMA kahan hai? People need boats NOW. #SukkurBarrage",
+    "location": { "lat": 27.7100, "lng": 68.8600, "label": "Rohri, Sukkur" },
+    "timestamp": "2026-05-20T07:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.91,
+    "mentionVelocity": 38,
+    "isFlagged": false,
+    "rawData": { "platform": "Twitter/X", "likes": 302, "retweets": 541 }
+  },
+  {
+    "id": "skr-s3",
+    "source": "social",
+    "content": "Sukkur mein aaj garmi ka record toot gaya — 50.1°C! Bijli nahi, paani nahi. Govt Hospital mein mareez bahar rakh diye hain. AC nahi chal raha. Doctors overwhelmed. #SukkurHeatwave",
+    "location": { "lat": 27.7052, "lng": 68.8574, "label": "Sukkur City" },
+    "timestamp": "2026-05-20T14:00:00Z",
+    "credibilityScore": 0,
+    "urgencyScore": 0.85,
+    "mentionVelocity": 19,
+    "isFlagged": false,
+    "rawData": { "platform": "Facebook", "shares": 94, "comments": 201 }
+  },
+  {
+    "id": "skr-f1",
+    "source": "field_report",
+    "content": "IRSA Sukkur Barrage Control Room: Discharge 847,000 cusecs — above HFL (High Flood Level 750,000 cusecs). 12 gates fully open. Downstream alert issued. Rohri embankment holding but Saleh Pat left bank showing seepage. 3 villages within 2km breach risk zone. NDMA activated.",
+    "location": { "lat": 27.7052, "lng": 68.8574, "label": "Sukkur Barrage Control Room" },
+    "timestamp": "2026-05-20T07:30:00Z",
+    "credibilityScore": 0.96,
+    "urgencyScore": 0.93,
+    "isFlagged": false,
+    "rawData": { "reporter": "IRSA_Sukkur_Barrage", "verified": true, "discharge_cusecs": 847000, "hfl_cusecs": 750000, "gates_open": 12 }
+  },
+  {
+    "id": "skr-f2",
+    "source": "field_report",
+    "content": "Sukkur Government Hospital CMO: Hospital at 168% capacity — 284 patients in 169-bed facility. 47 heatstroke admissions since 11:00. 9 critical (core temp >41°C). Power outage since 12:30 — backup generator fuel critically low (2hr remaining). IV fluid stock at 18% — resupply urgent.",
+    "location": { "lat": 27.7000, "lng": 68.8500, "label": "Sukkur Government Hospital" },
+    "timestamp": "2026-05-20T15:00:00Z",
+    "credibilityScore": 0.95,
+    "urgencyScore": 0.96,
+    "isFlagged": false,
+    "rawData": { "reporter": "Sukkur_GovtHospital_CMO", "verified": true, "capacity_pct": 168, "heatstroke_admissions": 47, "critical_patients": 9, "generator_hours_remaining": 2 }
+  },
+  {
+    "id": "skr-n1",
+    "source": "sensor",
+    "content": "IRSA River Gauge Station SKR-RG01 (Sukkur Barrage): Water level 206.8ft (danger level 204ft, HFL 207.5ft). Rising 0.4ft/hr. Flow velocity 7.2m/s. Left bank embankment strain gauge: 82% of safe limit. Breach risk: HIGH if level exceeds 207.5ft within 90min.",
+    "location": { "lat": 27.7052, "lng": 68.8574, "label": "IRSA River Gauge SKR-RG01" },
+    "timestamp": "2026-05-20T07:15:00Z",
+    "credibilityScore": 0.96,
+    "urgencyScore": 0.94,
+    "isFlagged": false,
+    "rawData": { "source": "IRSA_SKR_RG01", "level_ft": 206.8, "danger_level_ft": 204, "hfl_ft": 207.5, "velocity_ms": 7.2, "embankment_strain_pct": 82 }
+  },
+  {
+    "id": "skr-n2",
+    "source": "sensor",
+    "content": "Sindh Meteorological Office Sukkur Station SKR-MET01: Temperature 50.1°C (all-time station record). Heat index 58°C. Humidity 18%. Wind 3km/h — no cooling effect. UV index: EXTREME. Forecast: 49-51°C next 36 hours. Heat dome persistent.",
+    "location": { "lat": 27.7052, "lng": 68.8574, "label": "SMO Station Sukkur SKR-MET01" },
+    "timestamp": "2026-05-20T14:00:00Z",
+    "credibilityScore": 0.95,
+    "urgencyScore": 0.89,
+    "isFlagged": false,
+    "rawData": { "source": "SMO_SKR_MET01", "temp_c": 50.1, "heat_index_c": 58, "humidity_pct": 18, "uv_index": "EXTREME", "wind_kmh": 3 }
+  },
+  {
+    "id": "skr-e1",
+    "source": "emergency_call",
+    "content": "Rescue 1122 Sindh Sukkur: 52 flood calls — 19 rooftop strandings, 6 livestock swept away, 27 evacuation requests from Rohri/Saleh Pat zone. 11 heatstroke emergency calls from city. 3 callers reporting unconscious family members in unventilated homes.",
+    "location": { "lat": 27.7052, "lng": 68.8574, "label": "Sukkur City" },
+    "timestamp": "2026-05-20T15:30:00Z",
+    "credibilityScore": 0.93,
+    "urgencyScore": 0.95,
+    "isFlagged": false,
+    "rawData": { "source": "Rescue1122_SKR", "flood_calls": 39, "heatstroke_calls": 11, "rooftop_strandings": 19 }
+  },
+  {
+    "id": "skr-t1",
+    "source": "traffic",
+    "content": "Rohri-Sukkur Bridge: 0km/h — emergency vehicle priority only. Saleh Pat Road: flooded, impassable. National Highway N-55: 12km/h — flood evacuee vehicles. Sukkur city centre: 8km/h — heat-related road closures.",
+    "location": { "lat": 27.7052, "lng": 68.8574, "label": "Sukkur Road Network" },
+    "timestamp": "2026-05-20T08:00:00Z",
+    "credibilityScore": 0.81,
+    "urgencyScore": 0.74,
+    "isFlagged": false,
+    "rawData": { "source": "traffic_api", "bridge_speed_kmh": 0, "nh55_speed_kmh": 12 }
+  }
+]

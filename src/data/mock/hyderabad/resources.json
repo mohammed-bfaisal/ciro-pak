@@ -1,0 +1,9 @@
+[
+  { "id": "hyd-r1", "type": "rescue_team", "label": "Rescue 1122 Sindh Unit HYD-Alpha", "status": "available", "location": { "lat": 25.3960, "lng": 68.3578, "label": "Rescue 1122 Station Hyderabad" }, "assignedCrisisId": null, "capacity": 10, "currentLoad": 0 },
+  { "id": "hyd-r2", "type": "fire_truck", "label": "Hyderabad Fire Brigade HF-08", "status": "available", "location": { "lat": 25.3900, "lng": 68.3500, "label": "Fire Station Hyderabad" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
+  { "id": "hyd-r3", "type": "fire_truck", "label": "Hyderabad Fire Brigade HF-11", "status": "available", "location": { "lat": 25.3850, "lng": 68.3450, "label": "Fire Station 2 Hyderabad" }, "assignedCrisisId": null, "capacity": 8, "currentLoad": 0 },
+  { "id": "hyd-r4", "type": "ambulance", "label": "Liaquat University Hospital HYD-06", "status": "available", "location": { "lat": 25.3960, "lng": 68.3578, "label": "Liaquat University Hospital" }, "assignedCrisisId": null, "capacity": 4, "currentLoad": 0 },
+  { "id": "hyd-r5", "type": "police_unit", "label": "Hyderabad Traffic Police HTP-07", "status": "available", "location": { "lat": 25.3960, "lng": 68.3578, "label": "Traffic HQ Hyderabad" }, "assignedCrisisId": null, "capacity": 6, "currentLoad": 0 },
+  { "id": "hyd-r6", "type": "water_tanker", "label": "WASA Hyderabad Dewatering HWD-04", "status": "available", "location": { "lat": 25.4000, "lng": 68.3600, "label": "WASA Depot Hyderabad" }, "assignedCrisisId": null, "capacity": 1, "currentLoad": 0 },
+  { "id": "hyd-r7", "type": "drone", "label": "Sindh Safe Cities Drone SSC-HYD-01", "status": "available", "location": { "lat": 25.3960, "lng": 68.3578, "label": "Safe City Command Hyderabad" }, "assignedCrisisId": null, "capacity": 0, "currentLoad": 0 }
+]
