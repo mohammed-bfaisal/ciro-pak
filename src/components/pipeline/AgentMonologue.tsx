@@ -47,12 +47,10 @@ function MonologueRow({
 }
 
 export function AgentMonologue() {
-  const { pipelineMode, currentPhase, activeTraceStep, workplan } = useTraceStore((s) => ({
-    pipelineMode: s.pipelineMode,
-    currentPhase: s.currentPhase,
-    activeTraceStep: s.activeTraceStep,
-    workplan: s.workplan,
-  }));
+  const pipelineMode = useTraceStore((s) => s.pipelineMode);
+  const currentPhase = useTraceStore((s) => s.currentPhase);
+  const activeTraceStep = useTraceStore((s) => s.activeTraceStep);
+  const workplan = useTraceStore((s) => s.workplan);
 
   const visible = pipelineMode === 'running' || pipelineMode === 'paused';
   const phaseDesc = currentPhase ? PHASE_DESCRIPTIONS[currentPhase] : null;

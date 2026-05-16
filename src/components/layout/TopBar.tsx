@@ -8,10 +8,8 @@ import { CITIES_BY_PROVINCE, CITY_REGISTRY } from '../../data/cities';
 
 export function TopBar() {
   const [city, setCity] = useState<City>('karachi');
-  const { isRunning, openBriefing } = useTraceStore((s) => ({
-    isRunning: s.isRunning,
-    openBriefing: s.openBriefing,
-  }));
+  const isRunning = useTraceStore((s) => s.isRunning);
+  const openBriefing = useTraceStore((s) => s.openBriefing);
 
   const handleRun = () => {
     if (isRunning) return;

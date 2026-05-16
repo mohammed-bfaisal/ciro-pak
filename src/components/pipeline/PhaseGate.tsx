@@ -7,12 +7,10 @@ import { colors } from '../../constants/colors';
 const AUTO_ADVANCE_MS = 2000;
 
 export function PhaseGate() {
-  const { pipelineMode, currentPhaseIndex, resumeFromGate, workplan } = useTraceStore((s) => ({
-    pipelineMode: s.pipelineMode,
-    currentPhaseIndex: s.currentPhaseIndex,
-    resumeFromGate: s.resumeFromGate,
-    workplan: s.workplan,
-  }));
+  const pipelineMode = useTraceStore((s) => s.pipelineMode);
+  const currentPhaseIndex = useTraceStore((s) => s.currentPhaseIndex);
+  const resumeFromGate = useTraceStore((s) => s.resumeFromGate);
+  const workplan = useTraceStore((s) => s.workplan);
 
   const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(AUTO_ADVANCE_MS / 1000);

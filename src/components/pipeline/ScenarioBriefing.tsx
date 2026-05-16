@@ -12,11 +12,9 @@ const SEVERITY_COLOR: Record<string, string> = {
 };
 
 export function ScenarioBriefing() {
-  const { pipelineMode, pendingCity, dismissBriefing } = useTraceStore((s) => ({
-    pipelineMode: s.pipelineMode,
-    pendingCity: s.pendingCity,
-    dismissBriefing: s.dismissBriefing,
-  }));
+  const pipelineMode = useTraceStore((s) => s.pipelineMode);
+  const pendingCity = useTraceStore((s) => s.pendingCity);
+  const dismissBriefing = useTraceStore((s) => s.dismissBriefing);
 
   const visible = pipelineMode === 'briefing' && pendingCity !== null;
   const meta = pendingCity ? CITY_REGISTRY[pendingCity] : null;
