@@ -183,3 +183,25 @@ body::before {
 /* Hide scrollbar on signal feed */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Vehicle marker animations */
+@keyframes vehicle-select-ring {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+@keyframes vehicle-arrive {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.6); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fast-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes alert-border-flash {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 0 3px #f59e0b; }
+}
