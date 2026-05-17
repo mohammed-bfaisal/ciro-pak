@@ -64,6 +64,9 @@ export interface Resource {
   etaMinutes?: number;
   capacity: number;
   currentLoad: number;
+  currentPosition: GeoPoint;
+  targetPosition?: GeoPoint;
+  movementProgress: number;
 }
 
 export interface Action {
