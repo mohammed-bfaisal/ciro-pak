@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Loader2, Play, User, Bot, Pause } from 'lucide-react';
 import { useResourceStore } from '../../store/resourceStore';
 import { useTraceStore } from '../../store/traceStore';
@@ -6,6 +7,7 @@ import { runSimulation, runAIDispatch } from '../../agents/orchestrator';
 import { colors } from '../../constants/colors';
 
 export function ControlBar() {
+  const [isAIDispatching, setIsAIDispatching] = useState(false);
   const city              = useCityStore((s) => s.city);
   const isRunning         = useTraceStore((s) => s.isRunning);
   const simulationRunning = useResourceStore((s) => s.simulationRunning);
@@ -31,7 +33,9 @@ export function ControlBar() {
   const handleAI = async () => {
     if (isRunning) return;
     setDispatchMode('off');
+    setIsAIDispatching(true);
     await runAIDispatch(city);
+    setIsAIDispatching(false);
   };
 
   const base = 'flex items-center gap-1.5 rounded-lg text-xs font-semibold transition-all px-2 py-1.5 sm:px-3';
@@ -95,14 +99,14 @@ export function ControlBar() {
         disabled={isRunning}
         title="AI auto-dispatch"
         style={{
-          background: dispatchMode === 'ai' ? colors.amberMuted : colors.raised,
-          color: dispatchMode === 'ai' ? colors.amber : colors.textSecondary,
-          border: `1px solid ${dispatchMode === 'ai' ? colors.borderAmber : colors.borderDefault}`,
-          opacity: isRunning ? 0.6 : 1,
+          background: dispatchMode === 'ai' || isAIDispatching ? colors.amberMuted : colors.raised,
+          color: dispatchMode === 'ai' || isAIDispatching ? colors.amber : colors.textSecondary,
+          border: `1px solid ${dispatchMode === 'ai' || isAIDispatching ? colors.borderAmber : colors.borderDefault}`,
+          opacity: isRunning && !isAIDispatching ? 0.6 : 1,
           cursor: isRunning ? 'not-allowed' : 'pointer',
         }}
       >
-        {isRunning && dispatchMode === 'ai'
+        {isAIDispatching
           ? <Loader2 size={13} className="animate-spin" />
           : <Bot size={13} />
         }

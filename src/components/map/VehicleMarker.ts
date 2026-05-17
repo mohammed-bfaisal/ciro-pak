@@ -16,7 +16,7 @@ const TYPE_ICON: Record<Resource['type'], string> = {
 // pinned to the visual center of the emoji at every zoom level.
 export function createVehicleMarkerEl(resource: Resource, selected: boolean): HTMLDivElement {
   const el = document.createElement('div');
-  el.style.cssText = `position:relative;width:32px;height:32px;cursor:pointer;user-select:none`;
+  el.style.cssText = `position:absolute;width:32px;height:32px;cursor:pointer;user-select:none`;
 
   if (selected) {
     const ring = document.createElement('div');
