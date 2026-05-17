@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Activity, Play, Loader2, MapPin, ChevronDown, Check } from 'lucide-react';
+import { Activity, MapPin, ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { colors } from '../../constants/colors';
 import type { City } from '../../types';
-import { useTraceStore } from '../../store/traceStore';
 import { useCityStore } from '../../store/cityStore';
-import { runCIROPipeline } from '../../agents/orchestrator';
 
 const CITIES: { key: City; label: string; sub: string }[] = [
   { key: 'karachi',   label: 'Karachi',   sub: 'Sindh · 16.5M' },
@@ -15,25 +13,16 @@ const CITIES: { key: City; label: string; sub: string }[] = [
 export function TopBar() {
   const city    = useCityStore((s) => s.city);
   const setCity = useCityStore((s) => s.setCity);
-  const isRunning = useTraceStore((s) => s.isRunning);
   const [open, setOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
-
-  const handleRun = async () => {
-    if (isRunning) return;
-    await runCIROPipeline(city);
-  };
 
   const current = CITIES.find((c) => c.key === city)!;
 
@@ -67,10 +56,9 @@ export function TopBar() {
         </div>
       </div>
 
-      {/* Center: Custom city selector */}
+      {/* Center: City selector */}
       <div className="relative" ref={dropRef}>
         <button
-          id="city-selector"
           onClick={() => setOpen((v) => !v)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150"
           style={{
@@ -109,24 +97,16 @@ export function TopBar() {
                     key={c.key}
                     onClick={() => { setCity(c.key); setOpen(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors duration-100"
-                    style={{
-                      background: active ? colors.amberMuted : 'transparent',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active) (e.currentTarget as HTMLElement).style.background = colors.overlay;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = active ? colors.amberMuted : 'transparent';
-                    }}
+                    style={{ background: active ? colors.amberMuted : 'transparent' }}
+                    onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = colors.overlay; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = active ? colors.amberMuted : 'transparent'; }}
                   >
                     <MapPin size={12} style={{ color: active ? colors.amber : colors.textDim, flexShrink: 0 }} />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium leading-none mb-0.5" style={{ color: active ? colors.amber : colors.textPrimary }}>
                         {c.label}
                       </div>
-                      <div className="text-[10px] leading-none" style={{ color: colors.textDim }}>
-                        {c.sub}
-                      </div>
+                      <div className="text-[10px] leading-none" style={{ color: colors.textDim }}>{c.sub}</div>
                     </div>
                     {active && <Check size={12} style={{ color: colors.amber, flexShrink: 0 }} />}
                   </button>
@@ -137,32 +117,8 @@ export function TopBar() {
         </AnimatePresence>
       </div>
 
-      {/* Right: Run button */}
-      <div className="flex items-center gap-3">
-        <button
-          id="run-pipeline-btn"
-          onClick={handleRun}
-          disabled={isRunning}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
-          style={{
-            background: isRunning ? colors.amberMuted : colors.amber,
-            color: isRunning ? colors.amber : colors.void,
-            cursor: isRunning ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {isRunning ? (
-            <>
-              <Loader2 size={16} className="animate-spin" />
-              <span className="hidden tablet:inline">Running...</span>
-            </>
-          ) : (
-            <>
-              <Play size={16} fill="currentColor" />
-              <span className="hidden tablet:inline">Run Pipeline</span>
-            </>
-          )}
-        </button>
-      </div>
+      {/* Right: reserved for controls moved to Dashboard ControlBar */}
+      <div style={{ width: 120 }} />
     </header>
   );
 }
