@@ -1,5 +1,3 @@
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
-import { colors } from '../../constants/colors';
 import type { Resource } from '../../types';
 
 interface ResourceBarProps {
@@ -7,34 +5,72 @@ interface ResourceBarProps {
   height?: number;
 }
 
-export function ResourceBarChart({ resources, height = 120 }: ResourceBarProps) {
-  const statusCounts = {
-    available: resources.filter((r) => r.status === 'available').length,
-    dispatched: resources.filter((r) => r.status === 'dispatched').length,
-    en_route: resources.filter((r) => r.status === 'en_route').length,
-    on_scene: resources.filter((r) => r.status === 'on_scene').length,
-  };
+const STATUSES = [
+  { key: 'available',  label: 'Avail',  color: '#34d399' },
+  { key: 'dispatched', label: 'Disp',   color: '#f59e0b' },
+  { key: 'en_route',   label: 'Route',  color: '#60a5fa' },
+  { key: 'on_scene',   label: 'Scene',  color: '#a78bfa' },
+] as const;
 
-  const data = [
-    { name: 'Available', value: statusCounts.available, color: colors.success },
-    { name: 'Dispatched', value: statusCounts.dispatched, color: colors.amber },
-    { name: 'En Route', value: statusCounts.en_route, color: colors.info },
-    { name: 'On Scene', value: statusCounts.on_scene, color: '#60a5fa' },
-  ];
+export function ResourceBarChart({ resources, height = 120 }: ResourceBarProps) {
+  if (resources.length === 0) {
+    return (
+      <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 10, color: '#737373' }}>No resources loaded</span>
+      </div>
+    );
+  }
+
+  const counts = STATUSES.map((s) => ({
+    ...s,
+    n: resources.filter((r) => r.status === s.key).length,
+  }));
+
+  const max = Math.max(...counts.map((c) => c.n), 1);
 
   return (
-    <div style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} barSize={16}>
-          <XAxis dataKey="name" tick={{ fontSize: 10, fill: colors.textDim }} axisLine={false} tickLine={false} />
-          <YAxis hide />
-          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-            {data.map((entry, i) => (
-              <Cell key={i} fill={entry.color} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div style={{
+      width: '100%',
+      height,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      gap: 7,
+      padding: '0 2px',
+    }}>
+      {counts.map(({ key, label, color, n }) => (
+        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ fontSize: 8, color: '#737373', width: 30, flexShrink: 0, lineHeight: 1 }}>
+            {label}
+          </span>
+          <div style={{
+            flex: 1,
+            height: 5,
+            background: 'rgba(255,255,255,0.06)',
+            borderRadius: 3,
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              width: n > 0 ? `${(n / max) * 100}%` : '0%',
+              height: '100%',
+              background: color,
+              borderRadius: 3,
+              transition: 'width 0.5s ease',
+              boxShadow: n > 0 ? `0 0 6px ${color}66` : 'none',
+            }} />
+          </div>
+          <span style={{
+            fontSize: 8,
+            color: n > 0 ? '#a3a3a3' : '#404040',
+            width: 10,
+            textAlign: 'right',
+            flexShrink: 0,
+            lineHeight: 1,
+          }}>
+            {n}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

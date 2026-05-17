@@ -88,15 +88,23 @@ export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
         </div>
 
         {/* Tab content */}
-        <div className="p-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={crisisId}
+            className="p-4"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+          >
           {activeTab === 'overview' && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col items-center">
-                  <SeverityGauge severity={crisis.severity} size={70} />
-                  <span className="text-[10px] mt-1" style={{ color: colors.textDim }}>Severity</span>
+                <div className="flex flex-col items-center gap-1">
+                  <SeverityGauge severity={crisis.severity} size={80} />
+                  <span className="text-[10px]" style={{ color: colors.textDim }}>Severity</span>
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center gap-1">
                   <ConfidenceSparkline history={crisis.confidenceHistory} width={90} height={50} />
                   <span className="text-[10px] mt-1" style={{ color: colors.textDim }}>Confidence</span>
                 </div>
@@ -215,7 +223,8 @@ export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
               ))}
             </div>
           )}
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
     </AnimatePresence>
   );

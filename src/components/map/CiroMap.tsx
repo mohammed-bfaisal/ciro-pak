@@ -15,7 +15,8 @@ interface CiroMapProps {
 export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<maplibregl.Map | null>(null);
-  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const signalMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const crisisMarkersRef = useRef<maplibregl.Marker[]>([]);
   const signals = useSignalStore((s) => s.signals);
   const crises = useCrisisStore((s) => s.crises);
 
@@ -109,6 +110,10 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         });
       }
 
+      // Clear old signal markers before re-adding
+      signalMarkersRef.current.forEach((m) => m.remove());
+      signalMarkersRef.current = [];
+
       // Add signal pin markers
       signals.forEach((signal) => {
         const el = document.createElement('div');
@@ -124,7 +129,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         const marker = new maplibregl.Marker({ element: el })
           .setLngLat([signal.location.lng, signal.location.lat])
           .addTo(map);
-        markersRef.current.push(marker);
+        signalMarkersRef.current.push(marker);
       });
     };
 
@@ -137,8 +142,12 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
 
   // Add crisis markers
   useEffect(() => {
-    if (!mapInstance.current || crises.length === 0) return;
+    if (!mapInstance.current) return;
     const map = mapInstance.current;
+
+    // Clear old crisis markers before re-adding
+    crisisMarkersRef.current.forEach((m) => m.remove());
+    crisisMarkersRef.current = [];
 
     crises.forEach((crisis) => {
       const color = getCrisisColor(crisis.type);
@@ -168,15 +177,17 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       const marker = new maplibregl.Marker({ element: el })
         .setLngLat([crisis.location.lng, crisis.location.lat])
         .addTo(map);
-      markersRef.current.push(marker);
+      crisisMarkersRef.current.push(marker);
     });
-  }, [crises, onCrisisClick]);
+  }, [crises]);
 
-  // Cleanup markers on unmount
+  // Cleanup all markers on unmount
   useEffect(() => {
     return () => {
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current = [];
+      signalMarkersRef.current.forEach((m) => m.remove());
+      crisisMarkersRef.current.forEach((m) => m.remove());
+      signalMarkersRef.current = [];
+      crisisMarkersRef.current = [];
     };
   }, []);
 
