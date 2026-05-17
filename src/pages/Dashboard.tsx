@@ -3,32 +3,52 @@ import { CiroMap } from '../components/map/CiroMap';
 import { SignalFeed } from '../components/panels/SignalFeed';
 import { CrisisPanel } from '../components/panels/CrisisPanel';
 import { GlassPanel } from '../components/ui/GlassPanel';
+import { ControlBar } from '../components/hud/ControlBar';
+import { UnitRoster } from '../components/hud/UnitRoster';
+import { IncidentRegistry } from '../components/hud/IncidentRegistry';
+import { TimeControls } from '../components/hud/TimeControls';
 import { useCrisisStore } from '../store/crisisStore';
 import { useSignalStore } from '../store/signalStore';
 import { useCityStore } from '../store/cityStore';
+import { useResourceStore } from '../store/resourceStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
 
 export function Dashboard() {
-  const city = useCityStore((s) => s.city);
+  const city              = useCityStore((s) => s.city);
   const [showSignals, setShowSignals] = useState(false);
-  const selectedCrisisId = useCrisisStore((s) => s.selectedCrisisId);
-  const selectCrisis = useCrisisStore((s) => s.selectCrisis);
-  const signalCount = useSignalStore((s) => s.signals.length);
-  const crisisCount = useCrisisStore((s) => s.crises.length);
+  const selectedCrisisId  = useCrisisStore((s) => s.selectedCrisisId);
+  const selectCrisis      = useCrisisStore((s) => s.selectCrisis);
+  const signalCount       = useSignalStore((s) => s.signals.length);
+  const crisisCount       = useCrisisStore((s) => s.crises.length);
 
-  // Close both panels whenever the city changes
+  const isPaused          = useResourceStore((s) => s.isPaused);
+  const simulationRunning = useResourceStore((s) => s.simulationRunning);
+  const simulationSpeed   = useResourceStore((s) => s.simulationSpeed);
+  const tick              = useResourceStore((s) => s.tick);
+
+  // Close panels when city changes
   useEffect(() => {
     selectCrisis(null);
     setShowSignals(false);
   }, [city]);
+
+  // Movement tick — 1 real second per tick, scaled by simulationSpeed
+  useEffect(() => {
+    if (!simulationRunning || isPaused) return;
+    const id = setInterval(() => tick(), 1000 / simulationSpeed);
+    return () => clearInterval(id);
+  }, [simulationRunning, isPaused, simulationSpeed, tick]);
 
   return (
     <div className="absolute inset-0">
       {/* Map fills entire viewport */}
       <CiroMap city={city} onCrisisClick={(id) => selectCrisis(id)} />
 
-      {/* Signal feed toggle */}
+      {/* 3-button control bar — top center */}
+      <ControlBar />
+
+      {/* Signal feed toggle — top left */}
       <div className="absolute top-3 left-3 z-20">
         <button
           onClick={() => setShowSignals(!showSignals)}
@@ -53,15 +73,13 @@ export function Dashboard() {
         </button>
       </div>
 
-      {/* Stats overlay */}
-      {(signalCount > 0 || crisisCount > 0) && (
-        <div className="absolute top-3 right-3 z-20 flex gap-2">
-          {crisisCount > 0 && (
-            <GlassPanel amber className="px-3 py-2 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full animate-pulse-dot" style={{ background: colors.danger }} />
-              <span className="text-xs font-semibold" style={{ color: colors.textPrimary }}>{crisisCount} Active Crises</span>
-            </GlassPanel>
-          )}
+      {/* Active crises badge — top right */}
+      {crisisCount > 0 && (
+        <div className="absolute top-3 right-3 z-20">
+          <GlassPanel amber className="px-3 py-2 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full animate-pulse-dot" style={{ background: colors.danger }} />
+            <span className="text-xs font-semibold" style={{ color: colors.textPrimary }}>{crisisCount} Active</span>
+          </GlassPanel>
         </div>
       )}
 
@@ -85,6 +103,11 @@ export function Dashboard() {
       {selectedCrisisId && (
         <CrisisPanel crisisId={selectedCrisisId} onClose={() => selectCrisis(null)} />
       )}
+
+      {/* HUD panels */}
+      <UnitRoster />
+      <IncidentRegistry />
+      <TimeControls />
     </div>
   );
 }
