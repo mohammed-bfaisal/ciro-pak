@@ -28,7 +28,6 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const resources      = useResourceStore((s) => s.resources);
   const selectedUnitId = useResourceStore((s) => s.selectedUnitId);
   const dispatchMode   = useResourceStore((s) => s.dispatchMode);
-  const selectUnit     = useResourceStore((s) => s.selectUnit);
 
   // Initialize map
   useEffect(() => {
