@@ -200,50 +200,27 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     });
   }, [crises, dispatchMode, selectedUnitId]);
 
-  // Vehicle markers — rebuild on resource change (positions tick every second)
+  // Vehicle markers — clear all, recreate all (Muaaz pattern: no dual-marker flicker)
   useEffect(() => {
     if (!mapInstance.current) return;
     const map = mapInstance.current;
 
-    // Remove markers for units no longer in state
-    vehicleMarkersRef.current.forEach((marker, id) => {
-      if (!resources.find((r) => r.id === id)) {
-        marker.remove();
-        vehicleMarkersRef.current.delete(id);
-      }
-    });
+    // Clear every existing vehicle marker before recreating
+    vehicleMarkersRef.current.forEach((m) => m.remove());
+    vehicleMarkersRef.current.clear();
 
     resources.forEach((resource) => {
-      const isSelected = resource.id === selectedUnitId;
-      const existing = vehicleMarkersRef.current.get(resource.id);
-
-      if (existing) {
-        existing.setLngLat([resource.currentPosition.lng, resource.currentPosition.lat]);
-        const newEl = createVehicleMarkerEl(resource, isSelected);
-        newEl.onclick = () => {
-          if (useResourceStore.getState().dispatchMode !== 'ai') {
-            const s = useResourceStore.getState();
-            s.selectUnit(s.selectedUnitId === resource.id ? null : resource.id);
-          }
-        };
-        const updated = new maplibregl.Marker({ element: newEl })
-          .setLngLat([resource.currentPosition.lng, resource.currentPosition.lat])
-          .addTo(map);
-        existing.remove();
-        vehicleMarkersRef.current.set(resource.id, updated);
-      } else {
-        const el = createVehicleMarkerEl(resource, isSelected);
-        el.onclick = () => {
-          if (useResourceStore.getState().dispatchMode !== 'ai') {
-            const s = useResourceStore.getState();
-            s.selectUnit(s.selectedUnitId === resource.id ? null : resource.id);
-          }
-        };
-        const marker = new maplibregl.Marker({ element: el })
-          .setLngLat([resource.currentPosition.lng, resource.currentPosition.lat])
-          .addTo(map);
-        vehicleMarkersRef.current.set(resource.id, marker);
-      }
+      const el = createVehicleMarkerEl(resource, resource.id === selectedUnitId);
+      el.onclick = () => {
+        const s = useResourceStore.getState();
+        if (s.dispatchMode !== 'ai') {
+          s.selectUnit(s.selectedUnitId === resource.id ? null : resource.id);
+        }
+      };
+      const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([resource.currentPosition.lng, resource.currentPosition.lat])
+        .addTo(map);
+      vehicleMarkersRef.current.set(resource.id, marker);
     });
 
     if (map.isStyleLoaded()) {
