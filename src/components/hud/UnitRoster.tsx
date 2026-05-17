@@ -21,13 +21,13 @@ export function UnitRoster() {
 
   return (
     <div
-      className="absolute bottom-20 left-3 z-20 rounded-xl overflow-hidden"
+      className="absolute bottom-4 left-2 z-20 rounded-xl overflow-hidden"
       style={{
-        width: 220,
+        width: 'min(220px, calc(50vw - 16px))',
         background: 'rgba(17,17,17,0.92)',
         backdropFilter: 'blur(20px)',
         border: `1px solid ${colors.borderDefault}`,
-        maxHeight: collapsed ? 44 : 300,
+        maxHeight: collapsed ? 44 : 260,
         transition: 'max-height 0.25s ease',
       }}
     >
@@ -43,25 +43,27 @@ export function UnitRoster() {
       </button>
 
       {!collapsed && (
-        <div className="overflow-y-auto hide-scrollbar" style={{ maxHeight: 256 }}>
+        <div className="overflow-y-auto hide-scrollbar" style={{ maxHeight: 216 }}>
           {resources.map((r) => {
             const isSelected = r.id === selectedUnitId;
             const assignedCrisis = crises.find((c) => c.id === r.assignedCrisisId);
             const statusColor = getStatusColor(r.status);
-            const canSelect = dispatchMode === 'manual';
 
             return (
               <button
                 key={r.id}
-                onClick={() => canSelect && selectUnit(isSelected ? null : r.id)}
+                onClick={() => {
+                  // Always allow selection (for map fly-to); manual mode controls dispatch
+                  selectUnit(isSelected ? null : r.id);
+                }}
                 className="w-full flex items-start gap-2 px-3 py-2 text-left border-t"
                 style={{
                   borderColor: colors.borderSubtle,
                   background: isSelected ? colors.amberMuted : 'transparent',
-                  cursor: canSelect ? 'pointer' : 'default',
+                  cursor: 'pointer',
                 }}
               >
-                <span style={{ fontSize: 16, lineHeight: 1.2 }}>{TYPE_ICON[r.type] ?? '🚗'}</span>
+                <span style={{ fontSize: 15, lineHeight: 1.2, flexShrink: 0 }}>{TYPE_ICON[r.type] ?? '🚗'}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[11px] font-medium truncate" style={{ color: colors.textPrimary }}>
                     {r.label}
@@ -70,7 +72,7 @@ export function UnitRoster() {
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: statusColor, flexShrink: 0 }} />
                     <span className="text-[10px] truncate" style={{ color: colors.textDim }}>
                       {r.status === 'en_route' && assignedCrisis
-                        ? `→ ${assignedCrisis.title.slice(0, 20)}…`
+                        ? `→ ${assignedCrisis.title.slice(0, 18)}…`
                         : r.status === 'on_scene' && assignedCrisis
                         ? `On scene: ${assignedCrisis.type}`
                         : r.status}
@@ -78,8 +80,14 @@ export function UnitRoster() {
                   </div>
                   {r.status === 'en_route' && r.etaMinutes !== undefined && (
                     <div className="text-[10px]" style={{ color: colors.amber }}>
-                      ETA ~{Math.ceil(r.etaMinutes * (1 - r.movementProgress))} min
+                      ETA ~{Math.max(0, Math.ceil(r.etaMinutes * (1 - r.movementProgress)))} min
+                      {dispatchMode === 'manual' && !isSelected && (
+                        <span style={{ color: colors.info }}> · tap to select</span>
+                      )}
                     </div>
+                  )}
+                  {r.status === 'available' && dispatchMode === 'manual' && !isSelected && (
+                    <div className="text-[10px]" style={{ color: colors.info }}>tap to select</div>
                   )}
                 </div>
               </button>

@@ -17,9 +17,9 @@ export function initRouteLayer(map: maplibregl.Map): void {
     source: SOURCE_ID,
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': 2,
+      'line-width': 2.5,
       'line-dasharray': [4, 3],
-      'line-opacity': 0.8,
+      'line-opacity': 0.85,
     },
   });
 }
@@ -30,17 +30,21 @@ export function updateRouteLayer(map: maplibregl.Map, resources: Resource[]): vo
 
   const features = resources
     .filter((r) => (r.status === 'en_route' || r.status === 'dispatched') && r.targetPosition)
-    .map((r) => ({
-      type: 'Feature' as const,
-      geometry: {
-        type: 'LineString' as const,
-        coordinates: [
-          [r.currentPosition.lng, r.currentPosition.lat],
-          [r.targetPosition!.lng, r.targetPosition!.lat],
-        ],
-      },
-      properties: { color: getStatusColor(r.status) },
-    }));
+    .map((r) => {
+      // Use real road route if available, fall back to straight line
+      const coordinates: [number, number][] = r.routeCoordinates && r.routeCoordinates.length > 1
+        ? r.routeCoordinates
+        : [
+            [r.currentPosition.lng, r.currentPosition.lat],
+            [r.targetPosition!.lng, r.targetPosition!.lat],
+          ];
+
+      return {
+        type: 'Feature' as const,
+        geometry: { type: 'LineString' as const, coordinates },
+        properties: { color: getStatusColor(r.status) },
+      };
+    });
 
   src.setData({ type: 'FeatureCollection', features });
 }

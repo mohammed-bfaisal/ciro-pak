@@ -67,6 +67,7 @@ export interface Resource {
   currentPosition: GeoPoint;
   targetPosition?: GeoPoint;
   movementProgress: number;
+  routeCoordinates?: [number, number][]; // [lng, lat] pairs — actual road path
 }
 
 export interface Action {

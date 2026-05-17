@@ -9,6 +9,7 @@ import { getCrisisColor, getCredColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
 import { haversineDistance } from '../../utils/geo';
+import { fetchRoute } from '../../api/routing';
 import type { City } from '../../types';
 
 interface CiroMapProps {
@@ -25,6 +26,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
 
   const signals        = useSignalStore((s) => s.signals);
   const crises         = useCrisisStore((s) => s.crises);
+  const selectedCrisisId = useCrisisStore((s) => s.selectedCrisisId);
   const resources      = useResourceStore((s) => s.resources);
   const selectedUnitId = useResourceStore((s) => s.selectedUnitId);
   const dispatchMode   = useResourceStore((s) => s.dispatchMode);
@@ -61,6 +63,30 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       duration: 1500,
     });
   }, [city]);
+
+  // Fly to selected unit (bidirectional: panel → map)
+  useEffect(() => {
+    if (!mapInstance.current || !selectedUnitId) return;
+    const unit = resources.find((r) => r.id === selectedUnitId);
+    if (!unit) return;
+    mapInstance.current.flyTo({
+      center: [unit.currentPosition.lng, unit.currentPosition.lat],
+      zoom: 14,
+      duration: 800,
+    });
+  }, [selectedUnitId]);
+
+  // Fly to selected crisis (bidirectional: panel → map)
+  useEffect(() => {
+    if (!mapInstance.current || !selectedCrisisId) return;
+    const crisis = crises.find((c) => c.id === selectedCrisisId);
+    if (!crisis) return;
+    mapInstance.current.flyTo({
+      center: [crisis.location.lng, crisis.location.lat],
+      zoom: 13,
+      duration: 800,
+    });
+  }, [selectedCrisisId]);
 
   // Signal heatmap + pins
   useEffect(() => {
@@ -129,7 +155,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     else map.on('load', addSignals);
   }, [signals]);
 
-  // Crisis markers — recreate on change, dispatch-aware
+  // Crisis markers — dispatch-aware, rebuild on change
   useEffect(() => {
     if (!mapInstance.current) return;
     const map = mapInstance.current;
@@ -148,16 +174,19 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${isSelectTarget ? 18 : 14}px;height:${isSelectTarget ? 18 : 14}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};animation:pulse-dot 2s ease-in-out infinite"></div>
       `;
 
-      el.onclick = () => {
-        // Use getState() to avoid stale closure over selectedUnitId/dispatchMode
+      el.onclick = async () => {
         const store = useResourceStore.getState();
         if (store.dispatchMode === 'manual' && store.selectedUnitId) {
           const unit = store.resources.find((r) => r.id === store.selectedUnitId);
           const fromLat = unit?.currentPosition.lat ?? crisis.location.lat;
           const fromLng = unit?.currentPosition.lng ?? crisis.location.lng;
-          const distKm = haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng);
-          const etaMinutes = Math.max(2, Math.round((distKm / 30) * 60));
-          store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaMinutes);
+
+          // Fetch real road route; fall back to haversine ETA if OSRM unreachable
+          const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
+          const etaMinutes = routeResult?.etaMinutes
+            ?? Math.max(2, Math.round((haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng) / 30) * 60));
+
+          store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaMinutes, routeResult?.coords);
         } else {
           onCrisisClick?.(crisis.id);
         }
@@ -171,12 +200,12 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     });
   }, [crises, dispatchMode, selectedUnitId]);
 
-  // Vehicle markers — clear all and recreate on every resource change
+  // Vehicle markers — rebuild on resource change (positions tick every second)
   useEffect(() => {
     if (!mapInstance.current) return;
     const map = mapInstance.current;
 
-    // Remove markers for resources no longer in state
+    // Remove markers for units no longer in state
     vehicleMarkersRef.current.forEach((marker, id) => {
       if (!resources.find((r) => r.id === id)) {
         marker.remove();
@@ -189,9 +218,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       const existing = vehicleMarkersRef.current.get(resource.id);
 
       if (existing) {
-        // Move to updated position
         existing.setLngLat([resource.currentPosition.lng, resource.currentPosition.lat]);
-        // Rebuild element to reflect status/selection changes without flicker
         const newEl = createVehicleMarkerEl(resource, isSelected);
         newEl.onclick = () => {
           if (useResourceStore.getState().dispatchMode !== 'ai') {
@@ -199,7 +226,6 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
             s.selectUnit(s.selectedUnitId === resource.id ? null : resource.id);
           }
         };
-        // Replace the DOM element in-place via a fresh marker, then discard old one
         const updated = new maplibregl.Marker({ element: newEl })
           .setLngLat([resource.currentPosition.lng, resource.currentPosition.lat])
           .addTo(map);
@@ -220,13 +246,12 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       }
     });
 
-    // Update dashed route lines
     if (map.isStyleLoaded()) {
       updateRouteLayer(map, resources);
     }
   }, [resources, selectedUnitId, dispatchMode]);
 
-  // Cursor: crosshair when a unit is selected in manual mode
+  // Crosshair cursor in manual dispatch mode with unit selected
   useEffect(() => {
     if (!mapInstance.current) return;
     mapInstance.current.getCanvas().style.cursor =

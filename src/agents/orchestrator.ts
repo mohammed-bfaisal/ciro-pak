@@ -9,6 +9,7 @@ import { actionSimulatorAgent } from './actionSimulator';
 import { stakeholderAgent } from './stakeholderNotifier';
 import { fetchWeather } from '../api/weather';
 import { haversineDistance } from '../utils/geo';
+import { fetchRoute } from '../api/routing';
 import type { City, Signal, Resource } from '../types';
 
 import karachiSignals from '../data/mock/karachi/signals.json';
@@ -135,19 +136,25 @@ export async function runAIDispatch(city: City) {
   await delay(PHASE_DELAYS.allocation);
 
   const allocations = resourceAllocationAgent(crises, resources);
-  allocations.forEach((a) => {
+
+  // Fetch real road routes for all allocations in parallel
+  const routePromises = allocations.map(async (a) => {
     const crisis = crises.find((c) => c.id === a.crisisId);
-    if (!crisis) return;
     const unit = resources.find((r) => r.id === a.resourceId);
-    const distKm = haversineDistance(
-      unit?.currentPosition?.lat ?? crisis.location.lat,
-      unit?.currentPosition?.lng ?? crisis.location.lng,
-      crisis.location.lat,
-      crisis.location.lng
-    );
-    const etaMinutes = Math.max(2, Math.round((distKm / 30) * 60));
-    useResourceStore.getState().dispatchUnit(a.resourceId, a.crisisId, crisis.location, etaMinutes);
-    trace.log(`Dispatched ${a.resourceId} → ${a.crisisId}: ${a.reasoning}`);
+    if (!crisis || !unit) return null;
+    const fromLat = unit.currentPosition?.lat ?? unit.location.lat;
+    const fromLng = unit.currentPosition?.lng ?? unit.location.lng;
+    const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
+    const distKm = haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng);
+    const etaMinutes = routeResult?.etaMinutes ?? Math.max(2, Math.round((distKm / 30) * 60));
+    return { a, crisis, etaMinutes, routeCoordinates: routeResult?.coords };
+  });
+  const routeResults = await Promise.all(routePromises);
+
+  routeResults.forEach((r) => {
+    if (!r) return;
+    useResourceStore.getState().dispatchUnit(r.a.resourceId, r.a.crisisId, r.crisis.location, r.etaMinutes, r.routeCoordinates);
+    trace.log(`Dispatched ${r.a.resourceId} → ${r.a.crisisId}: ${r.a.reasoning}`);
   });
   trace.completePhase('Resource Allocation', PHASE_DELAYS.allocation);
 

@@ -6,13 +6,15 @@ import { GlassPanel } from '../components/ui/GlassPanel';
 import { ControlBar } from '../components/hud/ControlBar';
 import { UnitRoster } from '../components/hud/UnitRoster';
 import { IncidentRegistry } from '../components/hud/IncidentRegistry';
-import { TimeControls } from '../components/hud/TimeControls';
 import { useCrisisStore } from '../store/crisisStore';
 import { useSignalStore } from '../store/signalStore';
 import { useCityStore } from '../store/cityStore';
 import { useResourceStore } from '../store/resourceStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
+import type { Resource } from '../types';
+import karachiResources from '../data/mock/karachi/resources.json';
+import islamabadResources from '../data/mock/islamabad/resources.json';
 
 export function Dashboard() {
   const city              = useCityStore((s) => s.city);
@@ -27,10 +29,12 @@ export function Dashboard() {
   const simulationSpeed   = useResourceStore((s) => s.simulationSpeed);
   const tick              = useResourceStore((s) => s.tick);
 
-  // Close panels when city changes
+  // Close panels when city changes, and reload resources for new city
   useEffect(() => {
     selectCrisis(null);
     setShowSignals(false);
+    const raw = city === 'karachi' ? karachiResources : islamabadResources;
+    useResourceStore.getState().setResources(raw as Resource[]);
   }, [city]);
 
   // Movement tick — 1 real second per tick, scaled by simulationSpeed
@@ -107,7 +111,6 @@ export function Dashboard() {
       {/* HUD panels */}
       <UnitRoster />
       <IncidentRegistry />
-      <TimeControls />
     </div>
   );
 }

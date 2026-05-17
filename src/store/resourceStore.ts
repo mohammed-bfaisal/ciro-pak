@@ -15,7 +15,7 @@ interface ResourceState {
   setResources: (resources: Resource[]) => void;
   assignResource: (resourceId: string, crisisId: string) => void;
   updateStatus: (resourceId: string, status: Resource['status'], etaMinutes?: number) => void;
-  dispatchUnit: (unitId: string, crisisId: string, target: GeoPoint, etaMinutes: number) => void;
+  dispatchUnit: (unitId: string, crisisId: string, target: GeoPoint, etaMinutes: number, routeCoordinates?: [number, number][]) => void;
   tick: () => void;
   toggleSimulation: () => void;
   setSimulationSpeed: (speed: 1 | 2 | 4) => void;
@@ -55,7 +55,7 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
     ),
   })),
 
-  dispatchUnit: (unitId, crisisId, target, etaMinutes) => set((state) => ({
+  dispatchUnit: (unitId, crisisId, target, etaMinutes, routeCoordinates) => set((state) => ({
     resources: state.resources.map((r) =>
       r.id === unitId
         ? {
@@ -65,6 +65,7 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
             targetPosition: target,
             movementProgress: 0,
             etaMinutes,
+            routeCoordinates,
           }
         : r
     ),

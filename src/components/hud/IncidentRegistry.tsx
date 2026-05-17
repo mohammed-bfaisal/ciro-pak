@@ -20,13 +20,13 @@ export function IncidentRegistry() {
 
   return (
     <div
-      className="absolute bottom-20 right-3 z-20 rounded-xl overflow-hidden"
+      className="absolute bottom-4 right-2 z-20 rounded-xl overflow-hidden"
       style={{
-        width: 220,
+        width: 'min(220px, calc(50vw - 16px))',
         background: 'rgba(17,17,17,0.92)',
         backdropFilter: 'blur(20px)',
         border: `1px solid ${colors.borderDefault}`,
-        maxHeight: collapsed ? 44 : 300,
+        maxHeight: collapsed ? 44 : 260,
         transition: 'max-height 0.25s ease',
       }}
     >
@@ -42,7 +42,7 @@ export function IncidentRegistry() {
       </button>
 
       {!collapsed && (
-        <div className="overflow-y-auto hide-scrollbar" style={{ maxHeight: 256 }}>
+        <div className="overflow-y-auto hide-scrollbar" style={{ maxHeight: 216 }}>
           {crises.map((crisis) => {
             const assignedCount = resources.filter((r) => r.assignedCrisisId === crisis.id).length;
             const needsResponse = assignedCount === 0 &&
@@ -55,16 +55,16 @@ export function IncidentRegistry() {
                 key={crisis.id}
                 onClick={() => selectCrisis(crisis.id)}
                 className="w-full flex items-start gap-2 px-3 py-2 text-left border-t"
-                style={{ borderColor: colors.borderSubtle }}
+                style={{ borderColor: colors.borderSubtle, cursor: 'pointer' }}
               >
-                <span style={{ fontSize: 14, lineHeight: 1.4 }}>
+                <span style={{ fontSize: 14, lineHeight: 1.4, flexShrink: 0 }}>
                   {CRISIS_ICON[crisis.type] ?? '❓'}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[11px] font-medium truncate" style={{ color: colors.textPrimary }}>
                     {crisis.title}
                   </div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                     <span className="text-[10px] font-semibold" style={{ color: severityColor }}>
                       {crisis.severity}
                     </span>
