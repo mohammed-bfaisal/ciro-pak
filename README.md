@@ -1,73 +1,120 @@
-# React + TypeScript + Vite
+# CIRO Pakistan Dispatch Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CIRO is a 911 Operator-style emergency dispatch simulator for Pakistan cities, adapted for the Challenge 3 requirements. It runs fully client-side with mocked civic signals and resources: signals arrive over time, incidents activate, manual or AI dispatch sends units, vehicles move along road routes or stable fallback paths, actions simulate before/after impact, and the operator can review agent reasoning, stakeholder messaging, and recovery logs.
 
-Currently, two official plugins are available:
+Antigravity is treated as a development and orchestration aid used to build the project. It is not a runtime dependency, SDK, data source, or browser requirement inside the app.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Current Gameplay Loop
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```mermaid
+flowchart LR
+  A[City signal feed] --> B[Signal clustering]
+  B --> C[Incident queue]
+  C --> D{Operator mode}
+  D -->|Manual| E[Select unit and incident]
+  D -->|AI| F[Score resource-crisis pairs]
+  E --> G[Route lookup or fallback path]
+  F --> G
+  G --> H[Vehicle movement lifecycle]
+  H --> I[On-scene response]
+  I --> J[Return to base]
+  I --> K[Score and impact update]
+  K --> L[Trace, messages, recovery log]
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The simulation loop is:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+`signals arrive -> clusters form -> incidents appear -> operator or AI dispatches units -> routes draw -> vehicles move -> actions simulate -> outcomes update`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Implemented Challenge 3 Coverage
+
+| Requirement | Implementation |
+| --- | --- |
+| 16 required cities | `CITY_REGISTRY` covers Karachi, Islamabad, Lahore, Rawalpindi, Faisalabad, Multan, Gujranwala, Sialkot, Bahawalpur, Sargodha, Peshawar, Abbottabad, Quetta, Gwadar, Hyderabad, and Sukkur. |
+| 8+ signals per city | `getCityData(city)` returns at least 8 social, weather, traffic, field, sensor, or emergency-call signals per city. |
+| 6+ resources per city | Each city has at least 6 deployable resources with local agency labels. |
+| 2 simultaneous crises | Each city has two concurrent crisis scenarios with severity, confidence, affected population, and local locations. |
+| Conflict and false-alarm handling | Low-credibility conflicting signals and retraction/correction actions are retained in the scenario data and surfaced in the UI. |
+| Manual dispatch | Manual mode lets an operator select a unit and click an incident marker to dispatch along a route. |
+| AI dispatch | AI scores available units by severity, confidence, affected population, type match, travel time, and availability before movement starts. |
+| Moving units on paths | Routes are drawn on the map; units transition `available -> en_route -> on_scene -> returning -> available`. |
+| Time controls | The top command bar exposes pause/resume and `1x`, `2x`, `4x` speed controls while the shift clock is running. |
+| Agent trace | The HUD shows observation, inference, decision, and execution for incident activation, allocation, and actions. |
+| Before/after impact | The impact HUD shows action before state, after state, and side effects. |
+| Stakeholder messaging | Crisis detail panels show public, emergency services, hospital, utility, transport, and media notifications. |
+| Recovery/fallback | Action traces include API failure fallback cases such as traffic, hospital, or cached-route recovery. |
+
+## Architecture
+
+- React, TypeScript, Vite, Zustand, MapLibre GL, and Vitest.
+- Runtime state is client-side only. There is no backend and no real sensitive emergency data.
+- City scenario access goes through `src/data/cityData.ts`.
+- City metadata is centralized in `src/data/cities.ts`.
+- The live shift engine is in `src/simulation/sessionEngine.ts`.
+- Vehicle movement and lifecycle rules are in `src/simulation/movementEngine.ts`.
+- AI resource scoring is in `src/agents/resourceAllocator.ts`.
+- Agent orchestration is in `src/agents/orchestrator.ts`.
+- Map rendering, unit markers, and route layers live under `src/components/map`.
+
+## Data Model
+
+The main domain types are defined in `src/types/index.ts`:
+
+- `City` and `CITY_REGISTRY` for city identity, coordinates, population, weather query, and scenario metadata.
+- `Signal`, `SignalCluster`, and `Crisis` for signal fusion and incident activation.
+- `DispatchSession`, `IncidentRuntime`, and `GameScore` for shift state and scoring.
+- `Resource` for vehicles/resources, route coordinates, assignment history, cooldowns, and ETA.
+- `ResourceAllocation` for AI dispatch scores and reasoning.
+- `Action`, `ImpactSnapshot`, `StakeholderMessage`, and `AgentTraceEvent` for Challenge 3 evidence.
+
+## APIs And Tools
+
+- OSRM public demo routing is used when available for road route geometry.
+- Stable straight-line fallback routes are used when OSRM is unavailable.
+- Weather, social, traffic, field reports, and emergency calls are mocked for demo safety.
+- No live emergency systems, private data, user location, or civic credentials are used.
+
+## Cost, Latency, And Safety Assumptions
+
+- Mocked local signals have no runtime API cost.
+- OSRM routing is best-effort and can fail safely to local fallback paths.
+- Simulated action costs and latency are stored in the action model and surfaced in the UI.
+- All public alerts and stakeholder messages are simulated; nothing is sent externally.
+- The app is intended for challenge demo and prototype evaluation, not operational emergency use.
+
+## Scalability Notes
+
+- Adding a city requires a registry entry plus generated or authored signals, resources, crises, actions, and messages.
+- The session engine is deterministic enough for tests but still interactive through time controls and dispatch choices.
+- Map rendering is incremental: vehicle marker DOM nodes are reused while positions update on each tick.
+- The current bundle is large because MapLibre and Recharts ship in the main app chunk; code splitting is a future optimization.
+
+## Known Limitations
+
+- Routing depends on OSRM availability unless fallback paths are used.
+- AI dispatch is a transparent scoring heuristic, not a live LLM agent.
+- Mobile layout is smoke-tested as a responsive web app, not as a packaged native build.
+- Challenge data is realistic mock data, not verified live civic data.
+
+## Development
+
+```bash
+npm install
+npm run dev
+npm test
+npm run lint
+npm run build
 ```
+
+## Demo Script
+
+1. Start the app and choose a city from the top city selector.
+2. Press `Simulate` to start the live shift clock.
+3. Use `1x`, `2x`, or `4x` to confirm signals and incidents appear faster.
+4. Switch to `Manual`, select a unit from the unit roster, and click an incident marker.
+5. Confirm the route draws and the vehicle moves to the incident.
+6. Press `AI Dispatch` and watch multiple units receive scored assignments.
+7. Open the agent trace HUD and verify observation, inference, decision, and execution entries.
+8. Review the before/after impact HUD and a crisis detail panel's actions/messages tabs.
+9. Wait for units to arrive; the score HUD should update handled incidents and response time.
+10. Confirm units move through on-scene and returning states before becoming available again.
