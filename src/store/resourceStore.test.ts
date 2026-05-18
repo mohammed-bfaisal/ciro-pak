@@ -142,4 +142,54 @@ describe('resource dispatch movement', () => {
     expect(returned.assignedCrisisId).toBeNull();
     expect(returned.currentPosition).toEqual(unit.location);
   });
+
+  it('stores route metadata and refreshes a route from the current vehicle position', () => {
+    const store = useResourceStore.getState();
+
+    store.setResources([unit]);
+    store.dispatchUnit(
+      unit.id,
+      'crisis-1',
+      { lat: 0, lng: 10, label: 'Incident' },
+      600,
+      [
+        [0, 0],
+        [10, 0],
+      ],
+      {
+        provider: 'tomtom',
+        trafficDelaySeconds: 180,
+        freeFlowEtaSeconds: 420,
+        trafficUpdatedAt: '2026-05-18T08:00:00.000Z',
+      },
+    );
+
+    useResourceStore.getState().tick(60);
+    const beforeRefresh = useResourceStore.getState().resources[0];
+
+    useResourceStore.getState().updateRoute(
+      unit.id,
+      {
+        coords: [
+          [beforeRefresh.currentPosition.lng, beforeRefresh.currentPosition.lat],
+          [5, 5],
+          [10, 0],
+        ],
+        etaSeconds: 500,
+        etaMinutes: 9,
+        provider: 'osrm',
+        fallbackReason: 'tomtom_unavailable',
+      },
+      '2026-05-18T08:00:30.000Z',
+    );
+
+    const refreshed = useResourceStore.getState().resources[0];
+    expect(refreshed.currentPosition).toEqual(beforeRefresh.currentPosition);
+    expect(refreshed.movementProgress).toBe(0);
+    expect(refreshed.etaSeconds).toBe(500);
+    expect(refreshed.routeCoordinates?.[0]).toEqual([beforeRefresh.currentPosition.lng, beforeRefresh.currentPosition.lat]);
+    expect(refreshed.routeProvider).toBe('osrm');
+    expect(refreshed.routeFallbackReason).toBe('tomtom_unavailable');
+    expect(refreshed.routeRefreshedAt).toBe('2026-05-18T08:00:30.000Z');
+  });
 });

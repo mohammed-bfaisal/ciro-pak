@@ -163,13 +163,13 @@ export async function runAIDispatch(city: City) {
     const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
     const distKm = haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng);
     const etaSeconds = routeResult?.etaSeconds ?? Math.max(a.etaMinutes * 60, Math.round((distKm / 30) * 3600));
-    return { a, crisis, etaSeconds, routeCoordinates: routeResult?.coords };
+    return { a, crisis, etaSeconds, routeCoordinates: routeResult?.coords, routeResult };
   });
   const routeResults = await Promise.all(routePromises);
 
   routeResults.forEach((r) => {
     if (!r) return;
-    useResourceStore.getState().dispatchUnit(r.a.resourceId, r.a.crisisId, r.crisis.location, r.etaSeconds, r.routeCoordinates);
+    useResourceStore.getState().dispatchUnit(r.a.resourceId, r.a.crisisId, r.crisis.location, r.etaSeconds, r.routeCoordinates, r.routeResult ?? undefined);
     useCrisisStore.getState().updateCrisis(r.a.crisisId, { status: 'responding' });
     trace.log(`Dispatched ${r.a.resourceId} → ${r.a.crisisId}: ${r.a.reasoning}`);
   });

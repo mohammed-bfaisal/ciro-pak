@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { runAIDispatch } from '../../agents/orchestrator';
 import { colors, getSeverityColor, getStatusColor } from '../../constants/colors';
+import { formatRouteEta } from '../../utils/formatting';
 import { useCityStore } from '../../store/cityStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
@@ -185,6 +186,12 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
               <div className="space-y-1.5">
                 {resources.slice(0, 5).map((resource) => {
                   const selected = resource.id === selectedUnitId;
+                  const remainingEta = (resource.etaSeconds ?? ((resource.etaMinutes ?? 0) * 60)) * (1 - resource.movementProgress);
+                  const routeLabel = resource.routeProvider === 'tomtom'
+                    ? 'Traffic'
+                    : resource.routeProvider === 'osrm'
+                      ? 'OSRM'
+                      : null;
                   return (
                     <button
                       key={resource.id}
@@ -194,7 +201,11 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-xs font-semibold" style={{ color: colors.textPrimary }}>{resource.label}</span>
-                        <span className="block text-[10px]" style={{ color: getStatusColor(resource.status) }}>{resource.status}</span>
+                        <span className="block text-[10px]" style={{ color: getStatusColor(resource.status) }}>
+                          {resource.status}
+                          {resource.status === 'en_route' && ` · ${formatRouteEta(remainingEta)}`}
+                          {routeLabel && ` · ${routeLabel}`}
+                        </span>
                       </span>
                       <span className="text-[10px]" style={{ color: colors.textDim }}>{resource.type.replace('_', ' ')}</span>
                     </button>

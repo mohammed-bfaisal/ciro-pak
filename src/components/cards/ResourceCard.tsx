@@ -1,7 +1,7 @@
 import type { Resource } from '../../types';
 import { Badge } from '../ui/Badge';
 import { colors, getStatusColor } from '../../constants/colors';
-import { capitalize } from '../../utils/formatting';
+import { capitalize, formatRouteEta } from '../../utils/formatting';
 import { Truck, Shield, Heart, Flame, Droplets, Radio, Navigation } from 'lucide-react';
 
 const typeIcons: Record<string, typeof Truck> = {
@@ -21,6 +21,12 @@ interface ResourceCardProps {
 export function ResourceCard({ resource }: ResourceCardProps) {
   const Icon = typeIcons[resource.type] || Truck;
   const statusColor = getStatusColor(resource.status);
+  const remainingEtaSeconds = (resource.etaSeconds ?? ((resource.etaMinutes ?? 0) * 60)) * (1 - resource.movementProgress);
+  const routeBadge = resource.routeProvider === 'tomtom'
+    ? `Traffic-aware${resource.trafficDelaySeconds ? ` +${Math.ceil(resource.trafficDelaySeconds / 60)}m` : ''}`
+    : resource.routeProvider === 'osrm'
+      ? 'OSRM fallback'
+      : undefined;
 
   return (
     <div
@@ -47,7 +53,8 @@ export function ResourceCard({ resource }: ResourceCardProps) {
         </div>
         <div className="flex items-center gap-3 text-[11px]" style={{ color: colors.textDim }}>
           <span>{capitalize(resource.type)}</span>
-          {resource.etaMinutes && <span>ETA: {resource.etaMinutes}min</span>}
+          {(resource.etaSeconds || resource.etaMinutes) && <span>ETA: {formatRouteEta(remainingEtaSeconds)}</span>}
+          {routeBadge && <span style={{ color: resource.routeProvider === 'tomtom' ? colors.success : colors.textDim }}>{routeBadge}</span>}
           <span>📍 {resource.location.label}</span>
         </div>
       </div>

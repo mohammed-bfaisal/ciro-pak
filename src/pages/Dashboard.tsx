@@ -18,8 +18,10 @@ import { useSessionStore } from '../store/sessionStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
 import { getResources } from '../data/cityData';
+import { fetchRoute } from '../api/routing';
 
 const MOVEMENT_TICK_MS = 250;
+const ROUTE_REFRESH_MS = 30_000;
 
 export function Dashboard() {
   const city              = useCityStore((s) => s.city);
@@ -37,6 +39,7 @@ export function Dashboard() {
   const resources         = useResourceStore((s) => s.resources);
   const sessionTick       = useSessionStore((s) => s.tick);
   const resolveSession    = useSessionStore((s) => s.resolve);
+  const trafficSignalCount = useSignalStore((s) => s.signals.filter((signal) => signal.source === 'traffic').length);
 
   // Close panels when city changes, and reload resources for new city
   useEffect(() => {
@@ -59,6 +62,32 @@ export function Dashboard() {
     }, MOVEMENT_TICK_MS);
     return () => clearInterval(id);
   }, [simulationRunning, isPaused, simulationSpeed, tick, sessionTick]);
+
+  useEffect(() => {
+    if (!simulationRunning || isPaused) return;
+
+    const refreshActiveRoutes = () => {
+      const store = useResourceStore.getState();
+      store.resources
+        .filter((resource) => resource.status === 'en_route' && resource.targetPosition)
+        .forEach((resource) => {
+          const target = resource.targetPosition!;
+          void fetchRoute(
+            resource.currentPosition.lng,
+            resource.currentPosition.lat,
+            target.lng,
+            target.lat,
+          ).then((route) => {
+            if (!route) return;
+            useResourceStore.getState().updateRoute(resource.id, route, new Date().toISOString());
+          });
+        });
+    };
+
+    refreshActiveRoutes();
+    const id = setInterval(refreshActiveRoutes, ROUTE_REFRESH_MS);
+    return () => clearInterval(id);
+  }, [simulationRunning, isPaused, trafficSignalCount]);
 
   useEffect(() => {
     crises.forEach((crisis) => {

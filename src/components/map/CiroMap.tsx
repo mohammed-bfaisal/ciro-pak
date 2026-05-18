@@ -197,7 +197,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
           const etaSeconds = routeResult?.etaSeconds
             ?? Math.max(120, Math.round((haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng) / 30) * 3600));
 
-          store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaSeconds, routeResult?.coords);
+          store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaSeconds, routeResult?.coords, routeResult ?? undefined);
         } else {
           onCrisisClick?.(crisis.id);
         }

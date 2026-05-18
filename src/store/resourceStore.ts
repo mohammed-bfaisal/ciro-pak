@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Resource, GeoPoint, SimulationSpeed } from '../types';
 import { tickMovement } from '../simulation/movementEngine';
+import type { RouteResult } from '../api/routing';
 
 type DispatchMode = 'off' | 'manual' | 'ai';
 
@@ -15,7 +16,15 @@ interface ResourceState {
   setResources: (resources: Resource[]) => void;
   assignResource: (resourceId: string, crisisId: string) => void;
   updateStatus: (resourceId: string, status: Resource['status'], etaMinutes?: number) => void;
-  dispatchUnit: (unitId: string, crisisId: string, target: GeoPoint, etaSeconds: number, routeCoordinates?: [number, number][]) => void;
+  dispatchUnit: (
+    unitId: string,
+    crisisId: string,
+    target: GeoPoint,
+    etaSeconds: number,
+    routeCoordinates?: [number, number][],
+    routeMetadata?: Partial<RouteResult>,
+  ) => void;
+  updateRoute: (unitId: string, route: RouteResult, refreshedAt: string) => void;
   tick: (deltaSeconds?: number) => void;
   toggleSimulation: () => void;
   setSimulationSpeed: (speed: SimulationSpeed) => void;
@@ -55,7 +64,7 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
     ),
   })),
 
-  dispatchUnit: (unitId, crisisId, target, etaSeconds, routeCoordinates) => set((state) => ({
+  dispatchUnit: (unitId, crisisId, target, etaSeconds, routeCoordinates, routeMetadata) => set((state) => ({
     resources: state.resources.map((r) => {
       if (r.id !== unitId) return r;
 
@@ -79,6 +88,13 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
         lastEtaMinutes: Math.max(1, Math.ceil(etaSeconds / 60)),
         routeCoordinates: route,
         returnRouteCoordinates: [...route].reverse(),
+        routeProvider: routeMetadata?.provider,
+        routeFallbackReason: routeMetadata?.fallbackReason,
+        routeRefreshedAt: routeMetadata?.trafficUpdatedAt,
+        trafficDelaySeconds: routeMetadata?.trafficDelaySeconds,
+        freeFlowEtaSeconds: routeMetadata?.freeFlowEtaSeconds,
+        trafficUpdatedAt: routeMetadata?.trafficUpdatedAt,
+        distanceMeters: routeMetadata?.distanceMeters,
         assignmentHistory: [
           ...(r.assignmentHistory ?? []),
           { crisisId, assignedAt: new Date().toISOString() },
@@ -88,6 +104,40 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
     selectedUnitId: null,
     simulationRunning: true,
     isPaused: false,
+  })),
+
+  updateRoute: (unitId, route, refreshedAt) => set((state) => ({
+    resources: state.resources.map((resource) => {
+      if (resource.id !== unitId || !resource.targetPosition) return resource;
+      const start = resource.currentPosition ?? resource.location;
+      const routeCoordinates = route.coords.length > 1
+        ? [
+            [start.lng, start.lat],
+            ...route.coords.slice(1),
+          ] satisfies [number, number][]
+        : [
+            [start.lng, start.lat],
+            [resource.targetPosition.lng, resource.targetPosition.lat],
+          ] satisfies [number, number][];
+
+      return {
+        ...resource,
+        routeCoordinates,
+        returnRouteCoordinates: [...routeCoordinates].reverse(),
+        movementProgress: 0,
+        etaSeconds: route.etaSeconds,
+        etaMinutes: route.etaMinutes,
+        lastEtaSeconds: route.etaSeconds,
+        lastEtaMinutes: route.etaMinutes,
+        routeProvider: route.provider,
+        routeFallbackReason: route.fallbackReason,
+        routeRefreshedAt: refreshedAt,
+        trafficDelaySeconds: route.trafficDelaySeconds,
+        freeFlowEtaSeconds: route.freeFlowEtaSeconds,
+        trafficUpdatedAt: route.trafficUpdatedAt,
+        distanceMeters: route.distanceMeters,
+      };
+    }),
   })),
 
   tick: (deltaSeconds) => {

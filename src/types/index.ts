@@ -77,6 +77,13 @@ export interface Resource {
   movementProgress: number;
   routeCoordinates?: [number, number][]; // [lng, lat] pairs — actual road path
   returnRouteCoordinates?: [number, number][];
+  routeProvider?: 'tomtom' | 'osrm';
+  routeFallbackReason?: string;
+  routeRefreshedAt?: string;
+  trafficDelaySeconds?: number;
+  freeFlowEtaSeconds?: number;
+  trafficUpdatedAt?: string;
+  distanceMeters?: number;
   assignmentHistory?: { crisisId: string; assignedAt: string; clearedAt?: string }[];
   availabilityCooldownSeconds?: number;
   availabilityCooldownMinutes?: number;

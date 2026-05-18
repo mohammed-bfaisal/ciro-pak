@@ -49,6 +49,11 @@ export function UnitRoster() {
             const isSelected = r.id === selectedUnitId;
             const assignedCrisis = crises.find((c) => c.id === r.assignedCrisisId);
             const statusColor = getStatusColor(r.status);
+            const routeBadge = r.routeProvider === 'tomtom'
+              ? `Traffic-aware${r.trafficDelaySeconds ? ` +${Math.ceil(r.trafficDelaySeconds / 60)}m` : ''}`
+              : r.routeProvider === 'osrm'
+                ? 'OSRM fallback'
+                : 'No traffic data';
 
             return (
               <button
@@ -85,6 +90,11 @@ export function UnitRoster() {
                       {dispatchMode === 'manual' && !isSelected && (
                         <span style={{ color: colors.info }}> · tap to select</span>
                       )}
+                    </div>
+                  )}
+                  {r.status === 'en_route' && (
+                    <div className="text-[10px]" style={{ color: r.routeProvider === 'tomtom' ? colors.success : colors.textDim }}>
+                      {routeBadge}
                     </div>
                   )}
                   {r.status === 'available' && dispatchMode === 'manual' && !isSelected && (
