@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CIRO Shared Implementation Context</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="site">
+    <nav class="nav" aria-label="Plan navigation">
+      <h1>Shared Context</h1>
+      <a href="index.html">Index</a>
+      <a href="p00-foundation-settings-backend-contracts.html">P00 - Foundation Settings And Backend Contracts</a>
+<a href="p01-urdu-rtl-language-foundation.html">P01 - Urdu And RTL Language Foundation</a>
+<a href="p02-display-accessibility-settings.html">P02 - Display And Accessibility Settings</a>
+<a href="p03-manual-trigger-voice-narration.html">P03 - Manual Trigger Voice Narration</a>
+<a href="p04-triggered-mission-briefing-panel.html">P04 - Triggered Mission Briefing Panel</a>
+<a href="p05-ai-dispatch-approval-why-this-unit.html">P05 - AI Dispatch Approval And Why This Unit</a>
+<a href="p06-drag-touch-unit-dispatch.html">P06 - Drag And Touch Unit Dispatch</a>
+<a href="p07-mutual-aid-cooldown-fatigue-maintenance.html">P07 - Mutual Aid Cooldown Fatigue Maintenance</a>
+<a href="p08-bundled-public-map-layers.html">P08 - Bundled Public Map Layers</a>
+<a href="p09-settings-gated-road-closure-editor.html">P09 - Settings Gated Road Closure Editor</a>
+<a href="p10-vehicle-trails-geofence-alerts.html">P10 - Vehicle Trails And Geofence Alerts</a>
+<a href="p11-confidence-breakdown-data-quality.html">P11 - Confidence Breakdown And Data Quality</a>
+<a href="p12-real-backend-adapter-layer.html">P12 - Real Backend Adapter Layer</a>
+<a href="p13-toggleable-live-agent-monologue.html">P13 - Toggleable Live Agent Monologue</a>
+<a href="p14-classifier-tuning-multi-agent-debate.html">P14 - Classifier Tuning And Multi Agent Debate</a>
+<a href="p15-province-agency-packs-calendars-event-modifiers.html">P15 - Province Agency Packs Calendars And Event Modifiers</a>
+<a href="p16-vulnerable-populations-grid-port-heat-aqi-overlays.html">P16 - Vulnerable Populations Grid Port Heat AQI Overlays</a>
+<a href="p17-hospital-capacity-request-workflow.html">P17 - Hospital Capacity And Request Workflow</a>
+<a href="p18-message-approval-templates-escalation-matrix.html">P18 - Message Approval Templates And Escalation Matrix</a>
+<a href="p19-simulated-government-social-updates-page.html">P19 - Simulated Government Social Updates Page</a>
+<a href="p20-session-kpi-dashboard-cost-ledger.html">P20 - Session KPI Dashboard And Cost Ledger</a>
+<a href="p21-after-action-pdf-export-package.html">P21 - After Action PDF Export Package</a>
+<a href="p22-ai-next-hour-risk-forecast.html">P22 - AI Next Hour Risk Forecast</a>
+<a href="p23-capacitor-android-apk-polish.html">P23 - Capacitor Android APK Polish</a>
+<a href="p24-session-persistence-restore-reset.html">P24 - Session Persistence Restore And Reset</a>
+<a href="p25-scenario-editor-ai-scenario-generation.html">P25 - Scenario Editor And AI Scenario Generation</a>
+<a href="p26-playwright-visual-mobile-regression-suite.html">P26 - Playwright Visual Mobile Regression Suite</a>
+<a href="p27-deferred-multi-operator-review-plan.html">P27 - Deferred Multi Operator Review Plan</a>
+    </nav>
+    <main class="main">
+      <section class="hero"><h1>Shared Context For All CIRO Feature Plans</h1><p>Read this before using any atomic plan. It captures repository facts, mobile constraints, backend assumptions, and the non-negotiable delivery rules for future implementation agents.</p></section>
+      <section class="panel"><h2>Current Application Shape</h2><p>CIRO is a React, TypeScript, Vite, Zustand, MapLibre GL, Recharts, Framer Motion, and Capacitor application. It simulates crisis intelligence and response across Pakistan cities. Existing runtime behavior includes city selection, signal ingestion, crisis activation, map markers, manual dispatch, AI dispatch, route rendering, resource movement, trace logging, replay, compare, what-if, impact panels, and mobile operations dock behavior.</p></section>
+      <section class="panel"><h2>Capacitor And APK Constraints</h2><p>Every feature must work inside an Android WebView. The Vite base path stays relative. The APK must not contain private API keys. Network calls from the APK must target a hosted HTTPS backend or fall back to bundled data. Touch interactions must not rely on hover, right-click, desktop keyboard shortcuts, or wide-screen-only panels.</p></section>
+      <section class="panel"><h2>Backend And Key Custody</h2><p>OpenRouter, traffic, map, weather, and other live data provider keys live in backend environment variables. Frontend settings can expose provider status, selected models, and feature toggles, but never raw secrets. Preferred backend target is Cloud Run, with any equivalent HTTPS host acceptable for demo continuity.</p></section>
+      <section class="panel"><h2>Atomic Commit Rules</h2><p>Every future implementation must inspect git status first, preserve unrelated changes, stage only files owned by the atomic task, run fresh verification, and commit with a narrow message. Planning artifacts may be committed separately from runtime app changes.</p></section>
+      <section class="panel"><h2>Universal Verification Commands</h2><pre>npm run lint
+npm test
+npm run build
+# For Android once platform exists:
+npx cap sync android
+# Android Studio or Gradle debug APK verification follows the active project setup.</pre></section>
+    </main>
+  </div>
+</body>
+</html>

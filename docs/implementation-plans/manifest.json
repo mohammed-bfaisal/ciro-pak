@@ -1,0 +1,431 @@
+{
+  "site": "CIRO HTML implementation plans",
+  "format": "static-html",
+  "folder": "docs/implementation-plans",
+  "minimumEstimatedTokensPerPlan": 50000,
+  "tokenEstimator": "ceil(character_count / 4) used as a conservative planning gate for generated HTML",
+  "rules": [
+    "Planning artifacts only; no runtime app code in this branch.",
+    "Every feature plan must preserve React, Vite, Zustand, MapLibre, and Capacitor behavior.",
+    "Every future implementation plan must include mobile APK parity acceptance criteria.",
+    "API secrets must live in backend environment variables, never in the APK or frontend bundle.",
+    "Atomic commits are mandatory in this repository."
+  ],
+  "plans": [
+    {
+      "order": 0,
+      "code": "P00",
+      "title": "Foundation Settings And Backend Contracts",
+      "featureIds": [
+        "Foundation"
+      ],
+      "dependencies": [],
+      "file": "p00-foundation-settings-backend-contracts.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 1,
+      "code": "P01",
+      "title": "Urdu And RTL Language Foundation",
+      "featureIds": [
+        "1",
+        "3"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p01-urdu-rtl-language-foundation.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 2,
+      "code": "P02",
+      "title": "Display And Accessibility Settings",
+      "featureIds": [
+        "6",
+        "7"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p02-display-accessibility-settings.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 3,
+      "code": "P03",
+      "title": "Manual Trigger Voice Narration",
+      "featureIds": [
+        "10"
+      ],
+      "dependencies": [
+        "P00",
+        "P01"
+      ],
+      "file": "p03-manual-trigger-voice-narration.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 4,
+      "code": "P04",
+      "title": "Triggered Mission Briefing Panel",
+      "featureIds": [
+        "11"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p04-triggered-mission-briefing-panel.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 5,
+      "code": "P05",
+      "title": "AI Dispatch Approval And Why This Unit",
+      "featureIds": [
+        "15",
+        "16"
+      ],
+      "dependencies": [
+        "P04"
+      ],
+      "file": "p05-ai-dispatch-approval-why-this-unit.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 6,
+      "code": "P06",
+      "title": "Drag And Touch Unit Dispatch",
+      "featureIds": [
+        "17"
+      ],
+      "dependencies": [
+        "P05"
+      ],
+      "file": "p06-drag-touch-unit-dispatch.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 7,
+      "code": "P07",
+      "title": "Mutual Aid Cooldown Fatigue Maintenance",
+      "featureIds": [
+        "18",
+        "19"
+      ],
+      "dependencies": [
+        "P05"
+      ],
+      "file": "p07-mutual-aid-cooldown-fatigue-maintenance.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 8,
+      "code": "P08",
+      "title": "Bundled Public Map Layers",
+      "featureIds": [
+        "22",
+        "23"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p08-bundled-public-map-layers.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 9,
+      "code": "P09",
+      "title": "Settings Gated Road Closure Editor",
+      "featureIds": [
+        "24"
+      ],
+      "dependencies": [
+        "P08"
+      ],
+      "file": "p09-settings-gated-road-closure-editor.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 10,
+      "code": "P10",
+      "title": "Vehicle Trails And Geofence Alerts",
+      "featureIds": [
+        "29",
+        "30"
+      ],
+      "dependencies": [
+        "P08"
+      ],
+      "file": "p10-vehicle-trails-geofence-alerts.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 11,
+      "code": "P11",
+      "title": "Confidence Breakdown And Data Quality",
+      "featureIds": [
+        "38",
+        "39"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p11-confidence-breakdown-data-quality.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 12,
+      "code": "P12",
+      "title": "Real Backend Adapter Layer",
+      "featureIds": [
+        "40",
+        "100"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p12-real-backend-adapter-layer.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 13,
+      "code": "P13",
+      "title": "Toggleable Live Agent Monologue",
+      "featureIds": [
+        "41"
+      ],
+      "dependencies": [
+        "P00",
+        "P11"
+      ],
+      "file": "p13-toggleable-live-agent-monologue.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 14,
+      "code": "P14",
+      "title": "Classifier Tuning And Multi Agent Debate",
+      "featureIds": [
+        "48",
+        "50"
+      ],
+      "dependencies": [
+        "P12"
+      ],
+      "file": "p14-classifier-tuning-multi-agent-debate.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 15,
+      "code": "P15",
+      "title": "Province Agency Packs Calendars And Event Modifiers",
+      "featureIds": [
+        "61",
+        "62",
+        "63"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p15-province-agency-packs-calendars-event-modifiers.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 16,
+      "code": "P16",
+      "title": "Vulnerable Populations Grid Port Heat AQI Overlays",
+      "featureIds": [
+        "64",
+        "66",
+        "67",
+        "68"
+      ],
+      "dependencies": [
+        "P08",
+        "P15"
+      ],
+      "file": "p16-vulnerable-populations-grid-port-heat-aqi-overlays.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 17,
+      "code": "P17",
+      "title": "Hospital Capacity And Request Workflow",
+      "featureIds": [
+        "70",
+        "79"
+      ],
+      "dependencies": [
+        "P12",
+        "P16"
+      ],
+      "file": "p17-hospital-capacity-request-workflow.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 18,
+      "code": "P18",
+      "title": "Message Approval Templates And Escalation Matrix",
+      "featureIds": [
+        "71",
+        "73",
+        "75"
+      ],
+      "dependencies": [
+        "P05"
+      ],
+      "file": "p18-message-approval-templates-escalation-matrix.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 19,
+      "code": "P19",
+      "title": "Simulated Government Social Updates Page",
+      "featureIds": [
+        "77"
+      ],
+      "dependencies": [
+        "P18"
+      ],
+      "file": "p19-simulated-government-social-updates-page.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 20,
+      "code": "P20",
+      "title": "Session KPI Dashboard And Cost Ledger",
+      "featureIds": [
+        "81",
+        "83"
+      ],
+      "dependencies": [
+        "P00",
+        "P24"
+      ],
+      "file": "p20-session-kpi-dashboard-cost-ledger.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 21,
+      "code": "P21",
+      "title": "After Action PDF Export Package",
+      "featureIds": [
+        "84"
+      ],
+      "dependencies": [
+        "P20"
+      ],
+      "file": "p21-after-action-pdf-export-package.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 22,
+      "code": "P22",
+      "title": "AI Next Hour Risk Forecast",
+      "featureIds": [
+        "89"
+      ],
+      "dependencies": [
+        "P12",
+        "P16"
+      ],
+      "file": "p22-ai-next-hour-risk-forecast.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 23,
+      "code": "P23",
+      "title": "Capacitor Android APK Polish",
+      "featureIds": [
+        "92"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p23-capacitor-android-apk-polish.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 24,
+      "code": "P24",
+      "title": "Session Persistence Restore And Reset",
+      "featureIds": [
+        "93"
+      ],
+      "dependencies": [
+        "P00"
+      ],
+      "file": "p24-session-persistence-restore-reset.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 25,
+      "code": "P25",
+      "title": "Scenario Editor And AI Scenario Generation",
+      "featureIds": [
+        "94"
+      ],
+      "dependencies": [
+        "P12",
+        "P24"
+      ],
+      "file": "p25-scenario-editor-ai-scenario-generation.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 26,
+      "code": "P26",
+      "title": "Playwright Visual Mobile Regression Suite",
+      "featureIds": [
+        "97"
+      ],
+      "dependencies": [
+        "P01-P11 stable UI"
+      ],
+      "file": "p26-playwright-visual-mobile-regression-suite.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    },
+    {
+      "order": 27,
+      "code": "P27",
+      "title": "Deferred Multi Operator Review Plan",
+      "featureIds": [
+        "13"
+      ],
+      "dependencies": [
+        "Core demo features stable"
+      ],
+      "file": "p27-deferred-multi-operator-review-plan.html",
+      "targetEstimatedTokens": 50000,
+      "status": "planned-for-generation"
+    }
+  ]
+}
