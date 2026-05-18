@@ -144,7 +144,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         el.style.cssText = `width:10px;height:10px;border-radius:50%;background:${getCredColor(signal.credibilityScore)};border:2px solid rgba(0,0,0,0.3);cursor:pointer;box-shadow:0 0 6px ${getCredColor(signal.credibilityScore)}`;
         el.title = `${signal.source}: ${signal.content.slice(0, 50)}...`;
         signalMarkersRef.current.push(
-          new maplibregl.Marker({ element: el })
+          new maplibregl.Marker({ element: el, anchor: 'center' })
             .setLngLat([signal.location.lng, signal.location.lat])
             .addTo(map)
         );
@@ -168,7 +168,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       const size = isSelectTarget ? 40 : 32;
 
       const el = document.createElement('div');
-      el.style.cssText = `position:relative;width:${size}px;height:${size}px;cursor:pointer`;
+      el.style.cssText = `position:absolute;width:${size}px;height:${size}px;cursor:pointer`;
       el.innerHTML = `
         <div style="position:absolute;inset:0;border-radius:50%;background:${color}33;border:${isSelectTarget ? 3 : 2}px solid ${color};animation:pulse-ring 1.5s cubic-bezier(0.215,0.61,0.355,1) infinite"></div>
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${isSelectTarget ? 18 : 14}px;height:${isSelectTarget ? 18 : 14}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};animation:pulse-dot 2s ease-in-out infinite"></div>
@@ -193,14 +193,20 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       };
 
       crisisMarkersRef.current.push(
-        new maplibregl.Marker({ element: el })
+        new maplibregl.Marker({ element: el, anchor: 'center' })
           .setLngLat([crisis.location.lng, crisis.location.lat])
           .addTo(map)
       );
     });
   }, [crises, dispatchMode, selectedUnitId]);
 
-  // Vehicle markers — clear all, recreate all (Muaaz pattern: no dual-marker flicker)
+  // Vehicle markers — full rebuild only when structure changes (status, selection, dispatchMode, count)
+  // NOT on every tick — position updates are handled separately below.
+  const rebuildKey = [
+    resources.map((r) => `${r.id}:${r.status}:${r.id === selectedUnitId ? 'sel' : ''}`).join('|'),
+    dispatchMode,
+  ].join('/');
+
   useEffect(() => {
     if (!mapInstance.current) return;
     const map = mapInstance.current;
@@ -208,6 +214,13 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     // Clear every existing vehicle marker before recreating
     vehicleMarkersRef.current.forEach((m) => m.remove());
     vehicleMarkersRef.current.clear();
+
+    const locationGroups = new Map<string, typeof resources>();
+    resources.forEach((r) => {
+      const key = `${r.currentPosition.lng.toFixed(5)},${r.currentPosition.lat.toFixed(5)}`;
+      if (!locationGroups.has(key)) locationGroups.set(key, []);
+      locationGroups.get(key)!.push(r);
+    });
 
     resources.forEach((resource) => {
       const el = createVehicleMarkerEl(resource, resource.id === selectedUnitId);
@@ -217,7 +230,13 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
           s.selectUnit(s.selectedUnitId === resource.id ? null : resource.id);
         }
       };
-      const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+
+      const key = `${resource.currentPosition.lng.toFixed(5)},${resource.currentPosition.lat.toFixed(5)}`;
+      const group = locationGroups.get(key)!;
+      const index = group.findIndex((g) => g.id === resource.id);
+      const offsetX = group.length > 1 ? (index - (group.length - 1) / 2) * 18 : 0;
+
+      const marker = new maplibregl.Marker({ element: el, anchor: 'center', offset: [offsetX, 0] })
         .setLngLat([resource.currentPosition.lng, resource.currentPosition.lat])
         .addTo(map);
       vehicleMarkersRef.current.set(resource.id, marker);
@@ -226,7 +245,37 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     if (map.isStyleLoaded()) {
       updateRouteLayer(map, resources);
     }
-  }, [resources, selectedUnitId, dispatchMode]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rebuildKey]);
+
+  // Vehicle marker position updates — cheap, runs on every tick.
+  // setLngLat() moves the existing DOM element via CSS transform;
+  // no marker is destroyed or created, so there are no overflow artifacts.
+  useEffect(() => {
+    const locationGroups = new Map<string, typeof resources>();
+    resources.forEach((r) => {
+      const key = `${r.currentPosition.lng.toFixed(5)},${r.currentPosition.lat.toFixed(5)}`;
+      if (!locationGroups.has(key)) locationGroups.set(key, []);
+      locationGroups.get(key)!.push(r);
+    });
+
+    resources.forEach((resource) => {
+      const marker = vehicleMarkersRef.current.get(resource.id);
+      if (marker) {
+        const key = `${resource.currentPosition.lng.toFixed(5)},${resource.currentPosition.lat.toFixed(5)}`;
+        const group = locationGroups.get(key)!;
+        const index = group.findIndex((g) => g.id === resource.id);
+        const offsetX = group.length > 1 ? (index - (group.length - 1) / 2) * 18 : 0;
+
+        marker.setLngLat([resource.currentPosition.lng, resource.currentPosition.lat]);
+        marker.setOffset([offsetX, 0]);
+      }
+    });
+
+    if (mapInstance.current?.isStyleLoaded()) {
+      updateRouteLayer(mapInstance.current, resources);
+    }
+  }, [resources]);
 
   // Crosshair cursor in manual dispatch mode with unit selected
   useEffect(() => {

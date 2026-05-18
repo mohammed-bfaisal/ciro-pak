@@ -110,12 +110,14 @@ export async function runSimulation(city: City) {
 
 // ─── AI DISPATCH: allocation → execution → notifications → correction ───────
 export async function runAIDispatch(city: City) {
+  useTraceStore.setState({ isRunning: true });
   const trace = useTraceStore.getState();
   const crises = useCrisisStore.getState().crises;
   const existingResources = useResourceStore.getState().resources;
 
   if (crises.length === 0) {
     trace.log('⚠ No active crises — run SIMULATE first');
+    useTraceStore.setState({ isRunning: false });
     return;
   }
 
