@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { colors } from '../../constants/colors';
 import { useCityStore } from '../../store/cityStore';
 import { ALL_CITIES, CITY_REGISTRY } from '../../data/cities';
+import { getMapTilePreloader } from '../../utils/mapTilePreloader';
 
 const CITIES = ALL_CITIES.map((key) => {
   const metadata = CITY_REGISTRY[key];
@@ -32,6 +33,9 @@ export function TopBar() {
   }, []);
 
   const current = CITIES.find((c) => c.key === city) ?? CITIES[0];
+  const preloadCityTiles = (targetCity: (typeof CITIES)[number]['key']) => {
+    void getMapTilePreloader()?.preloadCity(targetCity);
+  };
 
   return (
     <header
@@ -101,10 +105,14 @@ export function TopBar() {
                 return (
                   <button
                     key={c.key}
-                    onClick={() => { setCity(c.key); setOpen(false); }}
+                    onClick={() => { preloadCityTiles(c.key); setCity(c.key); setOpen(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors duration-100"
                     style={{ background: active ? colors.amberMuted : 'transparent' }}
-                    onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = colors.overlay; }}
+                    onFocus={() => preloadCityTiles(c.key)}
+                    onMouseEnter={(e) => {
+                      preloadCityTiles(c.key);
+                      if (!active) (e.currentTarget as HTMLElement).style.background = colors.overlay;
+                    }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = active ? colors.amberMuted : 'transparent'; }}
                   >
                     <MapPin size={12} style={{ color: active ? colors.amber : colors.textDim, flexShrink: 0 }} />

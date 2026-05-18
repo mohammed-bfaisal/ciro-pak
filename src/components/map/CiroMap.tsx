@@ -10,6 +10,7 @@ import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
 import { haversineDistance } from '../../utils/geo';
 import { fetchRoute } from '../../api/routing';
+import { getMapTilePreloader, scheduleMapTilePreload } from '../../utils/mapTilePreloader';
 import type { City } from '../../types';
 
 interface CiroMapProps {
@@ -41,11 +42,19 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       center: CITY_COORDS[city].center,
       zoom: CITY_COORDS[city].zoom,
       attributionControl: false,
+      refreshExpiredTiles: false,
+      maxTileCacheSize: 320,
+      maxTileCacheZoomLevels: 8,
     });
     const observer = new ResizeObserver(() => mapInstance.current?.resize());
     observer.observe(container);
     mapInstance.current.on('load', () => {
       initRouteLayer(mapInstance.current!);
+      const preloader = getMapTilePreloader();
+      void preloader?.preloadCriticalMetadata();
+      scheduleMapTilePreload(() => {
+        void preloader?.preloadAllCities();
+      }, 2500);
     });
     return () => {
       observer.disconnect();
@@ -57,10 +66,12 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   // Fly to city on change
   useEffect(() => {
     if (!mapInstance.current) return;
-    mapInstance.current.flyTo({
+    void getMapTilePreloader()?.preloadCity(city);
+    mapInstance.current.easeTo({
       center: CITY_COORDS[city].center,
       zoom: CITY_COORDS[city].zoom,
-      duration: 1500,
+      duration: 500,
+      essential: true,
     });
   }, [city]);
 
