@@ -10,11 +10,10 @@ import { useCrisisStore } from '../store/crisisStore';
 import { useSignalStore } from '../store/signalStore';
 import { useCityStore } from '../store/cityStore';
 import { useResourceStore } from '../store/resourceStore';
+import { useSessionStore } from '../store/sessionStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
-import type { Resource } from '../types';
-import karachiResources from '../data/mock/karachi/resources.json';
-import islamabadResources from '../data/mock/islamabad/resources.json';
+import { getResources } from '../data/cityData';
 
 const MOVEMENT_TICK_MS = 250;
 
@@ -30,23 +29,29 @@ export function Dashboard() {
   const simulationRunning = useResourceStore((s) => s.simulationRunning);
   const simulationSpeed   = useResourceStore((s) => s.simulationSpeed);
   const tick              = useResourceStore((s) => s.tick);
+  const sessionTick       = useSessionStore((s) => s.tick);
 
   // Close panels when city changes, and reload resources for new city
   useEffect(() => {
     selectCrisis(null);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowSignals(false);
-    const raw = city === 'karachi' ? karachiResources : islamabadResources;
-    useResourceStore.getState().setResources(raw as Resource[]);
+    useSessionStore.getState().reset();
+    useSignalStore.getState().reset();
+    useCrisisStore.getState().reset();
+    useResourceStore.getState().setResources(getResources(city));
   }, [city]);
 
   // Movement tick - small fixed cadence, with speed applied as simulated minutes.
   useEffect(() => {
     if (!simulationRunning || isPaused) return;
     const deltaMinutes = simulationSpeed * (MOVEMENT_TICK_MS / 1000);
-    const id = setInterval(() => tick(deltaMinutes), MOVEMENT_TICK_MS);
+    const id = setInterval(() => {
+      tick(deltaMinutes);
+      sessionTick(deltaMinutes);
+    }, MOVEMENT_TICK_MS);
     return () => clearInterval(id);
-  }, [simulationRunning, isPaused, simulationSpeed, tick]);
+  }, [simulationRunning, isPaused, simulationSpeed, tick, sessionTick]);
 
   return (
     <div className="absolute inset-0">

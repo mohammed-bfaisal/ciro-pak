@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { Loader2, Play, User, Bot, Pause } from 'lucide-react';
 import { useResourceStore } from '../../store/resourceStore';
-import { useTraceStore } from '../../store/traceStore';
 import { useCityStore } from '../../store/cityStore';
-import { runSimulation, runAIDispatch } from '../../agents/orchestrator';
+import { useSessionStore } from '../../store/sessionStore';
+import { runAIDispatch } from '../../agents/orchestrator';
 import { colors } from '../../constants/colors';
 
 export function ControlBar() {
   const [isAIDispatching, setIsAIDispatching] = useState(false);
   const city              = useCityStore((s) => s.city);
-  const isRunning         = useTraceStore((s) => s.isRunning);
+  const live              = useSessionStore((s) => s.live);
+  const startSession      = useSessionStore((s) => s.start);
   const simulationRunning = useResourceStore((s) => s.simulationRunning);
   const isPaused          = useResourceStore((s) => s.isPaused);
   const simulationSpeed   = useResourceStore((s) => s.simulationSpeed);
@@ -19,19 +20,26 @@ export function ControlBar() {
   const togglePause       = useResourceStore((s) => s.togglePause);
   const setSpeed          = useResourceStore((s) => s.setSimulationSpeed);
 
-  const handleSimulate = async () => {
-    if (isRunning) return;
+  const handleSimulate = () => {
+    if (!live || live.session.city !== city) {
+      startSession(city);
+      useResourceStore.setState({ simulationRunning: true, isPaused: false });
+      return;
+    }
+
     toggleSimulation();
-    await runSimulation(city);
   };
 
   const handleManual = () => {
-    if (isRunning) return;
     setDispatchMode(dispatchMode === 'manual' ? 'off' : 'manual');
   };
 
   const handleAI = async () => {
-    if (isRunning) return;
+    if (isAIDispatching) return;
+    if (!live || live.session.city !== city) {
+      startSession(city);
+      useResourceStore.setState({ simulationRunning: true, isPaused: false });
+    }
     setDispatchMode('off');
     setIsAIDispatching(true);
     await runAIDispatch(city);
@@ -55,17 +63,15 @@ export function ControlBar() {
       <button
         className={base}
         onClick={handleSimulate}
-        disabled={isRunning}
-        title="Simulate incidents"
+        title={simulationRunning ? 'Pause live shift clock' : 'Start live shift clock'}
         style={{
           background: simulationRunning ? colors.amberMuted : colors.raised,
           color: simulationRunning ? colors.amber : colors.textSecondary,
           border: `1px solid ${simulationRunning ? colors.borderAmber : colors.borderDefault}`,
-          opacity: isRunning ? 0.6 : 1,
-          cursor: isRunning ? 'not-allowed' : 'pointer',
+          cursor: 'pointer',
         }}
       >
-        {isRunning && simulationRunning
+        {isAIDispatching && simulationRunning
           ? <Loader2 size={13} className="animate-spin" />
           : <Play size={13} fill={simulationRunning ? 'currentColor' : 'none'} />
         }
@@ -78,14 +84,12 @@ export function ControlBar() {
       <button
         className={base}
         onClick={handleManual}
-        disabled={isRunning}
         title="Manual dispatch"
         style={{
           background: dispatchMode === 'manual' ? 'rgba(96,165,250,0.15)' : colors.raised,
           color: dispatchMode === 'manual' ? colors.info : colors.textSecondary,
           border: `1px solid ${dispatchMode === 'manual' ? 'rgba(96,165,250,0.3)' : colors.borderDefault}`,
-          opacity: isRunning ? 0.6 : 1,
-          cursor: isRunning ? 'not-allowed' : 'pointer',
+          cursor: 'pointer',
         }}
       >
         <User size={13} />
@@ -96,14 +100,14 @@ export function ControlBar() {
       <button
         className={base}
         onClick={handleAI}
-        disabled={isRunning}
+        disabled={isAIDispatching}
         title="AI auto-dispatch"
         style={{
           background: dispatchMode === 'ai' || isAIDispatching ? colors.amberMuted : colors.raised,
           color: dispatchMode === 'ai' || isAIDispatching ? colors.amber : colors.textSecondary,
           border: `1px solid ${dispatchMode === 'ai' || isAIDispatching ? colors.borderAmber : colors.borderDefault}`,
-          opacity: isRunning && !isAIDispatching ? 0.6 : 1,
-          cursor: isRunning ? 'not-allowed' : 'pointer',
+          opacity: isAIDispatching ? 0.75 : 1,
+          cursor: isAIDispatching ? 'progress' : 'pointer',
         }}
       >
         {isAIDispatching
