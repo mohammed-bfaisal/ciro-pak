@@ -3,6 +3,7 @@ import { Loader2, Play, User, Bot, Pause } from 'lucide-react';
 import { useResourceStore } from '../../store/resourceStore';
 import { useCityStore } from '../../store/cityStore';
 import { useSessionStore } from '../../store/sessionStore';
+import { useCrisisStore } from '../../store/crisisStore';
 import { runAIDispatch } from '../../agents/orchestrator';
 import { colors } from '../../constants/colors';
 
@@ -39,6 +40,9 @@ export function ControlBar() {
     if (!live || live.session.city !== city) {
       startSession(city);
       useResourceStore.setState({ simulationRunning: true, isPaused: false });
+    }
+    if (useCrisisStore.getState().crises.length === 0) {
+      useSessionStore.getState().tick(6);
     }
     setDispatchMode('off');
     setIsAIDispatching(true);

@@ -74,7 +74,13 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
         targetPosition: target,
         movementProgress: 0,
         etaMinutes,
+        lastEtaMinutes: etaMinutes,
         routeCoordinates: route,
+        returnRouteCoordinates: [...route].reverse(),
+        assignmentHistory: [
+          ...(r.assignmentHistory ?? []),
+          { crisisId, assignedAt: new Date().toISOString() },
+        ],
       };
     }),
     selectedUnitId: null,

@@ -50,19 +50,47 @@ export function tickMovement(resources: Resource[], deltaMinutes: number): Resou
             lng: lerp(r.currentPosition.lng, r.targetPosition.lng, progress),
           };
 
+      if (progress >= 1) {
+        return {
+          ...r,
+          movementProgress: 0,
+          currentPosition: r.targetPosition,
+          status: 'on_scene' as const,
+          availabilityCooldownMinutes: r.availabilityCooldownMinutes ?? 3,
+          lastEtaMinutes: r.etaMinutes,
+        };
+      }
+
       return {
         ...r,
         movementProgress: progress,
         currentPosition: { lat: pos.lat, lng: pos.lng, label: r.currentPosition.label },
-        status: progress >= 1 ? ('on_scene' as const) : r.status,
+      };
+    }
+
+    if (r.status === 'on_scene') {
+      const nextCooldown = (r.availabilityCooldownMinutes ?? 3) - deltaMinutes;
+      if (nextCooldown > 0) {
+        return { ...r, availabilityCooldownMinutes: nextCooldown };
+      }
+
+      return {
+        ...r,
+        status: 'returning' as const,
+        movementProgress: 0,
+        targetPosition: r.location,
+        availabilityCooldownMinutes: undefined,
+        returnRouteCoordinates: r.returnRouteCoordinates
+          ?? (r.routeCoordinates ? [...r.routeCoordinates].reverse() : undefined),
       };
     }
 
     if (r.status === 'returning') {
       const progress = Math.min(1, r.movementProgress + deltaMinutes / 10);
-      // Return along route in reverse if available
-      const pos = r.routeCoordinates && r.routeCoordinates.length > 1
-        ? interpolateAlongRoute(r.routeCoordinates, 1 - progress)
+      const returnRoute = r.returnRouteCoordinates
+        ?? (r.routeCoordinates ? [...r.routeCoordinates].reverse() : undefined);
+      const pos = returnRoute && returnRoute.length > 1
+        ? interpolateAlongRoute(returnRoute, progress)
         : {
             lat: lerp(r.currentPosition.lat, r.location.lat, progress),
             lng: lerp(r.currentPosition.lng, r.location.lng, progress),
@@ -77,6 +105,8 @@ export function tickMovement(resources: Resource[], deltaMinutes: number): Resou
           assignedCrisisId: null,
           targetPosition: undefined,
           routeCoordinates: undefined,
+          returnRouteCoordinates: undefined,
+          assignmentHistory: closeAssignmentHistory(r.assignmentHistory, r.assignedCrisisId),
         };
       }
       return {
@@ -88,4 +118,17 @@ export function tickMovement(resources: Resource[], deltaMinutes: number): Resou
 
     return r;
   });
+}
+
+function closeAssignmentHistory(
+  history: Resource['assignmentHistory'],
+  crisisId: string | null,
+): Resource['assignmentHistory'] {
+  if (!history || !crisisId) return history;
+  const clearedAt = new Date().toISOString();
+  return history.map((entry) =>
+    entry.crisisId === crisisId && !entry.clearedAt
+      ? { ...entry, clearedAt }
+      : entry
+  );
 }

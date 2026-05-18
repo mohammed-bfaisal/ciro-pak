@@ -2,6 +2,7 @@ import { useTraceStore } from '../store/traceStore';
 import { useSignalStore } from '../store/signalStore';
 import { useCrisisStore } from '../store/crisisStore';
 import { useResourceStore } from '../store/resourceStore';
+import { useSessionStore } from '../store/sessionStore';
 import { signalFusionAgent } from './signalFusion';
 import { crisisDetectionAgent } from './crisisDetector';
 import { resourceAllocationAgent } from './resourceAllocator';
@@ -10,7 +11,7 @@ import { stakeholderAgent } from './stakeholderNotifier';
 import { fetchWeather } from '../api/weather';
 import { haversineDistance } from '../utils/geo';
 import { fetchRoute } from '../api/routing';
-import type { City, Signal, Resource } from '../types';
+import type { AgentTraceEvent, City, ImpactSnapshot, Resource, Signal } from '../types';
 import { getResources, getSignals } from '../data/cityData';
 
 const PHASE_DELAYS = {
@@ -134,6 +135,23 @@ export async function runAIDispatch(city: City) {
   await delay(PHASE_DELAYS.allocation);
 
   const allocations = resourceAllocationAgent(crises, resources);
+  const allocationTraceEvents: AgentTraceEvent[] = allocations.map((allocation) => {
+    const crisis = crises.find((candidate) => candidate.id === allocation.crisisId);
+    const unit = resources.find((candidate) => candidate.id === allocation.resourceId);
+    return {
+      id: `alloc-${allocation.resourceId}-${allocation.crisisId}-${Date.now()}`,
+      phase: 'Resource Allocation',
+      observation: `${unit?.label ?? allocation.resourceId} is available for ${crisis?.title ?? allocation.crisisId}.`,
+      inference: `Score ${allocation.score} from type match, severity, confidence, population, travel time, and availability.`,
+      decision: allocation.reasoning,
+      execution: `Queued route lookup and dispatch movement with ETA ${allocation.etaMinutes} minutes.`,
+      timestamp: new Date().toISOString(),
+    };
+  });
+  useSessionStore.getState().addTraceEvents(allocationTraceEvents);
+  allocations.forEach((allocation) => {
+    trace.log(`AI score ${allocation.score}: ${allocation.reasoning}; ${allocation.tradeoff}`);
+  });
 
   // Fetch real road routes for all allocations in parallel
   const routePromises = allocations.map(async (a) => {
@@ -144,7 +162,7 @@ export async function runAIDispatch(city: City) {
     const fromLng = unit.currentPosition?.lng ?? unit.location.lng;
     const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
     const distKm = haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng);
-    const etaMinutes = routeResult?.etaMinutes ?? Math.max(2, Math.round((distKm / 30) * 60));
+    const etaMinutes = routeResult?.etaMinutes ?? Math.max(a.etaMinutes, Math.round((distKm / 30) * 60));
     return { a, crisis, etaMinutes, routeCoordinates: routeResult?.coords };
   });
   const routeResults = await Promise.all(routePromises);
@@ -152,6 +170,7 @@ export async function runAIDispatch(city: City) {
   routeResults.forEach((r) => {
     if (!r) return;
     useResourceStore.getState().dispatchUnit(r.a.resourceId, r.a.crisisId, r.crisis.location, r.etaMinutes, r.routeCoordinates);
+    useCrisisStore.getState().updateCrisis(r.a.crisisId, { status: 'responding' });
     trace.log(`Dispatched ${r.a.resourceId} → ${r.a.crisisId}: ${r.a.reasoning}`);
   });
   trace.completePhase('Resource Allocation', PHASE_DELAYS.allocation);
@@ -163,6 +182,26 @@ export async function runAIDispatch(city: City) {
     'Logging before/after states...',
   ]);
   const actions = await actionSimulatorAgent(crises, allocations, trace, city);
+  const snapshots: ImpactSnapshot[] = actions.map((action) => ({
+    actionId: action.id,
+    crisisId: action.crisisId,
+    beforeState: action.beforeState,
+    afterState: action.afterState,
+    sideEffects: action.sideEffects ?? [],
+  }));
+  const actionTraceEvents: AgentTraceEvent[] = actions.flatMap((action) =>
+    action.trace.map((step) => ({
+      id: `action-${action.id}-${step.step}-${Date.now()}`,
+      phase: `Action: ${action.title}`,
+      observation: step.observation,
+      inference: step.inference,
+      decision: step.decision,
+      execution: step.execution ?? step.toolResult ?? `${action.status} state applied.`,
+      timestamp: step.timestamp,
+    }))
+  );
+  useSessionStore.getState().addImpactSnapshots(snapshots);
+  useSessionStore.getState().addTraceEvents(actionTraceEvents);
   trace.completePhase('Action Execution', PHASE_DELAYS.execution);
 
   // Phase 6 — Stakeholder Notifications

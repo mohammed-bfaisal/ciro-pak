@@ -90,4 +90,32 @@ describe('resource dispatch movement', () => {
     expect(moved.movementProgress).toBeCloseTo(0.025);
     expect(moved.currentPosition.lng).toBeCloseTo(0.25);
   });
+
+  it('moves units through en route, on scene, returning, and available states', () => {
+    const store = useResourceStore.getState();
+
+    store.setResources([{ ...unit, availabilityCooldownMinutes: 1 }]);
+    store.dispatchUnit(
+      unit.id,
+      'crisis-1',
+      { lat: 0, lng: 10, label: 'Incident' },
+      1,
+      [
+        [0, 0],
+        [10, 0],
+      ],
+    );
+
+    useResourceStore.getState().tick(1);
+    expect(useResourceStore.getState().resources[0].status).toBe('on_scene');
+
+    useResourceStore.getState().tick(1);
+    expect(useResourceStore.getState().resources[0].status).toBe('returning');
+
+    useResourceStore.getState().tick(10);
+    const returned = useResourceStore.getState().resources[0];
+    expect(returned.status).toBe('available');
+    expect(returned.assignedCrisisId).toBeNull();
+    expect(returned.currentPosition).toEqual(unit.location);
+  });
 });

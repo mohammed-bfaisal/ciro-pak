@@ -212,5 +212,16 @@ export interface Workplan {
 export interface ResourceAllocation {
   resourceId: string;
   crisisId: string;
+  score: number;
+  etaMinutes: number;
   reasoning: string;
+  tradeoff: string;
+  factors: {
+    severity: number;
+    confidence: number;
+    affectedPopulation: number;
+    typeMatch: number;
+    travelTime: number;
+    availability: number;
+  };
 }
