@@ -46,7 +46,7 @@ export function Dashboard() {
     useSignalStore.getState().reset();
     useCrisisStore.getState().reset();
     useResourceStore.getState().setResources(getResources(city));
-  }, [city]);
+  }, [city, selectCrisis]);
 
   // Movement tick - small fixed cadence, with speed applied as simulated minutes.
   useEffect(() => {
