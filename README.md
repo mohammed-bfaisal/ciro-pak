@@ -125,6 +125,13 @@ npx cap add android    # only needed once if the android platform folder is abse
 npx cap sync android
 ```
 
+Native debug APK build prerequisites: JDK 11 or newer plus the Android SDK/command-line tools. On Windows, run:
+
+```bash
+cd android
+.\gradlew.bat assembleDebug
+```
+
 The APK uses the same built web app in Android WebView. Core dispatch, station resources, OSRM fallback routing, time controls, and route badges must work without a localhost dependency. TomTom traffic works in the APK only when the key is present during the production build.
 
 ## Demo Script
