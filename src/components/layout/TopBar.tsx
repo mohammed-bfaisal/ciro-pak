@@ -35,16 +35,17 @@ export function TopBar() {
 
   return (
     <header
-      className="flex items-center justify-between px-4 border-b relative z-40"
+      className="grid items-center px-4 border-b relative z-40"
       style={{
         height: 'var(--topbar-height)',
+        gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
         background: 'rgba(8,8,8,0.9)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderColor: 'rgba(255,255,255,0.09)',
       }}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-2">
         <div className="flex items-center gap-2">
           <Activity size={20} style={{ color: colors.amber }} />
           <span className="font-display text-lg hidden tablet:inline" style={{ color: colors.textPrimary }}>
@@ -62,7 +63,7 @@ export function TopBar() {
         </div>
       </div>
 
-      <div className="relative" ref={dropRef}>
+      <div className="relative justify-self-center" ref={dropRef}>
         <button
           onClick={() => setOpen((v) => !v)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150"
@@ -122,7 +123,7 @@ export function TopBar() {
         </AnimatePresence>
       </div>
 
-      <div style={{ width: 120 }} />
+      <div aria-hidden="true" />
     </header>
   );
 }

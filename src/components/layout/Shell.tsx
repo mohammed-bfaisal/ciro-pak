@@ -12,7 +12,7 @@ export function Shell({ children }: ShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex flex-col w-full overflow-hidden bg-void" style={{ height: '100%' }}>
+    <div className="app-shell flex flex-col w-full overflow-hidden bg-void">
       <TopBar />
       {/* Content row: sidebar + main */}
       <div className="relative flex flex-1 overflow-hidden min-h-0">

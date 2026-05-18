@@ -54,7 +54,7 @@ export function ControlBar() {
 
   return (
     <div
-      className="absolute top-3 left-1/2 z-20 flex items-center gap-1.5 px-2 py-1.5 rounded-xl"
+      className="hidden desktop:flex absolute top-3 left-1/2 z-20 items-center gap-1.5 px-2 py-1.5 rounded-xl"
       style={{
         transform: 'translateX(-50%)',
         background: 'rgba(17,17,17,0.92)',

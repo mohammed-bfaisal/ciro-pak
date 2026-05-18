@@ -17,7 +17,7 @@ export function SessionStats() {
 
   return (
     <div
-      className="absolute z-20 rounded-xl px-3 py-2"
+      className="hidden desktop:block absolute z-20 rounded-xl px-3 py-2"
       style={{
         top: 54,
         right: 12,

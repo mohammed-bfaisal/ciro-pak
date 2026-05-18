@@ -13,7 +13,7 @@ export function AgentTracePanel() {
 
   return (
     <div
-      className="absolute z-20 rounded-xl overflow-hidden hidden tablet:block"
+      className="hidden desktop:block absolute z-20 rounded-xl overflow-hidden"
       style={{
         top: 172,
         right: 12,

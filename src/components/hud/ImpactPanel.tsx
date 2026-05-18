@@ -13,7 +13,7 @@ export function ImpactPanel() {
 
   return (
     <div
-      className="absolute z-20 rounded-xl overflow-hidden hidden tablet:block"
+      className="hidden desktop:block absolute z-20 rounded-xl overflow-hidden"
       style={{
         top: 54,
         left: 12,

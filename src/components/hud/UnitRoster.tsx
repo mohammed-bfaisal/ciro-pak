@@ -21,7 +21,7 @@ export function UnitRoster() {
 
   return (
     <div
-      className="absolute bottom-4 left-2 z-20 rounded-xl overflow-hidden"
+      className="hidden desktop:block absolute bottom-4 left-2 z-20 rounded-xl overflow-hidden"
       style={{
         width: 'min(220px, calc(50vw - 16px))',
         background: 'rgba(17,17,17,0.92)',
