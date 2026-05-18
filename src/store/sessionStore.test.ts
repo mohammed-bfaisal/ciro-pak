@@ -28,4 +28,24 @@ describe('session store integration', () => {
     expect(useCrisisStore.getState().crises.length).toBeGreaterThanOrEqual(1);
     expect(useSessionStore.getState().traceEvents.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('tracks P00 runtime status without changing the live dispatch defaults', () => {
+    const session = useSessionStore.getState();
+
+    expect(session.p00Status).toBe('idle');
+    expect(session.p00LastUpdatedAt).toBeNull();
+    expect(session.p00ErrorState).toBeNull();
+
+    session.setP00Status('ready', '2026-05-18T08:00:00.000Z');
+    expect(useSessionStore.getState().p00Status).toBe('ready');
+    expect(useSessionStore.getState().p00LastUpdatedAt).toBe('2026-05-18T08:00:00.000Z');
+
+    session.setP00ErrorState('backend unavailable');
+    expect(useSessionStore.getState().p00Status).toBe('error');
+    expect(useSessionStore.getState().p00ErrorState).toBe('backend unavailable');
+
+    useSessionStore.getState().reset();
+    expect(useSessionStore.getState().p00Status).toBe('idle');
+    expect(useSessionStore.getState().p00ErrorState).toBeNull();
+  });
 });

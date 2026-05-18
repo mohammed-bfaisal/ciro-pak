@@ -8,6 +8,7 @@ import { TracePage } from './pages/TracePage'
 import { ComparePage } from './pages/ComparePage'
 import { ReplayPage } from './pages/ReplayPage'
 import { WhatIfPage } from './pages/WhatIfPage'
+import { SettingsPage } from './pages/SettingsPage'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/replay" element={<ReplayPage />} />
         <Route path="/whatif" element={<WhatIfPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </Shell>
   )

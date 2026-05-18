@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { Activity, MapPin, ChevronDown, Check } from 'lucide-react';
+import { Activity, MapPin, ChevronDown, Check, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { colors } from '../../constants/colors';
 import { useCityStore } from '../../store/cityStore';
 import { ALL_CITIES, CITY_REGISTRY } from '../../data/cities';
@@ -19,6 +20,7 @@ const CITIES = ALL_CITIES.map((key) => {
 });
 
 export function TopBar() {
+  const navigate = useNavigate();
   const city = useCityStore((s) => s.city);
   const setCity = useCityStore((s) => s.setCity);
   const [open, setOpen] = useState(false);
@@ -131,7 +133,21 @@ export function TopBar() {
         </AnimatePresence>
       </div>
 
-      <div aria-hidden="true" />
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => navigate('/settings')}
+          aria-label="Open settings"
+          className="flex h-9 w-9 items-center justify-center rounded-lg"
+          style={{
+            background: colors.raised,
+            color: colors.textSecondary,
+            border: `1px solid ${colors.borderDefault}`,
+          }}
+        >
+          <Settings size={16} />
+        </button>
+      </div>
     </header>
   );
 }
