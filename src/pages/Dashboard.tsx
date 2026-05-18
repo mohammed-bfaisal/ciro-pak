@@ -16,6 +16,8 @@ import type { Resource } from '../types';
 import karachiResources from '../data/mock/karachi/resources.json';
 import islamabadResources from '../data/mock/islamabad/resources.json';
 
+const MOVEMENT_TICK_MS = 250;
+
 export function Dashboard() {
   const city              = useCityStore((s) => s.city);
   const [showSignals, setShowSignals] = useState(false);
@@ -32,15 +34,17 @@ export function Dashboard() {
   // Close panels when city changes, and reload resources for new city
   useEffect(() => {
     selectCrisis(null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowSignals(false);
     const raw = city === 'karachi' ? karachiResources : islamabadResources;
     useResourceStore.getState().setResources(raw as Resource[]);
   }, [city]);
 
-  // Movement tick — 1 real second per tick, scaled by simulationSpeed
+  // Movement tick - small fixed cadence, with speed applied as simulated minutes.
   useEffect(() => {
     if (!simulationRunning || isPaused) return;
-    const id = setInterval(() => tick(), 1000 / simulationSpeed);
+    const deltaMinutes = simulationSpeed * (MOVEMENT_TICK_MS / 1000);
+    const id = setInterval(() => tick(deltaMinutes), MOVEMENT_TICK_MS);
     return () => clearInterval(id);
   }, [simulationRunning, isPaused, simulationSpeed, tick]);
 

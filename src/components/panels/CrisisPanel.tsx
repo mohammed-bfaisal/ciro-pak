@@ -1,12 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
-import type { Crisis as _Crisis } from '../../types';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useSignalStore } from '../../store/signalStore';
 import { useResourceStore } from '../../store/resourceStore';
 import { Badge } from '../ui/Badge';
-import { CredibilityBar as _CredibilityBar } from '../ui/CredibilityBar';
 import { SeverityGauge } from '../charts/SeverityGauge';
 import { SourceDonut } from '../charts/SourceDonut';
 import { ConfidenceSparkline } from '../charts/ConfidenceSparkline';

@@ -16,7 +16,7 @@ interface ResourceState {
   assignResource: (resourceId: string, crisisId: string) => void;
   updateStatus: (resourceId: string, status: Resource['status'], etaMinutes?: number) => void;
   dispatchUnit: (unitId: string, crisisId: string, target: GeoPoint, etaMinutes: number, routeCoordinates?: [number, number][]) => void;
-  tick: () => void;
+  tick: (deltaMinutes?: number) => void;
   toggleSimulation: () => void;
   setSimulationSpeed: (speed: 1 | 2 | 4) => void;
   togglePause: () => void;
@@ -56,26 +56,35 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
   })),
 
   dispatchUnit: (unitId, crisisId, target, etaMinutes, routeCoordinates) => set((state) => ({
-    resources: state.resources.map((r) =>
-      r.id === unitId
-        ? {
-            ...r,
-            assignedCrisisId: crisisId,
-            status: 'en_route' as const,
-            targetPosition: target,
-            movementProgress: 0,
-            etaMinutes,
-            routeCoordinates,
-          }
-        : r
-    ),
+    resources: state.resources.map((r) => {
+      if (r.id !== unitId) return r;
+
+      const start = r.currentPosition ?? r.location;
+      const route = routeCoordinates && routeCoordinates.length > 1
+        ? routeCoordinates
+        : [
+            [start.lng, start.lat],
+            [target.lng, target.lat],
+          ] satisfies [number, number][];
+
+      return {
+        ...r,
+        assignedCrisisId: crisisId,
+        status: 'en_route' as const,
+        targetPosition: target,
+        movementProgress: 0,
+        etaMinutes,
+        routeCoordinates: route,
+      };
+    }),
     selectedUnitId: null,
+    simulationRunning: true,
+    isPaused: false,
   })),
 
-  tick: () => {
+  tick: (deltaMinutes) => {
     const { resources, simulationSpeed } = get();
-    const deltaMinutes = simulationSpeed * 1;
-    set({ resources: tickMovement(resources, deltaMinutes) });
+    set({ resources: tickMovement(resources, deltaMinutes ?? simulationSpeed) });
   },
 
   toggleSimulation: () => set((state) => ({ simulationRunning: !state.simulationRunning })),

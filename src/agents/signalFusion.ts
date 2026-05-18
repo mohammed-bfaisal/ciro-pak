@@ -96,6 +96,8 @@ export function applyCorroboration(signals: Signal[]): Signal[] {
 }
 
 export function signalFusionAgent(signals: Signal[], _city: City): Signal[] {
+  void _city;
+
   // Step 1: Score credibility
   let scored = signals.map((s) => ({
     ...s,
