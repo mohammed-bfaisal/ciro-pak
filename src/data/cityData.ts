@@ -6,6 +6,7 @@ import islamabadSignals from './mock/islamabad/signals.json';
 import islamabadResources from './mock/islamabad/resources.json';
 import { getKarachiActions, getKarachiCrises, getKarachiMessages } from './mock/karachi/scenario';
 import { getIslamabadActions, getIslamabadCrises, getIslamabadMessages } from './mock/islamabad/scenario';
+import { getStationResources } from './stationResources';
 
 export interface CityData {
   signals: Signal[];
@@ -178,7 +179,7 @@ function existingCityData(
 
   return {
     signals: completeSignals,
-    resources: normalizeResources(resources),
+    resources: normalizeResources(getStationResources(city).length > 0 ? getStationResources(city) : resources),
     actions,
     messages,
     crises: crises.map((crisis) => {
@@ -242,7 +243,7 @@ function generateCityData(city: Exclude<City, 'karachi' | 'islamabad'>, spec: Ge
 
   return {
     signals,
-    resources: makeResources(spec, lat, lng),
+    resources: normalizeResources(getStationResources(city)),
     crises,
     actions,
     messages,
@@ -266,17 +267,6 @@ function makeSignals(
     signal(`${p}-f1`, 'field_report', `${spec.agencies.field}: verified ${spec.primary.title}; affected radius expanding and public access should be restricted.`, c1Location, 0.94, 0.96, { reporter: spec.agencies.field, verified: true }),
     signal(`${p}-f2`, 'field_report', `${spec.agencies.utility}: ${spec.secondary.title} confirmed at ${spec.secondary.locationLabel}; utility escalation requested.`, c2Location, 0.9, 0.84, { reporter: spec.agencies.utility, verified: true }),
     signal(`${p}-e1`, spec.sensorKind, `${spec.sensorKind === 'sensor' ? 'Sensor' : 'Emergency call'} burst around ${spec.secondary.locationLabel}; multiple reports in 15 minutes.`, c2Location, 0.86, 0.89, { count: 11, window_minutes: 15 }),
-  ];
-}
-
-function makeResources(spec: GeneratedScenarioSpec, baseLat: number, baseLng: number): Resource[] {
-  return [
-    resource(`${spec.prefix}-r1`, 'rescue_team', spec.agencies.rescue, baseLat + 0.012, baseLng + 0.012, 12),
-    resource(`${spec.prefix}-r2`, 'police_unit', spec.agencies.police, baseLat - 0.01, baseLng + 0.01, 6),
-    resource(`${spec.prefix}-r3`, 'ambulance', spec.agencies.ambulance, baseLat + 0.008, baseLng - 0.014, 4),
-    resource(`${spec.prefix}-r4`, 'fire_truck', spec.agencies.fire, baseLat - 0.014, baseLng - 0.012, 6),
-    resource(`${spec.prefix}-r5`, spec.primary.type === 'flood' || spec.secondary.type === 'flood' ? 'water_tanker' : 'medical_outreach', spec.agencies.support, baseLat + 0.018, baseLng - 0.004, 8),
-    resource(`${spec.prefix}-r6`, 'drone', spec.agencies.drone, baseLat - 0.006, baseLng + 0.018, 0),
   ];
 }
 
@@ -387,23 +377,6 @@ function signal(
     isFlagged,
     conflictsWith,
     rawData,
-  };
-}
-
-function resource(id: string, type: Resource['type'], label: string, lat: number, lng: number, capacity: number): Resource {
-  const location = { lat, lng, label };
-  return {
-    id,
-    type,
-    label,
-    status: 'available',
-    location,
-    assignedCrisisId: null,
-    capacity,
-    currentLoad: 0,
-    currentPosition: location,
-    movementProgress: 0,
-    assignmentHistory: [],
   };
 }
 

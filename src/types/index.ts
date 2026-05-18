@@ -83,6 +83,10 @@ export interface Resource {
   lastEtaSeconds?: number;
   lastEtaMinutes?: number;
   bearing?: number;
+  source?: 'OpenStreetMap/Overpass snapshot' | string;
+  sourceId?: string;
+  sourceConfidence?: number;
+  sourceUpdatedAt?: string;
 }
 
 export interface Action {
