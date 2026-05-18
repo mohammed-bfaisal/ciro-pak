@@ -20,7 +20,7 @@ interface CrisisPanelProps {
 
 export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
   const crisis = useCrisisStore((s) => s.crises.find((c) => c.id === crisisId));
-  const signals = useSignalStore((s) => s.fusedSignals);
+  const signals = useSignalStore((s) => s.fusedSignals.length > 0 ? s.fusedSignals : s.signals);
   const resources = useResourceStore((s) => s.resources);
   const [activeTab, setActiveTab] = useState('overview');
   const [reasoningOpen, setReasoningOpen] = useState(false);

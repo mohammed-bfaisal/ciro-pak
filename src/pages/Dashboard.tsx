@@ -6,6 +6,9 @@ import { GlassPanel } from '../components/ui/GlassPanel';
 import { ControlBar } from '../components/hud/ControlBar';
 import { UnitRoster } from '../components/hud/UnitRoster';
 import { IncidentRegistry } from '../components/hud/IncidentRegistry';
+import { SessionStats } from '../components/hud/SessionStats';
+import { AgentTracePanel } from '../components/hud/AgentTracePanel';
+import { ImpactPanel } from '../components/hud/ImpactPanel';
 import { useCrisisStore } from '../store/crisisStore';
 import { useSignalStore } from '../store/signalStore';
 import { useCityStore } from '../store/cityStore';
@@ -22,14 +25,17 @@ export function Dashboard() {
   const [showSignals, setShowSignals] = useState(false);
   const selectedCrisisId  = useCrisisStore((s) => s.selectedCrisisId);
   const selectCrisis      = useCrisisStore((s) => s.selectCrisis);
+  const crises            = useCrisisStore((s) => s.crises);
   const signalCount       = useSignalStore((s) => s.signals.length);
-  const crisisCount       = useCrisisStore((s) => s.crises.length);
+  const crisisCount       = crises.length;
 
   const isPaused          = useResourceStore((s) => s.isPaused);
   const simulationRunning = useResourceStore((s) => s.simulationRunning);
   const simulationSpeed   = useResourceStore((s) => s.simulationSpeed);
   const tick              = useResourceStore((s) => s.tick);
+  const resources         = useResourceStore((s) => s.resources);
   const sessionTick       = useSessionStore((s) => s.tick);
+  const resolveSession    = useSessionStore((s) => s.resolve);
 
   // Close panels when city changes, and reload resources for new city
   useEffect(() => {
@@ -52,6 +58,23 @@ export function Dashboard() {
     }, MOVEMENT_TICK_MS);
     return () => clearInterval(id);
   }, [simulationRunning, isPaused, simulationSpeed, tick, sessionTick]);
+
+  useEffect(() => {
+    crises.forEach((crisis) => {
+      if (crisis.status !== 'responding') return;
+      const assigned = resources.filter((resource) => resource.assignedCrisisId === crisis.id);
+      if (assigned.length === 0) return;
+      const onScene = assigned.filter((resource) => resource.status === 'on_scene' || resource.status === 'returning');
+      const enoughUnitsArrived = onScene.length >= Math.min(2, assigned.length);
+      if (!enoughUnitsArrived) return;
+
+      const responseMinutes = Math.max(
+        1,
+        ...assigned.map((resource) => resource.lastEtaMinutes ?? resource.etaMinutes ?? 1),
+      );
+      resolveSession(crisis.id, responseMinutes);
+    });
+  }, [crises, resources, resolveSession]);
 
   return (
     <div className="absolute inset-0">
@@ -118,6 +141,9 @@ export function Dashboard() {
       )}
 
       {/* HUD panels */}
+      <SessionStats />
+      <AgentTracePanel />
+      <ImpactPanel />
       <UnitRoster />
       <IncidentRegistry />
     </div>
