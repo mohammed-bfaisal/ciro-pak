@@ -49,13 +49,13 @@ export function Dashboard() {
     useResourceStore.getState().setResources(getResources(city));
   }, [city, selectCrisis]);
 
-  // Movement tick - small fixed cadence, with speed applied as simulated minutes.
+  // Movement tick: at 1x, one real second advances one route second.
   useEffect(() => {
     if (!simulationRunning || isPaused) return;
-    const deltaMinutes = simulationSpeed * (MOVEMENT_TICK_MS / 1000);
     const id = setInterval(() => {
-      tick(deltaMinutes);
-      sessionTick(deltaMinutes);
+      const deltaSeconds = simulationSpeed * (MOVEMENT_TICK_MS / 1000);
+      tick(deltaSeconds);
+      sessionTick(deltaSeconds / 60);
     }, MOVEMENT_TICK_MS);
     return () => clearInterval(id);
   }, [simulationRunning, isPaused, simulationSpeed, tick, sessionTick]);

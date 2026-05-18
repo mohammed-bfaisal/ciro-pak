@@ -9,6 +9,7 @@ export type CrisisType =
 
 export type Severity = 'low' | 'medium' | 'high' | 'critical';
 export type CrisisStatus = 'detecting' | 'active' | 'responding' | 'resolved' | 'false_alarm';
+export type SimulationSpeed = 1 | 2 | 5 | 10 | 20;
 export type City =
   | 'karachi' | 'islamabad'
   | 'lahore' | 'rawalpindi' | 'faisalabad' | 'multan'
@@ -67,6 +68,7 @@ export interface Resource {
   status: 'available' | 'dispatched' | 'en_route' | 'on_scene' | 'returning';
   location: GeoPoint;
   assignedCrisisId: string | null;
+  etaSeconds?: number;
   etaMinutes?: number;
   capacity: number;
   currentLoad: number;
@@ -76,7 +78,9 @@ export interface Resource {
   routeCoordinates?: [number, number][]; // [lng, lat] pairs — actual road path
   returnRouteCoordinates?: [number, number][];
   assignmentHistory?: { crisisId: string; assignedAt: string; clearedAt?: string }[];
+  availabilityCooldownSeconds?: number;
   availabilityCooldownMinutes?: number;
+  lastEtaSeconds?: number;
   lastEtaMinutes?: number;
   bearing?: number;
 }
@@ -169,7 +173,7 @@ export interface DispatchSession {
   id: string;
   city: City;
   elapsedMinutes: number;
-  speed: 1 | 2 | 4;
+  speed: SimulationSpeed;
   status: 'idle' | 'running' | 'paused' | 'complete';
   score: GameScore;
 }

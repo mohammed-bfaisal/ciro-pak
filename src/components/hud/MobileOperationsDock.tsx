@@ -143,7 +143,7 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
               {isPaused ? <Play size={14} fill="currentColor" /> : <Pause size={14} />}
             </button>
               <div className="flex flex-1 min-w-0 items-center gap-1 rounded-lg p-1" style={{ background: colors.raised }}>
-                {([1, 2, 4] as const).map((speed) => (
+                {([1, 2, 5, 10, 20] as const).map((speed) => (
                   <button
                     key={speed}
                     onClick={() => useResourceStore.getState().setSimulationSpeed(speed)}

@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useResourceStore } from '../../store/resourceStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { colors, getStatusColor } from '../../constants/colors';
+import { formatRouteEta } from '../../utils/formatting';
 
 const TYPE_ICON: Record<string, string> = {
   ambulance: '🚑', police_unit: '🚓', fire_truck: '🚒',
@@ -78,9 +79,9 @@ export function UnitRoster() {
                         : r.status}
                     </span>
                   </div>
-                  {r.status === 'en_route' && r.etaMinutes !== undefined && (
+                  {r.status === 'en_route' && (r.etaSeconds !== undefined || r.etaMinutes !== undefined) && (
                     <div className="text-[10px]" style={{ color: colors.amber }}>
-                      ETA ~{Math.max(0, Math.ceil(r.etaMinutes * (1 - r.movementProgress)))} min
+                      ETA ~{formatRouteEta((r.etaSeconds ?? ((r.etaMinutes ?? 0) * 60)) * (1 - r.movementProgress))}
                       {dispatchMode === 'manual' && !isSelected && (
                         <span style={{ color: colors.info }}> · tap to select</span>
                       )}

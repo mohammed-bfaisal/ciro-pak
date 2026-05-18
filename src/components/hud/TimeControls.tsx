@@ -29,7 +29,7 @@ export function TimeControls() {
         {isPaused ? <Play size={14} fill="currentColor" /> : <Pause size={14} />}
       </button>
 
-      {([1, 2, 4] as const).map((speed) => (
+      {([1, 2, 5, 10, 20] as const).map((speed) => (
         <button
           key={speed}
           onClick={() => setSpeed(speed)}

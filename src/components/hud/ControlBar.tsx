@@ -135,7 +135,7 @@ export function ControlBar() {
             {isPaused ? <Play size={13} fill="currentColor" /> : <Pause size={13} />}
           </button>
 
-          {([1, 2, 4] as const).map((speed) => (
+          {([1, 2, 5, 10, 20] as const).map((speed) => (
             <button
               key={speed}
               onClick={() => setSpeed(speed)}

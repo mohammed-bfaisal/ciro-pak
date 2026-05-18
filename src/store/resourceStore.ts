@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Resource, GeoPoint } from '../types';
+import type { Resource, GeoPoint, SimulationSpeed } from '../types';
 import { tickMovement } from '../simulation/movementEngine';
 
 type DispatchMode = 'off' | 'manual' | 'ai';
@@ -7,7 +7,7 @@ type DispatchMode = 'off' | 'manual' | 'ai';
 interface ResourceState {
   resources: Resource[];
   simulationRunning: boolean;
-  simulationSpeed: 1 | 2 | 4;
+  simulationSpeed: SimulationSpeed;
   isPaused: boolean;
   dispatchMode: DispatchMode;
   selectedUnitId: string | null;
@@ -15,10 +15,10 @@ interface ResourceState {
   setResources: (resources: Resource[]) => void;
   assignResource: (resourceId: string, crisisId: string) => void;
   updateStatus: (resourceId: string, status: Resource['status'], etaMinutes?: number) => void;
-  dispatchUnit: (unitId: string, crisisId: string, target: GeoPoint, etaMinutes: number, routeCoordinates?: [number, number][]) => void;
-  tick: (deltaMinutes?: number) => void;
+  dispatchUnit: (unitId: string, crisisId: string, target: GeoPoint, etaSeconds: number, routeCoordinates?: [number, number][]) => void;
+  tick: (deltaSeconds?: number) => void;
   toggleSimulation: () => void;
-  setSimulationSpeed: (speed: 1 | 2 | 4) => void;
+  setSimulationSpeed: (speed: SimulationSpeed) => void;
   togglePause: () => void;
   setDispatchMode: (mode: DispatchMode) => void;
   selectUnit: (id: string | null) => void;
@@ -55,7 +55,7 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
     ),
   })),
 
-  dispatchUnit: (unitId, crisisId, target, etaMinutes, routeCoordinates) => set((state) => ({
+  dispatchUnit: (unitId, crisisId, target, etaSeconds, routeCoordinates) => set((state) => ({
     resources: state.resources.map((r) => {
       if (r.id !== unitId) return r;
 
@@ -73,8 +73,10 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
         status: 'en_route' as const,
         targetPosition: target,
         movementProgress: 0,
-        etaMinutes,
-        lastEtaMinutes: etaMinutes,
+        etaSeconds,
+        etaMinutes: Math.max(1, Math.ceil(etaSeconds / 60)),
+        lastEtaSeconds: etaSeconds,
+        lastEtaMinutes: Math.max(1, Math.ceil(etaSeconds / 60)),
         routeCoordinates: route,
         returnRouteCoordinates: [...route].reverse(),
         assignmentHistory: [
@@ -88,9 +90,9 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
     isPaused: false,
   })),
 
-  tick: (deltaMinutes) => {
+  tick: (deltaSeconds) => {
     const { resources, simulationSpeed } = get();
-    set({ resources: tickMovement(resources, deltaMinutes ?? simulationSpeed) });
+    set({ resources: tickMovement(resources, deltaSeconds ?? simulationSpeed) });
   },
 
   toggleSimulation: () => set((state) => ({ simulationRunning: !state.simulationRunning })),

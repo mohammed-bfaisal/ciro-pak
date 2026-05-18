@@ -37,11 +37,11 @@ function interpolateAlongRoute(coords: [number, number][], t: number): { lat: nu
   return { lat: last[1], lng: last[0] };
 }
 
-export function tickMovement(resources: Resource[], deltaMinutes: number): Resource[] {
+export function tickMovement(resources: Resource[], deltaSeconds: number): Resource[] {
   return resources.map((r) => {
     if ((r.status === 'en_route' || r.status === 'dispatched') && r.targetPosition) {
-      const eta = r.etaMinutes ?? 10;
-      const progress = Math.min(1, r.movementProgress + deltaMinutes / eta);
+      const eta = r.etaSeconds ?? Math.max(60, (r.etaMinutes ?? 10) * 60);
+      const progress = Math.min(1, r.movementProgress + deltaSeconds / eta);
 
       const pos = r.routeCoordinates && r.routeCoordinates.length > 1
         ? interpolateAlongRoute(r.routeCoordinates, progress)
@@ -56,8 +56,9 @@ export function tickMovement(resources: Resource[], deltaMinutes: number): Resou
           movementProgress: 0,
           currentPosition: r.targetPosition,
           status: 'on_scene' as const,
-          availabilityCooldownMinutes: r.availabilityCooldownMinutes ?? 3,
+          availabilityCooldownSeconds: r.availabilityCooldownSeconds ?? ((r.availabilityCooldownMinutes ?? 3) * 60),
           lastEtaMinutes: r.etaMinutes,
+          lastEtaSeconds: r.etaSeconds,
         };
       }
 
@@ -69,9 +70,10 @@ export function tickMovement(resources: Resource[], deltaMinutes: number): Resou
     }
 
     if (r.status === 'on_scene') {
-      const nextCooldown = (r.availabilityCooldownMinutes ?? 3) - deltaMinutes;
+      const cooldownSeconds = r.availabilityCooldownSeconds ?? ((r.availabilityCooldownMinutes ?? 3) * 60);
+      const nextCooldown = cooldownSeconds - deltaSeconds;
       if (nextCooldown > 0) {
-        return { ...r, availabilityCooldownMinutes: nextCooldown };
+        return { ...r, availabilityCooldownSeconds: nextCooldown, availabilityCooldownMinutes: Math.ceil(nextCooldown / 60) };
       }
 
       return {
@@ -79,14 +81,18 @@ export function tickMovement(resources: Resource[], deltaMinutes: number): Resou
         status: 'returning' as const,
         movementProgress: 0,
         targetPosition: r.location,
+        etaSeconds: r.lastEtaSeconds,
+        etaMinutes: r.lastEtaMinutes,
         availabilityCooldownMinutes: undefined,
+        availabilityCooldownSeconds: undefined,
         returnRouteCoordinates: r.returnRouteCoordinates
           ?? (r.routeCoordinates ? [...r.routeCoordinates].reverse() : undefined),
       };
     }
 
     if (r.status === 'returning') {
-      const progress = Math.min(1, r.movementProgress + deltaMinutes / 10);
+      const returnEtaSeconds = r.lastEtaSeconds ?? Math.max(60, (r.lastEtaMinutes ?? 10) * 60);
+      const progress = Math.min(1, r.movementProgress + deltaSeconds / returnEtaSeconds);
       const returnRoute = r.returnRouteCoordinates
         ?? (r.routeCoordinates ? [...r.routeCoordinates].reverse() : undefined);
       const pos = returnRoute && returnRoute.length > 1
@@ -104,6 +110,8 @@ export function tickMovement(resources: Resource[], deltaMinutes: number): Resou
           status: 'available' as const,
           assignedCrisisId: null,
           targetPosition: undefined,
+          etaSeconds: undefined,
+          etaMinutes: undefined,
           routeCoordinates: undefined,
           returnRouteCoordinates: undefined,
           assignmentHistory: closeAssignmentHistory(r.assignmentHistory, r.assignedCrisisId),

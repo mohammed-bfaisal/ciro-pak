@@ -20,7 +20,7 @@ describe('resource dispatch movement', () => {
     useResourceStore.getState().reset();
   });
 
-  it('starts the simulation clock and advances a dispatched unit along its route', () => {
+  it('advances one real route minute after sixty 1x seconds', () => {
     const store = useResourceStore.getState();
 
     store.setResources([unit]);
@@ -28,7 +28,7 @@ describe('resource dispatch movement', () => {
       unit.id,
       'crisis-1',
       { lat: 0, lng: 10, label: 'Incident' },
-      10,
+      600,
       [
         [0, 0],
         [10, 0],
@@ -36,14 +36,39 @@ describe('resource dispatch movement', () => {
     );
 
     expect(useResourceStore.getState().simulationRunning).toBe(true);
+    expect(useResourceStore.getState().resources[0].etaSeconds).toBe(600);
+    expect(useResourceStore.getState().resources[0].etaMinutes).toBe(10);
 
-    useResourceStore.getState().tick();
+    useResourceStore.getState().tick(60);
 
     const moved = useResourceStore.getState().resources[0];
     expect(moved.status).toBe('en_route');
     expect(moved.movementProgress).toBeCloseTo(0.1);
     expect(moved.currentPosition.lng).toBeCloseTo(1);
     expect(moved.currentPosition.lat).toBeCloseTo(0);
+  });
+
+  it('uses the selected speed as a real-time multiplier when no explicit delta is passed', () => {
+    const store = useResourceStore.getState();
+
+    store.setResources([unit]);
+    store.dispatchUnit(
+      unit.id,
+      'crisis-1',
+      { lat: 0, lng: 10, label: 'Incident' },
+      600,
+      [
+        [0, 0],
+        [10, 0],
+      ],
+    );
+
+    store.setSimulationSpeed(20);
+    useResourceStore.getState().tick();
+
+    const moved = useResourceStore.getState().resources[0];
+    expect(moved.movementProgress).toBeCloseTo(20 / 600);
+    expect(moved.currentPosition.lng).toBeCloseTo(10 * (20 / 600));
   });
 
   it('uses a stable straight-line route when a road route is unavailable', () => {
@@ -54,11 +79,10 @@ describe('resource dispatch movement', () => {
       unit.id,
       'crisis-1',
       { lat: 0, lng: 10, label: 'Incident' },
-      10,
+      600,
     );
 
-    useResourceStore.getState().tick();
-    useResourceStore.getState().tick();
+    useResourceStore.getState().tick(120);
 
     const moved = useResourceStore.getState().resources[0];
     expect(moved.routeCoordinates).toEqual([
@@ -69,7 +93,7 @@ describe('resource dispatch movement', () => {
     expect(moved.currentPosition.lng).toBeCloseTo(2);
   });
 
-  it('accepts fractional clock deltas for smooth time-speed controls', () => {
+  it('accepts fractional second deltas for smooth time-speed controls', () => {
     const store = useResourceStore.getState();
 
     store.setResources([unit]);
@@ -77,7 +101,7 @@ describe('resource dispatch movement', () => {
       unit.id,
       'crisis-1',
       { lat: 0, lng: 10, label: 'Incident' },
-      10,
+      600,
       [
         [0, 0],
         [10, 0],
@@ -87,8 +111,8 @@ describe('resource dispatch movement', () => {
     useResourceStore.getState().tick(0.25);
 
     const moved = useResourceStore.getState().resources[0];
-    expect(moved.movementProgress).toBeCloseTo(0.025);
-    expect(moved.currentPosition.lng).toBeCloseTo(0.25);
+    expect(moved.movementProgress).toBeCloseTo(0.25 / 600);
+    expect(moved.currentPosition.lng).toBeCloseTo(10 * (0.25 / 600));
   });
 
   it('moves units through en route, on scene, returning, and available states', () => {
@@ -99,20 +123,20 @@ describe('resource dispatch movement', () => {
       unit.id,
       'crisis-1',
       { lat: 0, lng: 10, label: 'Incident' },
-      1,
+      60,
       [
         [0, 0],
         [10, 0],
       ],
     );
 
-    useResourceStore.getState().tick(1);
+    useResourceStore.getState().tick(60);
     expect(useResourceStore.getState().resources[0].status).toBe('on_scene');
 
-    useResourceStore.getState().tick(1);
+    useResourceStore.getState().tick(60);
     expect(useResourceStore.getState().resources[0].status).toBe('returning');
 
-    useResourceStore.getState().tick(10);
+    useResourceStore.getState().tick(600);
     const returned = useResourceStore.getState().resources[0];
     expect(returned.status).toBe('available');
     expect(returned.assignedCrisisId).toBeNull();

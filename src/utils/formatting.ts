@@ -23,6 +23,16 @@ export function formatCurrency(pkr: number): string {
   return `PKR ${pkr.toLocaleString()}`;
 }
 
+export function formatRouteEta(totalSeconds: number): string {
+  const seconds = Math.max(0, Math.ceil(totalSeconds));
+  if (seconds < 600) {
+    const minutesPart = Math.floor(seconds / 60);
+    const secondsPart = seconds % 60;
+    return `${minutesPart}:${secondsPart.toString().padStart(2, '0')}`;
+  }
+  return `${Math.ceil(seconds / 60)} min`;
+}
+
 export function capitalize(s: string): string {
   return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
