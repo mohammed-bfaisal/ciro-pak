@@ -44,7 +44,10 @@ describe('MobileOperationsDock', () => {
     expect(html).toContain('Impact');
     expect(html).toContain('1x');
     expect(html).toContain('2x');
-    expect(html).toContain('4x');
+    expect(html).toContain('5x');
+    expect(html).toContain('10x');
+    expect(html).toContain('20x');
+    expect(html).not.toContain('4x');
     expect(html).toContain('handled');
   });
 });
