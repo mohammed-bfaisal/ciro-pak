@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_P00_SETTINGS, FOUNDATION_SETTING_KEYS } from '../foundation/contracts';
+import { DEFAULT_P01_SETTINGS, P01_SETTING_KEYS } from '../foundation/urduRtlLanguage';
 import { useSettingsStore } from './settingsStore';
 
 function createStorage(): Storage {
@@ -30,6 +31,7 @@ describe('settings store', () => {
     vi.stubGlobal('localStorage', createStorage());
     localStorage.clear();
     useSettingsStore.getState().resetP00Settings();
+    useSettingsStore.getState().resetP01Settings();
   });
 
   afterEach(() => {
@@ -39,6 +41,7 @@ describe('settings store', () => {
 
   it('loads default P00 settings without storing secrets', () => {
     expect(useSettingsStore.getState().p00).toEqual(DEFAULT_P00_SETTINGS);
+    expect(useSettingsStore.getState().p01).toEqual(DEFAULT_P01_SETTINGS);
     expect(storageKeys(localStorage)).toEqual([]);
   });
 
@@ -53,13 +56,29 @@ describe('settings store', () => {
     expect(storageKeys(localStorage).sort()).toEqual(Object.values(FOUNDATION_SETTING_KEYS).sort());
   });
 
+  it('persists only approved P01 setting keys', () => {
+    useSettingsStore.getState().setP01Enabled(false);
+    useSettingsStore.getState().setP01MobileParity(false);
+    useSettingsStore.getState().markP01Reviewed('2026-05-18T08:00:00.000Z');
+
+    expect(localStorage.getItem(P01_SETTING_KEYS.enabled)).toBe('false');
+    expect(localStorage.getItem(P01_SETTING_KEYS.mobileParity)).toBe('false');
+    expect(localStorage.getItem(P01_SETTING_KEYS.lastReviewedAt)).toBe('2026-05-18T08:00:00.000Z');
+    expect(storageKeys(localStorage).sort()).toEqual(Object.values(P01_SETTING_KEYS).sort());
+  });
+
   it('recovers from corrupt localStorage values with safe defaults', () => {
     localStorage.setItem(FOUNDATION_SETTING_KEYS.enabled, 'not-a-bool');
     localStorage.setItem(FOUNDATION_SETTING_KEYS.mobileParity, 'not-a-bool');
     localStorage.setItem(FOUNDATION_SETTING_KEYS.lastReviewedAt, '<script>alert(1)</script>');
+    localStorage.setItem(P01_SETTING_KEYS.enabled, 'not-a-bool');
+    localStorage.setItem(P01_SETTING_KEYS.mobileParity, 'not-a-bool');
+    localStorage.setItem(P01_SETTING_KEYS.lastReviewedAt, '<script>alert(1)</script>');
 
     useSettingsStore.getState().loadP00Settings();
+    useSettingsStore.getState().loadP01Settings();
 
     expect(useSettingsStore.getState().p00).toEqual(DEFAULT_P00_SETTINGS);
+    expect(useSettingsStore.getState().p01).toEqual(DEFAULT_P01_SETTINGS);
   });
 });
