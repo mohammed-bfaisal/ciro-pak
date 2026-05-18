@@ -162,14 +162,14 @@ export async function runAIDispatch(city: City) {
     const fromLng = unit.currentPosition?.lng ?? unit.location.lng;
     const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
     const distKm = haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng);
-    const etaMinutes = routeResult?.etaMinutes ?? Math.max(a.etaMinutes, Math.round((distKm / 30) * 60));
-    return { a, crisis, etaMinutes, routeCoordinates: routeResult?.coords };
+    const etaSeconds = routeResult?.etaSeconds ?? Math.max(a.etaMinutes * 60, Math.round((distKm / 30) * 3600));
+    return { a, crisis, etaSeconds, routeCoordinates: routeResult?.coords };
   });
   const routeResults = await Promise.all(routePromises);
 
   routeResults.forEach((r) => {
     if (!r) return;
-    useResourceStore.getState().dispatchUnit(r.a.resourceId, r.a.crisisId, r.crisis.location, r.etaMinutes, r.routeCoordinates);
+    useResourceStore.getState().dispatchUnit(r.a.resourceId, r.a.crisisId, r.crisis.location, r.etaSeconds, r.routeCoordinates);
     useCrisisStore.getState().updateCrisis(r.a.crisisId, { status: 'responding' });
     trace.log(`Dispatched ${r.a.resourceId} → ${r.a.crisisId}: ${r.a.reasoning}`);
   });

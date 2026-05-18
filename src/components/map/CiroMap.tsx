@@ -194,10 +194,10 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
 
           // Fetch real road route; fall back to haversine ETA if OSRM unreachable
           const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
-          const etaMinutes = routeResult?.etaMinutes
-            ?? Math.max(2, Math.round((haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng) / 30) * 60));
+          const etaSeconds = routeResult?.etaSeconds
+            ?? Math.max(120, Math.round((haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng) / 30) * 3600));
 
-          store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaMinutes, routeResult?.coords);
+          store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaSeconds, routeResult?.coords);
         } else {
           onCrisisClick?.(crisis.id);
         }
