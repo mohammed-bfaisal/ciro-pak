@@ -11,11 +11,7 @@ import { fetchWeather } from '../api/weather';
 import { haversineDistance } from '../utils/geo';
 import { fetchRoute } from '../api/routing';
 import type { City, Signal, Resource } from '../types';
-
-import karachiSignals from '../data/mock/karachi/signals.json';
-import karachiResources from '../data/mock/karachi/resources.json';
-import islamabadSignals from '../data/mock/islamabad/signals.json';
-import islamabadResources from '../data/mock/islamabad/resources.json';
+import { getResources, getSignals } from '../data/cityData';
 
 const PHASE_DELAYS = {
   ingestion:   800,
@@ -32,11 +28,11 @@ function delay(ms: number) {
 }
 
 function loadSignals(city: City): Signal[] {
-  return (city === 'karachi' ? karachiSignals : islamabadSignals) as Signal[];
+  return getSignals(city);
 }
 
 function loadResources(city: City): Resource[] {
-  return (city === 'karachi' ? karachiResources : islamabadResources) as Resource[];
+  return getResources(city);
 }
 
 // ─── SIMULATE: ingestion → fusion → crisis detection ───────────────────────

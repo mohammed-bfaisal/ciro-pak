@@ -1,12 +1,11 @@
 import type { Signal, Crisis, City } from '../types';
-import { getKarachiCrises } from '../data/mock/karachi/scenario';
-import { getIslamabadCrises } from '../data/mock/islamabad/scenario';
+import { getCrises } from '../data/cityData';
 
 export function crisisDetectionAgent(fusedSignals: Signal[], city: City): Crisis[] {
   // Use pre-computed crises from scenario data
   // In a real system, this would cluster signals by proximity, classify crisis types,
   // and estimate severity + confidence scores dynamically.
-  const crises = city === 'karachi' ? getKarachiCrises() : getIslamabadCrises();
+  const crises = getCrises(city);
 
   // Attach the fused signal IDs to verify the pipeline
   return crises.map((crisis) => {

@@ -1,6 +1,5 @@
 import type { Crisis, Action, City, ResourceAllocation } from '../types';
-import { getKarachiActions } from '../data/mock/karachi/scenario';
-import { getIslamabadActions } from '../data/mock/islamabad/scenario';
+import { getActions } from '../data/cityData';
 
 function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -12,7 +11,7 @@ export async function actionSimulatorAgent(
   trace: { log: (msg: string) => void },
   city: City
 ): Promise<Action[]> {
-  const actions = city === 'karachi' ? getKarachiActions() : getIslamabadActions();
+  const actions = getActions(city);
 
   for (const action of actions) {
     trace.log(`▸ Executing: ${action.title}`);

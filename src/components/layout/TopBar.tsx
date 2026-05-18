@@ -2,16 +2,23 @@ import { useState, useRef, useEffect } from 'react';
 import { Activity, MapPin, ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { colors } from '../../constants/colors';
-import type { City } from '../../types';
 import { useCityStore } from '../../store/cityStore';
+import { ALL_CITIES, CITY_REGISTRY } from '../../data/cities';
 
-const CITIES: { key: City; label: string; sub: string }[] = [
-  { key: 'karachi',   label: 'Karachi',   sub: 'Sindh · 16.5M' },
-  { key: 'islamabad', label: 'Islamabad', sub: 'Capital · 1.1M' },
-];
+const CITIES = ALL_CITIES.map((key) => {
+  const metadata = CITY_REGISTRY[key];
+  const population = metadata.population >= 1_000_000
+    ? `${(metadata.population / 1_000_000).toFixed(1)}M`
+    : `${Math.round(metadata.population / 1_000)}K`;
+  return {
+    key,
+    label: metadata.label,
+    sub: `${metadata.province} - ${population}`,
+  };
+});
 
 export function TopBar() {
-  const city    = useCityStore((s) => s.city);
+  const city = useCityStore((s) => s.city);
   const setCity = useCityStore((s) => s.setCity);
   const [open, setOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -24,7 +31,7 @@ export function TopBar() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const current = CITIES.find((c) => c.key === city)!;
+  const current = CITIES.find((c) => c.key === city) ?? CITIES[0];
 
   return (
     <header
@@ -37,7 +44,6 @@ export function TopBar() {
         borderColor: 'rgba(255,255,255,0.09)',
       }}
     >
-      {/* Left: Logo + LIVE */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <Activity size={20} style={{ color: colors.amber }} />
@@ -56,7 +62,6 @@ export function TopBar() {
         </div>
       </div>
 
-      {/* Center: City selector */}
       <div className="relative" ref={dropRef}>
         <button
           onClick={() => setOpen((v) => !v)}
@@ -82,7 +87,7 @@ export function TopBar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.97 }}
               transition={{ duration: 0.14 }}
-              className="absolute top-full mt-1.5 left-0 right-0 rounded-xl overflow-hidden z-50"
+              className="absolute top-full mt-1.5 left-0 right-0 rounded-xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
               style={{
                 background: 'rgba(26,26,26,0.98)',
                 border: `1px solid ${colors.borderStrong}`,
@@ -117,7 +122,6 @@ export function TopBar() {
         </AnimatePresence>
       </div>
 
-      {/* Right: reserved for controls moved to Dashboard ControlBar */}
       <div style={{ width: 120 }} />
     </header>
   );

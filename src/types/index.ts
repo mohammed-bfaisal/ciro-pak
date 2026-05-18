@@ -9,7 +9,13 @@ export type CrisisType =
 
 export type Severity = 'low' | 'medium' | 'high' | 'critical';
 export type CrisisStatus = 'detecting' | 'active' | 'responding' | 'resolved' | 'false_alarm';
-export type City = 'karachi' | 'islamabad';
+export type City =
+  | 'karachi' | 'islamabad'
+  | 'lahore' | 'rawalpindi' | 'faisalabad' | 'multan'
+  | 'gujranwala' | 'sialkot' | 'bahawalpur' | 'sargodha'
+  | 'peshawar' | 'abbottabad'
+  | 'quetta' | 'gwadar'
+  | 'hyderabad' | 'sukkur';
 
 export interface GeoPoint {
   lat: number;
@@ -68,6 +74,11 @@ export interface Resource {
   targetPosition?: GeoPoint;
   movementProgress: number;
   routeCoordinates?: [number, number][]; // [lng, lat] pairs — actual road path
+  returnRouteCoordinates?: [number, number][];
+  assignmentHistory?: { crisisId: string; assignedAt: string; clearedAt?: string }[];
+  availabilityCooldownMinutes?: number;
+  lastEtaMinutes?: number;
+  bearing?: number;
 }
 
 export interface Action {
@@ -85,6 +96,7 @@ export interface Action {
   latencyMs: number;
   beforeState: Record<string, unknown>;
   afterState: Record<string, unknown>;
+  sideEffects?: string[];
   trace: TraceStep[];
 }
 
@@ -96,7 +108,70 @@ export interface TraceStep {
   decision: string;
   toolCalled?: string;
   toolResult?: string;
+  execution?: string;
   timestamp: string;
+}
+
+export interface AgentTraceEvent {
+  id: string;
+  phase: string;
+  observation: string;
+  inference: string;
+  decision: string;
+  execution: string;
+  timestamp: string;
+}
+
+export interface SignalCluster {
+  id: string;
+  city: City;
+  signalIds: string[];
+  location: GeoPoint;
+  confidenceScore: number;
+  dominantType: CrisisType;
+  contradictionLevel: number;
+}
+
+export interface AllocationDecision {
+  resourceId: string;
+  crisisId: string;
+  score: number;
+  etaMinutes: number;
+  reasoning: string;
+}
+
+export interface ImpactSnapshot {
+  actionId: string;
+  crisisId: string;
+  beforeState: Record<string, unknown>;
+  afterState: Record<string, unknown>;
+  sideEffects: string[];
+}
+
+export interface GameScore {
+  handledIncidents: number;
+  missedIncidents: number;
+  averageResponseMinutes: number;
+  publicTrust: number;
+  resourceEfficiency: number;
+  totalCostPKR: number;
+}
+
+export interface IncidentRuntime {
+  crisisId: string;
+  revealedAtMinute: number;
+  deadlineMinute: number;
+  requiredResourceTypes: Resource['type'][];
+  status: 'queued' | 'active' | 'responding' | 'resolved' | 'missed' | 'false_alarm';
+}
+
+export interface DispatchSession {
+  id: string;
+  city: City;
+  elapsedMinutes: number;
+  speed: 1 | 2 | 4;
+  status: 'idle' | 'running' | 'paused' | 'complete';
+  score: GameScore;
 }
 
 export interface StakeholderMessage {
