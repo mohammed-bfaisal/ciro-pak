@@ -15,13 +15,20 @@ import { useSignalStore } from '../store/signalStore';
 import { useCityStore } from '../store/cityStore';
 import { useResourceStore } from '../store/resourceStore';
 import { useSessionStore } from '../store/sessionStore';
+import { makeTrafficScopeKey, useLiveDataStore } from '../store/liveDataStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
 import { getResources } from '../data/cityData';
 import { fetchRoute } from '../api/routing';
+import { fetchTrafficFlow } from '../api/traffic';
+import { fetchWeather } from '../api/weather';
+import type { City } from '../types';
 
 const MOVEMENT_TICK_MS = 250;
 const ROUTE_REFRESH_MS = 30_000;
+const WEATHER_REFRESH_MS = 120_000;
+const TRAFFIC_REFRESH_MS = 30_000;
+const MAX_TRAFFIC_SCOPES = 6;
 
 export function Dashboard() {
   const city              = useCityStore((s) => s.city);
@@ -49,8 +56,28 @@ export function Dashboard() {
     useSessionStore.getState().reset();
     useSignalStore.getState().reset();
     useCrisisStore.getState().reset();
+    useLiveDataStore.getState().reset();
     useResourceStore.getState().setResources(getResources(city));
   }, [city, selectCrisis]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const refreshWeather = () => {
+      void fetchWeather(city).then((signal) => {
+        if (cancelled) return;
+        useLiveDataStore.getState().setWeatherSignal(city, signal);
+        useSignalStore.getState().upsertSignal(signal);
+      });
+    };
+
+    refreshWeather();
+    const id = window.setInterval(refreshWeather, WEATHER_REFRESH_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [city, simulationRunning]);
 
   // Movement tick: at 1x, one real second advances one route second.
   useEffect(() => {
@@ -88,6 +115,28 @@ export function Dashboard() {
     const id = setInterval(refreshActiveRoutes, ROUTE_REFRESH_MS);
     return () => clearInterval(id);
   }, [simulationRunning, isPaused, trafficSignalCount]);
+
+  useEffect(() => {
+    if (!simulationRunning || isPaused) return;
+    let cancelled = false;
+
+    const refreshTraffic = () => {
+      const trafficScopes = getTrafficRefreshScopes(city).slice(0, MAX_TRAFFIC_SCOPES);
+      trafficScopes.forEach((scope) => {
+        void fetchTrafficFlow(scope.lat, scope.lng).then((flow) => {
+          if (cancelled) return;
+          useLiveDataStore.getState().setTrafficFlow(scope.key, flow);
+        });
+      });
+    };
+
+    refreshTraffic();
+    const id = window.setInterval(refreshTraffic, TRAFFIC_REFRESH_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [city, simulationRunning, isPaused, trafficSignalCount, crisisCount]);
 
   useEffect(() => {
     crises.forEach((crisis) => {
@@ -183,4 +232,24 @@ export function Dashboard() {
       />
     </div>
   );
+}
+
+function getTrafficRefreshScopes(city: City): { key: string; lat: number; lng: number }[] {
+  const resourceScopes = useResourceStore.getState().resources
+    .filter((resource) => resource.status === 'en_route' && resource.targetPosition)
+    .map((resource) => ({
+      key: makeTrafficScopeKey(city, 'route', resource.id),
+      lat: resource.currentPosition.lat,
+      lng: resource.currentPosition.lng,
+    }));
+
+  const crisisScopes = useCrisisStore.getState().crises
+    .filter((crisis) => crisis.status === 'active' || crisis.status === 'responding')
+    .map((crisis) => ({
+      key: makeTrafficScopeKey(city, 'crisis', crisis.id),
+      lat: crisis.location.lat,
+      lng: crisis.location.lng,
+    }));
+
+  return [...resourceScopes, ...crisisScopes];
 }
