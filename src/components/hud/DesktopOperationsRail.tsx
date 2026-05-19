@@ -200,6 +200,7 @@ export function DesktopOperationsRail({ onSelectCrisis }: DesktopOperationsRailP
                 : resource.routeProvider === 'osrm'
                   ? 'OSRM fallback'
                   : 'No route data';
+              const routeUpdated = resource.routeRefreshedAt ?? resource.trafficUpdatedAt;
               return (
                 <button
                   key={resource.id}
@@ -227,6 +228,7 @@ export function DesktopOperationsRail({ onSelectCrisis }: DesktopOperationsRailP
                   </div>
                   <div className="mt-2 text-[11px]" style={{ color: resource.routeProvider === 'tomtom' ? colors.success : colors.textDim }}>
                     {routeLabel}
+                    {routeUpdated ? ` - refreshed ${formatShortTime(routeUpdated)}` : ''}
                   </div>
                 </button>
               );
@@ -367,4 +369,11 @@ function formatClock(minutes: number): string {
   const hours = Math.floor(total / 60).toString().padStart(2, '0');
   const mins = (total % 60).toString().padStart(2, '0');
   return `${hours}:${mins}`;
+}
+
+function formatShortTime(timestamp: string): string {
+  return new Intl.DateTimeFormat(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(timestamp));
 }

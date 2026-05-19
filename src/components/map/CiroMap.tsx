@@ -5,6 +5,7 @@ import { DARK_STYLE, CITY_COORDS } from '../../constants/mapStyles';
 import { useSignalStore } from '../../store/signalStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
+import { useLiveDataStore } from '../../store/liveDataStore';
 import { getApiClientOptionsForSettings, useSettingsStore } from '../../store/settingsStore';
 import { getCrisisColor, getCredColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
@@ -13,6 +14,15 @@ import { haversineDistance } from '../../utils/geo';
 import { fetchRoute } from '../../api/routing';
 import { getMapTilePreloader, scheduleMapTilePreload } from '../../utils/mapTilePreloader';
 import type { City } from '../../types';
+
+const SIGNAL_SOURCE_ID = 'signals-heat';
+const SIGNAL_LAYER_ID = 'signals-heatmap';
+const CRISIS_RADIUS_SOURCE_ID = 'crisis-radius-source';
+const CRISIS_RADIUS_LAYER_ID = 'crisis-radius-layer';
+const TRAFFIC_FLOW_SOURCE_ID = 'traffic-flow-source';
+const TRAFFIC_FLOW_LAYER_ID = 'traffic-flow-layer';
+const RESOURCE_COVERAGE_SOURCE_ID = 'resource-coverage-source';
+const RESOURCE_COVERAGE_LAYER_ID = 'resource-coverage-layer';
 
 interface CiroMapProps {
   city: City;
@@ -33,6 +43,11 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const selectedUnitId = useResourceStore((s) => s.selectedUnitId);
   const dispatchMode   = useResourceStore((s) => s.dispatchMode);
   const preferBackendData = useSettingsStore((s) => s.preferBackendData);
+  const showSignalHeatmap = useSettingsStore((s) => s.showSignalHeatmap);
+  const showCrisisRadius = useSettingsStore((s) => s.showCrisisRadius);
+  const showResourceCoverage = useSettingsStore((s) => s.showResourceCoverage);
+  const showTrafficLayer = useSettingsStore((s) => s.showTrafficLayer);
+  const trafficFlows = useLiveDataStore((s) => s.trafficFlows);
 
   // Initialize map
   useEffect(() => {
@@ -103,26 +118,44 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
 
   // Signal heatmap + pins
   useEffect(() => {
-    if (!mapInstance.current || signals.length === 0) return;
+    if (!mapInstance.current) return;
     const map = mapInstance.current;
 
+    const clearSignals = () => {
+      signalMarkersRef.current.forEach((marker) => marker.remove());
+      signalMarkersRef.current = [];
+      removeLayerAndSource(map, SIGNAL_LAYER_ID, SIGNAL_SOURCE_ID);
+    };
+
+    if (!showSignalHeatmap || signals.length === 0) {
+      clearSignals();
+      return;
+    }
+
     const addSignals = () => {
-      if (!map.getSource('signals-heat')) {
-        map.addSource('signals-heat', {
+      const data = {
+        type: 'FeatureCollection' as const,
+        features: signals.map((s) => ({
+          type: 'Feature' as const,
+          geometry: { type: 'Point' as const, coordinates: [s.location.lng, s.location.lat] },
+          properties: { weight: s.credibilityScore * s.urgencyScore },
+        })),
+      };
+
+      if (!map.getSource(SIGNAL_SOURCE_ID)) {
+        map.addSource(SIGNAL_SOURCE_ID, {
           type: 'geojson',
-          data: {
-            type: 'FeatureCollection',
-            features: signals.map((s) => ({
-              type: 'Feature' as const,
-              geometry: { type: 'Point' as const, coordinates: [s.location.lng, s.location.lat] },
-              properties: { weight: s.credibilityScore * s.urgencyScore },
-            })),
-          },
+          data,
         });
+      } else {
+        (map.getSource(SIGNAL_SOURCE_ID) as maplibregl.GeoJSONSource).setData(data);
+      }
+
+      if (!map.getLayer(SIGNAL_LAYER_ID)) {
         map.addLayer({
-          id: 'signals-heatmap',
+          id: SIGNAL_LAYER_ID,
           type: 'heatmap',
-          source: 'signals-heat',
+          source: SIGNAL_SOURCE_ID,
           paint: {
             'heatmap-weight': ['get', 'weight'],
             'heatmap-intensity': 1.5,
@@ -138,15 +171,6 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
               1, 'rgba(239,68,68,0.9)',
             ],
           },
-        });
-      } else {
-        (map.getSource('signals-heat') as maplibregl.GeoJSONSource).setData({
-          type: 'FeatureCollection',
-          features: signals.map((s) => ({
-            type: 'Feature' as const,
-            geometry: { type: 'Point' as const, coordinates: [s.location.lng, s.location.lat] },
-            properties: { weight: s.credibilityScore * s.urgencyScore },
-          })),
         });
       }
 
@@ -165,8 +189,153 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     };
 
     if (map.isStyleLoaded()) addSignals();
-    else map.on('load', addSignals);
-  }, [signals]);
+    else map.once('load', addSignals);
+
+    return () => {
+      map.off('load', addSignals);
+    };
+  }, [signals, showSignalHeatmap]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+
+    const updateCrisisRadius = () => {
+      if (!showCrisisRadius || crises.length === 0) {
+        removeLayerAndSource(map, CRISIS_RADIUS_LAYER_ID, CRISIS_RADIUS_SOURCE_ID);
+        return;
+      }
+
+      const data = {
+        type: 'FeatureCollection' as const,
+        features: crises.map((crisis) => ({
+          type: 'Feature' as const,
+          geometry: { type: 'Point' as const, coordinates: [crisis.location.lng, crisis.location.lat] },
+          properties: {
+            radiusKm: crisis.location.affectedRadiusKm,
+            color: getCrisisColor(crisis.type),
+          },
+        })),
+      };
+
+      upsertGeoJsonSource(map, CRISIS_RADIUS_SOURCE_ID, data);
+      if (!map.getLayer(CRISIS_RADIUS_LAYER_ID)) {
+        map.addLayer({
+          id: CRISIS_RADIUS_LAYER_ID,
+          type: 'circle',
+          source: CRISIS_RADIUS_SOURCE_ID,
+          paint: {
+            'circle-radius': ['interpolate', ['linear'], ['get', 'radiusKm'], 0, 0, 1, 18, 5, 52, 10, 84],
+            'circle-color': ['get', 'color'],
+            'circle-opacity': 0.14,
+            'circle-stroke-color': ['get', 'color'],
+            'circle-stroke-width': 1,
+            'circle-stroke-opacity': 0.62,
+          },
+        });
+      }
+    };
+
+    if (map.isStyleLoaded()) updateCrisisRadius();
+    else map.once('load', updateCrisisRadius);
+    return () => {
+      map.off('load', updateCrisisRadius);
+    };
+  }, [crises, showCrisisRadius]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+    const flows = Object.values(trafficFlows);
+
+    const updateTrafficLayer = () => {
+      if (!showTrafficLayer || flows.length === 0) {
+        removeLayerAndSource(map, TRAFFIC_FLOW_LAYER_ID, TRAFFIC_FLOW_SOURCE_ID);
+        return;
+      }
+
+      const data = {
+        type: 'FeatureCollection' as const,
+        features: flows.map((flow) => ({
+          type: 'Feature' as const,
+          geometry: { type: 'Point' as const, coordinates: [flow.lng, flow.lat] },
+          properties: {
+            color: getTrafficColor(flow.congestionLevel),
+            congestion: flow.congestionLevel,
+          },
+        })),
+      };
+
+      upsertGeoJsonSource(map, TRAFFIC_FLOW_SOURCE_ID, data);
+      if (!map.getLayer(TRAFFIC_FLOW_LAYER_ID)) {
+        map.addLayer({
+          id: TRAFFIC_FLOW_LAYER_ID,
+          type: 'circle',
+          source: TRAFFIC_FLOW_SOURCE_ID,
+          paint: {
+            'circle-radius': ['match', ['get', 'congestion'], 'standstill', 20, 'heavy', 17, 'moderate', 14, 11],
+            'circle-color': ['get', 'color'],
+            'circle-opacity': 0.72,
+            'circle-stroke-color': '#080808',
+            'circle-stroke-width': 2,
+          },
+        });
+      }
+    };
+
+    if (map.isStyleLoaded()) updateTrafficLayer();
+    else map.once('load', updateTrafficLayer);
+    return () => {
+      map.off('load', updateTrafficLayer);
+    };
+  }, [trafficFlows, showTrafficLayer]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+
+    const updateResourceCoverage = () => {
+      const availableResources = resources.filter((resource) => resource.status === 'available');
+      if (!showResourceCoverage || availableResources.length === 0) {
+        removeLayerAndSource(map, RESOURCE_COVERAGE_LAYER_ID, RESOURCE_COVERAGE_SOURCE_ID);
+        return;
+      }
+
+      const data = {
+        type: 'FeatureCollection' as const,
+        features: availableResources.map((resource) => ({
+          type: 'Feature' as const,
+          geometry: { type: 'Point' as const, coordinates: [resource.currentPosition.lng, resource.currentPosition.lat] },
+          properties: {
+            radius: Math.min(40, Math.max(16, resource.capacity * 8)),
+          },
+        })),
+      };
+
+      upsertGeoJsonSource(map, RESOURCE_COVERAGE_SOURCE_ID, data);
+      if (!map.getLayer(RESOURCE_COVERAGE_LAYER_ID)) {
+        map.addLayer({
+          id: RESOURCE_COVERAGE_LAYER_ID,
+          type: 'circle',
+          source: RESOURCE_COVERAGE_SOURCE_ID,
+          paint: {
+            'circle-radius': ['get', 'radius'],
+            'circle-color': '#60a5fa',
+            'circle-opacity': 0.08,
+            'circle-stroke-color': '#60a5fa',
+            'circle-stroke-width': 1,
+            'circle-stroke-opacity': 0.45,
+          },
+        });
+      }
+    };
+
+    if (map.isStyleLoaded()) updateResourceCoverage();
+    else map.once('load', updateResourceCoverage);
+    return () => {
+      map.off('load', updateResourceCoverage);
+    };
+  }, [resources, showResourceCoverage]);
 
   // Crisis markers — dispatch-aware, rebuild on change
   useEffect(() => {
@@ -315,4 +484,44 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   return (
     <div ref={mapRef} className="w-full h-full" style={{ position: 'absolute', inset: 0 }} />
   );
+}
+
+function upsertGeoJsonSource(
+  map: maplibregl.Map,
+  sourceId: string,
+  data: GeoJSON.FeatureCollection,
+) {
+  const source = map.getSource(sourceId) as maplibregl.GeoJSONSource | undefined;
+  if (source) {
+    source.setData(data);
+    return;
+  }
+  map.addSource(sourceId, {
+    type: 'geojson',
+    data,
+  });
+}
+
+function removeLayerAndSource(map: maplibregl.Map, layerId: string, sourceId: string) {
+  if (map.getLayer(layerId)) {
+    map.removeLayer(layerId);
+  }
+  if (map.getSource(sourceId)) {
+    map.removeSource(sourceId);
+  }
+}
+
+function getTrafficColor(congestionLevel: string): string {
+  switch (congestionLevel) {
+    case 'free':
+      return '#34d399';
+    case 'moderate':
+      return '#fbbf24';
+    case 'heavy':
+      return '#fb923c';
+    case 'standstill':
+      return '#f87171';
+    default:
+      return '#60a5fa';
+  }
 }
