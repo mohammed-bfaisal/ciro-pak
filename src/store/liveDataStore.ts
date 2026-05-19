@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { TrafficFlow } from '../api/traffic';
 import type { City, Signal } from '../types';
 
-export type LiveDataStateKind = 'idle' | 'live' | 'fallback';
+export type LiveDataStateKind = 'idle' | 'live' | 'fallback' | 'disabled';
 
 export interface LiveDataStatus {
   state: LiveDataStateKind;
@@ -18,6 +18,8 @@ interface LiveDataState {
   trafficStatus: LiveDataStatus;
   setWeatherSignal: (city: City, signal: Signal) => void;
   setTrafficFlow: (scopeKey: string, flow: TrafficFlow) => void;
+  setWeatherDisabled: () => void;
+  setTrafficDisabled: () => void;
   resetCity: (city: City) => void;
   reset: () => void;
 }
@@ -60,6 +62,20 @@ export const useLiveDataStore = create<LiveDataState>((set) => ({
       fallbackReason: flow.fallbackReason,
     },
   })),
+
+  setWeatherDisabled: () => set({
+    weatherStatus: {
+      state: 'disabled',
+      provider: 'none',
+    },
+  }),
+
+  setTrafficDisabled: () => set({
+    trafficStatus: {
+      state: 'disabled',
+      provider: 'none',
+    },
+  }),
 
   resetCity: (city) => set((state) => {
     const weatherByCity = { ...state.weatherByCity };

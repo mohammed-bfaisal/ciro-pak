@@ -3,6 +3,7 @@ import { useSignalStore } from '../store/signalStore';
 import { useCrisisStore } from '../store/crisisStore';
 import { useResourceStore } from '../store/resourceStore';
 import { useSessionStore } from '../store/sessionStore';
+import { getApiClientOptionsForSettings, useSettingsStore } from '../store/settingsStore';
 import { signalFusionAgent } from './signalFusion';
 import { crisisDetectionAgent } from './crisisDetector';
 import { resourceAllocationAgent } from './resourceAllocator';
@@ -57,8 +58,11 @@ export async function runSimulation(city: City) {
     `Loading ${city} traffic data...`,
   ]);
   const rawSignals = loadSignals(city);
-  const weather = await fetchWeather(city);
-  const allSignals = [...rawSignals, weather];
+  const settings = useSettingsStore.getState();
+  const weather = settings.enableWeatherUpdates
+    ? await fetchWeather(city, getApiClientOptionsForSettings())
+    : null;
+  const allSignals = weather ? [...rawSignals, weather] : rawSignals;
   signals.setRaw(allSignals);
 
   for (const signal of allSignals) {
@@ -160,7 +164,13 @@ export async function runAIDispatch(city: City) {
     if (!crisis || !unit) return null;
     const fromLat = unit.currentPosition?.lat ?? unit.location.lat;
     const fromLng = unit.currentPosition?.lng ?? unit.location.lng;
-    const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
+    const routeResult = await fetchRoute(
+      fromLng,
+      fromLat,
+      crisis.location.lng,
+      crisis.location.lat,
+      getApiClientOptionsForSettings(),
+    );
     const distKm = haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng);
     const etaSeconds = routeResult?.etaSeconds ?? Math.max(a.etaMinutes * 60, Math.round((distKm / 30) * 3600));
     return { a, crisis, etaSeconds, routeCoordinates: routeResult?.coords, routeResult };

@@ -16,8 +16,7 @@ export interface RouteResult {
   fallbackReason?: 'tomtom_key_missing' | 'tomtom_unavailable' | 'osrm_unavailable';
 }
 
-interface RoutingOptions {
-  fetcher?: typeof fetch;
+interface RoutingOptions extends ApiClientOptions {
   apiBaseUrl?: string | null;
 }
 
