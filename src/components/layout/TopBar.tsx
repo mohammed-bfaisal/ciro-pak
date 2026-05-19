@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Activity, MapPin, ChevronDown, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Activity, MapPin, ChevronDown, Check, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { colors } from '../../constants/colors';
 import { useCityStore } from '../../store/cityStore';
@@ -22,6 +23,7 @@ const CITIES = ALL_CITIES.map((key) => {
 export function TopBar() {
   const city = useCityStore((s) => s.city);
   const setCity = useCityStore((s) => s.setCity);
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -132,8 +134,21 @@ export function TopBar() {
         </AnimatePresence>
       </div>
 
-      <div className="min-w-0 justify-self-end">
+      <div className="flex min-w-0 items-center gap-2 justify-self-end">
         <LiveDataStatus />
+        <button
+          type="button"
+          onClick={() => navigate('/settings')}
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border"
+          style={{
+            color: colors.textSecondary,
+            background: colors.raised,
+            borderColor: colors.borderDefault,
+          }}
+          aria-label="Open settings"
+        >
+          <Settings size={16} />
+        </button>
       </div>
     </header>
   );

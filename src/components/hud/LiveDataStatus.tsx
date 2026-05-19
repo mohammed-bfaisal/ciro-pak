@@ -35,6 +35,7 @@ export function LiveDataStatus() {
 }
 
 function formatTitle(label: string, status: LiveDataStatusValue): string {
+  if (status.state === 'disabled') return `${label}: disabled`;
   if (status.state === 'idle') return `${label}: idle`;
   const reason = status.fallbackReason ? `, ${status.fallbackReason}` : '';
   return `${label}: ${status.provider}${reason}`;

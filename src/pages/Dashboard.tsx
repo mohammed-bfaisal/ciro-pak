@@ -16,6 +16,7 @@ import { useCityStore } from '../store/cityStore';
 import { useResourceStore } from '../store/resourceStore';
 import { useSessionStore } from '../store/sessionStore';
 import { makeTrafficScopeKey, useLiveDataStore } from '../store/liveDataStore';
+import { getApiClientOptionsForSettings, useSettingsStore } from '../store/settingsStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
 import { getResources } from '../data/cityData';
@@ -46,6 +47,9 @@ export function Dashboard() {
   const resources         = useResourceStore((s) => s.resources);
   const sessionTick       = useSessionStore((s) => s.tick);
   const resolveSession    = useSessionStore((s) => s.resolve);
+  const enableWeatherUpdates = useSettingsStore((s) => s.enableWeatherUpdates);
+  const enableTrafficUpdates = useSettingsStore((s) => s.enableTrafficUpdates);
+  const preferBackendData = useSettingsStore((s) => s.preferBackendData);
   const trafficSignalCount = useSignalStore((s) => s.signals.filter((signal) => signal.source === 'traffic').length);
 
   // Close panels when city changes, and reload resources for new city
@@ -61,10 +65,15 @@ export function Dashboard() {
   }, [city, selectCrisis]);
 
   useEffect(() => {
+    if (!enableWeatherUpdates) {
+      useLiveDataStore.getState().setWeatherDisabled();
+      return;
+    }
+
     let cancelled = false;
 
     const refreshWeather = () => {
-      void fetchWeather(city).then((signal) => {
+      void fetchWeather(city, getApiClientOptionsForSettings()).then((signal) => {
         if (cancelled) return;
         useLiveDataStore.getState().setWeatherSignal(city, signal);
         useSignalStore.getState().upsertSignal(signal);
@@ -77,7 +86,7 @@ export function Dashboard() {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [city, simulationRunning]);
+  }, [city, simulationRunning, enableWeatherUpdates, preferBackendData]);
 
   // Movement tick: at 1x, one real second advances one route second.
   useEffect(() => {
@@ -104,6 +113,7 @@ export function Dashboard() {
             resource.currentPosition.lat,
             target.lng,
             target.lat,
+            getApiClientOptionsForSettings(),
           ).then((route) => {
             if (!route) return;
             useResourceStore.getState().updateRoute(resource.id, route, new Date().toISOString());
@@ -114,16 +124,20 @@ export function Dashboard() {
     refreshActiveRoutes();
     const id = setInterval(refreshActiveRoutes, ROUTE_REFRESH_MS);
     return () => clearInterval(id);
-  }, [simulationRunning, isPaused, trafficSignalCount]);
+  }, [simulationRunning, isPaused, trafficSignalCount, preferBackendData]);
 
   useEffect(() => {
+    if (!enableTrafficUpdates) {
+      useLiveDataStore.getState().setTrafficDisabled();
+      return;
+    }
     if (!simulationRunning || isPaused) return;
     let cancelled = false;
 
     const refreshTraffic = () => {
       const trafficScopes = getTrafficRefreshScopes(city).slice(0, MAX_TRAFFIC_SCOPES);
       trafficScopes.forEach((scope) => {
-        void fetchTrafficFlow(scope.lat, scope.lng).then((flow) => {
+        void fetchTrafficFlow(scope.lat, scope.lng, getApiClientOptionsForSettings()).then((flow) => {
           if (cancelled) return;
           useLiveDataStore.getState().setTrafficFlow(scope.key, flow);
         });
@@ -136,7 +150,7 @@ export function Dashboard() {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [city, simulationRunning, isPaused, trafficSignalCount, crisisCount]);
+  }, [city, simulationRunning, isPaused, trafficSignalCount, crisisCount, enableTrafficUpdates, preferBackendData]);
 
   useEffect(() => {
     crises.forEach((crisis) => {

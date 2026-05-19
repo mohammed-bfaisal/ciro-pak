@@ -5,6 +5,7 @@ import { DARK_STYLE, CITY_COORDS } from '../../constants/mapStyles';
 import { useSignalStore } from '../../store/signalStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
+import { getApiClientOptionsForSettings, useSettingsStore } from '../../store/settingsStore';
 import { getCrisisColor, getCredColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
@@ -31,6 +32,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const resources      = useResourceStore((s) => s.resources);
   const selectedUnitId = useResourceStore((s) => s.selectedUnitId);
   const dispatchMode   = useResourceStore((s) => s.dispatchMode);
+  const preferBackendData = useSettingsStore((s) => s.preferBackendData);
 
   // Initialize map
   useEffect(() => {
@@ -193,7 +195,13 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
           const fromLng = unit?.currentPosition.lng ?? crisis.location.lng;
 
           // Fetch real road route; fall back to haversine ETA if OSRM unreachable
-          const routeResult = await fetchRoute(fromLng, fromLat, crisis.location.lng, crisis.location.lat);
+          const routeResult = await fetchRoute(
+            fromLng,
+            fromLat,
+            crisis.location.lng,
+            crisis.location.lat,
+            getApiClientOptionsForSettings(),
+          );
           const etaSeconds = routeResult?.etaSeconds
             ?? Math.max(120, Math.round((haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng) / 30) * 3600));
 
@@ -209,7 +217,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
           .addTo(map)
       );
     });
-  }, [crises, dispatchMode, selectedUnitId]);
+  }, [crises, dispatchMode, selectedUnitId, preferBackendData]);
 
   // Vehicle markers — full rebuild only when structure changes (status, selection, dispatchMode, count)
   // NOT on every tick — position updates are handled separately below.

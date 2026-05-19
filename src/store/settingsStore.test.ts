@@ -1,0 +1,25 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { DEFAULT_SETTINGS, getApiClientOptionsForSettings, useSettingsStore } from './settingsStore';
+
+describe('settings store', () => {
+  beforeEach(() => {
+    useSettingsStore.getState().resetSettings();
+  });
+
+  it('starts with mobile-safe data and map defaults', () => {
+    expect(useSettingsStore.getState()).toMatchObject(DEFAULT_SETTINGS);
+  });
+
+  it('toggles individual boolean settings atomically', () => {
+    useSettingsStore.getState().toggleSetting('enableTrafficUpdates');
+
+    expect(useSettingsStore.getState().enableTrafficUpdates).toBe(false);
+    expect(useSettingsStore.getState().enableWeatherUpdates).toBe(true);
+  });
+
+  it('can force API adapters into local fallback mode without changing env', () => {
+    useSettingsStore.getState().setSetting('preferBackendData', false);
+
+    expect(getApiClientOptionsForSettings()).toEqual({ baseUrl: null });
+  });
+});
