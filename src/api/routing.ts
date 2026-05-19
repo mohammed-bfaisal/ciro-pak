@@ -1,5 +1,6 @@
+import { apiFetch, getConfiguredApiBaseUrl, type ApiClientOptions } from './client';
+
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving';
-const TOMTOM_BASE = 'https://api.tomtom.com/routing/1/calculateRoute';
 
 export type RoutingProvider = 'tomtom' | 'osrm';
 
@@ -17,22 +18,7 @@ export interface RouteResult {
 
 interface RoutingOptions {
   fetcher?: typeof fetch;
-  tomtomApiKey?: string;
-  now?: () => Date;
-}
-
-interface TomTomResponse {
-  routes?: {
-    summary?: {
-      lengthInMeters?: number;
-      travelTimeInSeconds?: number;
-      noTrafficTravelTimeInSeconds?: number;
-      trafficDelayInSeconds?: number;
-    };
-    legs?: {
-      points?: { latitude: number; longitude: number }[];
-    }[];
-  }[];
+  apiBaseUrl?: string | null;
 }
 
 interface OsrmResponse {
@@ -52,58 +38,37 @@ export async function fetchRoute(
   options: RoutingOptions = {},
 ): Promise<RouteResult | null> {
   const fetcher = options.fetcher ?? globalThis.fetch.bind(globalThis);
-  const tomtomApiKey = options.tomtomApiKey ?? import.meta.env.VITE_TOMTOM_API_KEY;
-
-  if (tomtomApiKey) {
-    const tomtomRoute = await fetchTomTomRoute(fromLng, fromLat, toLng, toLat, {
-      fetcher,
-      tomtomApiKey,
-      now: options.now ?? (() => new Date()),
-    });
-    if (tomtomRoute) return tomtomRoute;
-  }
+  const apiBaseUrl = Object.prototype.hasOwnProperty.call(options, 'apiBaseUrl')
+    ? options.apiBaseUrl
+    : getConfiguredApiBaseUrl();
+  const backendRoute = await fetchBackendRoute(fromLng, fromLat, toLng, toLat, {
+    fetcher,
+    baseUrl: apiBaseUrl,
+  });
+  if (backendRoute) return backendRoute;
 
   return fetchOsrmRoute(fromLng, fromLat, toLng, toLat, {
     fetcher,
-    fallbackReason: tomtomApiKey ? 'tomtom_unavailable' : 'tomtom_key_missing',
+    fallbackReason: apiBaseUrl ? 'tomtom_unavailable' : 'tomtom_key_missing',
   });
 }
 
-async function fetchTomTomRoute(
+async function fetchBackendRoute(
   fromLng: number,
   fromLat: number,
   toLng: number,
   toLat: number,
-  options: Required<Pick<RoutingOptions, 'fetcher' | 'tomtomApiKey' | 'now'>>,
+  options: ApiClientOptions,
 ): Promise<RouteResult | null> {
   try {
     const params = new URLSearchParams({
-      key: options.tomtomApiKey,
-      traffic: 'true',
-      routeType: 'fastest',
-      travelMode: 'car',
-      computeTravelTimeFor: 'all',
-      routeRepresentation: 'polyline',
+      fromLng: String(fromLng),
+      fromLat: String(fromLat),
+      toLng: String(toLng),
+      toLat: String(toLat),
     });
-    const url = `${TOMTOM_BASE}/${fromLat},${fromLng}:${toLat},${toLng}/json?${params.toString()}`;
-    const res = await options.fetcher(url);
-    if (!res.ok) return null;
-    const data = await res.json() as TomTomResponse;
-    const route = data.routes?.[0];
-    const summary = route?.summary;
-    const points = route?.legs?.flatMap((leg) => leg.points ?? []) ?? [];
-    if (!summary?.travelTimeInSeconds || points.length < 2) return null;
-
-    return {
-      coords: points.map((point) => [point.longitude, point.latitude]),
-      etaSeconds: Math.max(1, Math.ceil(summary.travelTimeInSeconds)),
-      etaMinutes: Math.max(1, Math.ceil(summary.travelTimeInSeconds / 60)),
-      distanceMeters: summary.lengthInMeters,
-      provider: 'tomtom',
-      trafficDelaySeconds: summary.trafficDelayInSeconds,
-      freeFlowEtaSeconds: summary.noTrafficTravelTimeInSeconds,
-      trafficUpdatedAt: options.now().toISOString(),
-    };
+    const route = await apiFetch<RouteResult>(`/api/route?${params.toString()}`, {}, options);
+    return isRouteResult(route) ? route : null;
   } catch {
     return null;
   }
@@ -134,4 +99,12 @@ async function fetchOsrmRoute(
   } catch {
     return null;
   }
+}
+
+function isRouteResult(value: unknown): value is RouteResult {
+  const route = value as Partial<RouteResult>;
+  return Array.isArray(route.coords) &&
+    typeof route.etaSeconds === 'number' &&
+    typeof route.etaMinutes === 'number' &&
+    (route.provider === 'tomtom' || route.provider === 'osrm');
 }
