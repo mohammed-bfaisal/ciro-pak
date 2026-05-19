@@ -2,13 +2,7 @@ import { useState, useEffect } from 'react';
 import { CiroMap } from '../components/map/CiroMap';
 import { SignalFeed } from '../components/panels/SignalFeed';
 import { CrisisPanel } from '../components/panels/CrisisPanel';
-import { GlassPanel } from '../components/ui/GlassPanel';
-import { ControlBar } from '../components/hud/ControlBar';
-import { UnitRoster } from '../components/hud/UnitRoster';
-import { IncidentRegistry } from '../components/hud/IncidentRegistry';
-import { SessionStats } from '../components/hud/SessionStats';
-import { AgentTracePanel } from '../components/hud/AgentTracePanel';
-import { ImpactPanel } from '../components/hud/ImpactPanel';
+import { DesktopOperationsRail } from '../components/hud/DesktopOperationsRail';
 import { MobileOperationsDock } from '../components/hud/MobileOperationsDock';
 import { useCrisisStore } from '../store/crisisStore';
 import { useSignalStore } from '../store/signalStore';
@@ -175,7 +169,6 @@ export function Dashboard() {
       <CiroMap city={city} onCrisisClick={(id) => selectCrisis(id)} />
 
       {/* 3-button control bar — top center */}
-      <ControlBar />
 
       {/* Signal feed toggle — top left */}
       <div className="hidden desktop:block absolute top-3 left-3 z-20">
@@ -203,15 +196,6 @@ export function Dashboard() {
       </div>
 
       {/* Active crises badge — top right */}
-      {crisisCount > 0 && (
-        <div className="hidden desktop:block absolute top-3 right-3 z-20">
-          <GlassPanel amber className="px-3 py-2 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full animate-pulse-dot" style={{ background: colors.danger }} />
-            <span className="text-xs font-semibold" style={{ color: colors.textPrimary }}>{crisisCount} Active</span>
-          </GlassPanel>
-        </div>
-      )}
-
       {/* Signal feed panel */}
       {showSignals && (
         <div className="absolute top-0 left-0 bottom-0 z-20 w-[320px] mobile:w-full border-r" style={{
@@ -233,17 +217,17 @@ export function Dashboard() {
         <CrisisPanel crisisId={selectedCrisisId} onClose={() => selectCrisis(null)} />
       )}
 
-      {/* HUD panels */}
-      <SessionStats />
-      <AgentTracePanel />
-      <ImpactPanel />
-      <UnitRoster />
-      <IncidentRegistry />
-      <MobileOperationsDock
-        showSignals={showSignals}
-        onToggleSignals={() => setShowSignals((value) => !value)}
-        onSelectCrisis={(id) => selectCrisis(id)}
-      />
+      {!selectedCrisisId && (
+        <DesktopOperationsRail onSelectCrisis={(id) => selectCrisis(id)} />
+      )}
+
+      {!selectedCrisisId && !showSignals && (
+        <MobileOperationsDock
+          showSignals={showSignals}
+          onToggleSignals={() => setShowSignals((value) => !value)}
+          onSelectCrisis={(id) => selectCrisis(id)}
+        />
+      )}
     </div>
   );
 }
