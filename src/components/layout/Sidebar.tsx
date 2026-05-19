@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Map, Radio, AlertTriangle, Truck, Terminal, GitCompare, Play, Sliders, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { Map, Radio, AlertTriangle, Truck, Terminal, GitCompare, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 import { colors } from '../../constants/colors';
 
 const navItems = [
@@ -10,8 +10,6 @@ const navItems = [
   { path: '/trace',     icon: Terminal,        label: 'Agent Trace'},
   { path: '/compare',   icon: GitCompare,     label: 'Compare'   },
   { path: '/settings',  icon: Settings,       label: 'Settings'  },
-  { path: '/replay',    icon: Play,           label: 'Replay'    },
-  { path: '/whatif',    icon: Sliders,        label: 'What-If'   },
 ];
 
 interface SidebarProps {
