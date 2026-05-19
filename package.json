@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run --dir src",
     "stations:generate": "node scripts/generate-station-snapshot.mjs",
     "preview": "vite preview"
   },
