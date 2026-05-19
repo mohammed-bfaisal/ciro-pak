@@ -13,7 +13,7 @@ export interface BackendEnv {
 
 export function readEnv(source: NodeJS.ProcessEnv = process.env): BackendEnv {
   const port = Number.parseInt(source.PORT ?? '8080', 10);
-  const openrouterModel = cleanOptional(source.OPENROUTER_MODEL) ?? 'google/gemini-2.0-flash-exp:free';
+  const openrouterModel = cleanOptional(source.OPENROUTER_MODEL) ?? 'google/gemma-4-26b-a4b-it:free';
 
   return {
     port: Number.isFinite(port) ? port : 8080,
