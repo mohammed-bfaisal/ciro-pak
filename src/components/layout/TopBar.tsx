@@ -1,12 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Activity, MapPin, ChevronDown, Check, Settings } from 'lucide-react';
+import { Activity, MapPin, ChevronDown, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { colors } from '../../constants/colors';
 import { useCityStore } from '../../store/cityStore';
-import { useSettingsStore } from '../../store/settingsStore';
 import { ALL_CITIES, CITY_REGISTRY } from '../../data/cities';
-import { getP01CityLabel, resolveP01Runtime } from '../../foundation/urduRtlLanguage';
 import { getMapTilePreloader } from '../../utils/mapTilePreloader';
 
 const CITIES = ALL_CITIES.map((key) => {
@@ -22,10 +19,8 @@ const CITIES = ALL_CITIES.map((key) => {
 });
 
 export function TopBar() {
-  const navigate = useNavigate();
   const city = useCityStore((s) => s.city);
   const setCity = useCityStore((s) => s.setCity);
-  const p01 = useSettingsStore((s) => s.p01);
   const [open, setOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -38,8 +33,6 @@ export function TopBar() {
   }, []);
 
   const current = CITIES.find((c) => c.key === city) ?? CITIES[0];
-  const p01Runtime = resolveP01Runtime(p01);
-  const cityLabel = (targetCity: (typeof CITIES)[number]['key']) => getP01CityLabel(targetCity, p01Runtime.mode);
   const preloadCityTiles = (targetCity: (typeof CITIES)[number]['key']) => {
     void getMapTilePreloader()?.preloadCity(targetCity);
   };
@@ -78,8 +71,6 @@ export function TopBar() {
         <button
           onClick={() => setOpen((v) => !v)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150"
-          dir={p01Runtime.dir}
-          lang={p01Runtime.lang}
           style={{
             background: open ? colors.overlay : colors.raised,
             color: colors.textPrimary,
@@ -88,9 +79,7 @@ export function TopBar() {
           }}
         >
           <MapPin size={13} style={{ color: colors.amber, flexShrink: 0 }} />
-          <span className="flex-1" style={{ textAlign: p01Runtime.dir === 'rtl' ? 'right' : 'left' }}>
-            {cityLabel(current.key)}
-          </span>
+          <span className="flex-1 text-left">{current.label}</span>
           <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }}>
             <ChevronDown size={13} style={{ color: colors.textDim }} />
           </motion.div>
@@ -104,8 +93,6 @@ export function TopBar() {
               exit={{ opacity: 0, y: -4, scale: 0.97 }}
               transition={{ duration: 0.14 }}
               className="absolute top-full mt-1.5 left-0 right-0 rounded-xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
-              dir={p01Runtime.dir}
-              lang={p01Runtime.lang}
               style={{
                 background: 'rgba(26,26,26,0.98)',
                 border: `1px solid ${colors.borderStrong}`,
@@ -131,11 +118,9 @@ export function TopBar() {
                     <MapPin size={12} style={{ color: active ? colors.amber : colors.textDim, flexShrink: 0 }} />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium leading-none mb-0.5" style={{ color: active ? colors.amber : colors.textPrimary }}>
-                        {cityLabel(c.key)}
+                        {c.label}
                       </div>
-                      <div className="text-[10px] leading-none" style={{ color: colors.textDim }}>
-                        {p01.enabled ? `${getP01CityLabel(c.key, 'romanUrdu')} - ${c.sub}` : c.sub}
-                      </div>
+                      <div className="text-[10px] leading-none" style={{ color: colors.textDim }}>{c.sub}</div>
                     </div>
                     {active && <Check size={12} style={{ color: colors.amber, flexShrink: 0 }} />}
                   </button>
@@ -146,21 +131,7 @@ export function TopBar() {
         </AnimatePresence>
       </div>
 
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => navigate('/settings')}
-          aria-label="Open settings"
-          className="flex h-9 w-9 items-center justify-center rounded-lg"
-          style={{
-            background: colors.raised,
-            color: colors.textSecondary,
-            border: `1px solid ${colors.borderDefault}`,
-          }}
-        >
-          <Settings size={16} />
-        </button>
-      </div>
+      <div aria-hidden="true" />
     </header>
   );
 }

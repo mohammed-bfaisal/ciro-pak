@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import type { AgentTraceEvent, City, ImpactSnapshot } from '../types';
 import { getCityData } from '../data/cityData';
-import type { P00Status } from '../foundation/contracts';
-import type { P01Status } from '../foundation/urduRtlLanguage';
 import {
   advanceLiveSimulation,
   createLiveSimulation,
@@ -18,21 +16,11 @@ interface SessionState {
   live: LiveSimulationState | null;
   traceEvents: AgentTraceEvent[];
   impactSnapshots: ImpactSnapshot[];
-  p00Status: P00Status;
-  p00LastUpdatedAt: string | null;
-  p00ErrorState: string | null;
-  p01Status: P01Status;
-  p01LastUpdatedAt: string | null;
-  p01ErrorState: string | null;
   start: (city: City) => void;
   tick: (deltaMinutes: number) => void;
   resolve: (crisisId: string, responseMinutes: number) => void;
   addTraceEvents: (events: AgentTraceEvent[]) => void;
   addImpactSnapshots: (snapshots: ImpactSnapshot[]) => void;
-  setP00Status: (status: P00Status, updatedAt: string) => void;
-  setP00ErrorState: (message: string | null) => void;
-  setP01Status: (status: P01Status, updatedAt: string) => void;
-  setP01ErrorState: (message: string | null) => void;
   reset: () => void;
 }
 
@@ -40,12 +28,6 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   live: null,
   traceEvents: [],
   impactSnapshots: [],
-  p00Status: 'idle',
-  p00LastUpdatedAt: null,
-  p00ErrorState: null,
-  p01Status: 'idle',
-  p01LastUpdatedAt: null,
-  p01ErrorState: null,
 
   start: (city) => {
     const cityData = getCityData(city);
@@ -118,39 +100,5 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     impactSnapshots: [...snapshots, ...state.impactSnapshots].slice(0, 12),
   })),
 
-  setP00Status: (p00Status, p00LastUpdatedAt) => set({
-    p00Status,
-    p00LastUpdatedAt,
-    p00ErrorState: p00Status === 'error' ? get().p00ErrorState : null,
-  }),
-
-  setP00ErrorState: (message) => set({
-    p00Status: message ? 'error' : 'idle',
-    p00ErrorState: message,
-    p00LastUpdatedAt: new Date().toISOString(),
-  }),
-
-  setP01Status: (p01Status, p01LastUpdatedAt) => set({
-    p01Status,
-    p01LastUpdatedAt,
-    p01ErrorState: p01Status === 'error' ? get().p01ErrorState : null,
-  }),
-
-  setP01ErrorState: (message) => set({
-    p01Status: message ? 'error' : 'idle',
-    p01ErrorState: message,
-    p01LastUpdatedAt: new Date().toISOString(),
-  }),
-
-  reset: () => set({
-    live: null,
-    traceEvents: [],
-    impactSnapshots: [],
-    p00Status: 'idle',
-    p00LastUpdatedAt: null,
-    p00ErrorState: null,
-    p01Status: 'idle',
-    p01LastUpdatedAt: null,
-    p01ErrorState: null,
-  }),
+  reset: () => set({ live: null, traceEvents: [], impactSnapshots: [] }),
 }));

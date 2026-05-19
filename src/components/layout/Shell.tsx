@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
-import { resolveP01Runtime } from '../../foundation/urduRtlLanguage';
-import { useSettingsStore } from '../../store/settingsStore';
 
 interface ShellProps {
   children: ReactNode;
@@ -12,34 +10,9 @@ interface ShellProps {
 
 export function Shell({ children }: ShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const p01 = useSettingsStore((state) => state.p01);
-  const p01Runtime = resolveP01Runtime(p01);
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return undefined;
-    const root = document.documentElement;
-    const previousLang = root.lang;
-    const previousDir = root.dir;
-    root.lang = p01Runtime.lang;
-    root.dir = p01Runtime.dir;
-    root.dataset.ciroLocale = p01Runtime.mode;
-    root.dataset.ciroP01Enabled = String(p01.enabled);
-    return () => {
-      root.lang = previousLang || 'en';
-      root.dir = previousDir || 'ltr';
-      delete root.dataset.ciroLocale;
-      delete root.dataset.ciroP01Enabled;
-    };
-  }, [p01.enabled, p01Runtime.dir, p01Runtime.lang, p01Runtime.mode]);
 
   return (
-    <div
-      className="app-shell flex flex-col w-full overflow-hidden bg-void"
-      dir={p01Runtime.dir}
-      lang={p01Runtime.lang}
-      data-ciro-locale={p01Runtime.mode}
-      data-ciro-p01-enabled={p01.enabled}
-    >
+    <div className="app-shell flex flex-col w-full overflow-hidden bg-void">
       <TopBar />
       {/* Content row: sidebar + main */}
       <div className="relative flex flex-1 overflow-hidden min-h-0">
