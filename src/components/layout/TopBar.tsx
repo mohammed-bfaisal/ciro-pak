@@ -5,6 +5,7 @@ import { colors } from '../../constants/colors';
 import { useCityStore } from '../../store/cityStore';
 import { ALL_CITIES, CITY_REGISTRY } from '../../data/cities';
 import { getMapTilePreloader } from '../../utils/mapTilePreloader';
+import { LiveDataStatus } from '../hud/LiveDataStatus';
 
 const CITIES = ALL_CITIES.map((key) => {
   const metadata = CITY_REGISTRY[key];
@@ -131,7 +132,9 @@ export function TopBar() {
         </AnimatePresence>
       </div>
 
-      <div aria-hidden="true" />
+      <div className="min-w-0 justify-self-end">
+        <LiveDataStatus />
+      </div>
     </header>
   );
 }
