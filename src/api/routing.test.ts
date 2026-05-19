@@ -2,6 +2,46 @@ import { describe, expect, it, vi } from 'vitest';
 import { fetchRoute } from './routing';
 
 describe('traffic-aware routing', () => {
+  it('calls the default browser fetch with its global receiver', async () => {
+    const originalFetch = globalThis.fetch;
+    const fetcher = vi.fn(function (this: typeof globalThis) {
+      if (this !== globalThis) {
+        throw new TypeError('Illegal invocation');
+      }
+
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          code: 'Ok',
+          routes: [
+            {
+              duration: 610,
+              distance: 4100,
+              geometry: {
+                coordinates: [
+                  [73.02, 33.69],
+                  [73.03, 33.695],
+                  [73.05, 33.7],
+                ],
+              },
+            },
+          ],
+        }),
+      } as Response);
+    });
+
+    vi.stubGlobal('fetch', fetcher);
+
+    try {
+      const route = await fetchRoute(73.02, 33.69, 73.05, 33.7, { tomtomApiKey: '' });
+
+      expect(route?.coords).toHaveLength(3);
+      expect(fetcher).toHaveBeenCalledOnce();
+    } finally {
+      vi.stubGlobal('fetch', originalFetch);
+    }
+  });
+
   it('uses TomTom traffic travel time when an API key is available', async () => {
     const fetcher = vi.fn(async () => ({
       ok: true,
