@@ -51,7 +51,7 @@ export async function fetchRoute(
   toLat: number,
   options: RoutingOptions = {},
 ): Promise<RouteResult | null> {
-  const fetcher = options.fetcher ?? fetch;
+  const fetcher = options.fetcher ?? globalThis.fetch.bind(globalThis);
   const tomtomApiKey = options.tomtomApiKey ?? import.meta.env.VITE_TOMTOM_API_KEY;
 
   if (tomtomApiKey) {
