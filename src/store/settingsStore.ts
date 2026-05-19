@@ -24,7 +24,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showTrafficLayer: true,
   showSignalHeatmap: true,
   showCrisisRadius: true,
-  showResourceCoverage: false,
+  showResourceCoverage: true,
   enableWeatherUpdates: true,
   enableTrafficUpdates: true,
   preferBackendData: true,

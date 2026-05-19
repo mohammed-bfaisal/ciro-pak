@@ -10,6 +10,10 @@ describe('settings store', () => {
     expect(useSettingsStore.getState()).toMatchObject(DEFAULT_SETTINGS);
   });
 
+  it('shows resource coverage ranges by default', () => {
+    expect(useSettingsStore.getState().showResourceCoverage).toBe(true);
+  });
+
   it('toggles individual boolean settings atomically', () => {
     useSettingsStore.getState().toggleSetting('enableTrafficUpdates');
 
