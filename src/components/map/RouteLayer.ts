@@ -47,4 +47,7 @@ export function updateRouteLayer(map: maplibregl.Map, resources: Resource[]): vo
     });
 
   src.setData({ type: 'FeatureCollection', features });
+  if (map.getLayer(LAYER_ID)) {
+    map.moveLayer(LAYER_ID);
+  }
 }
