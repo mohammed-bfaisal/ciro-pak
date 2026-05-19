@@ -12,6 +12,7 @@ describe('SettingsPage', () => {
 
   it('renders P00 foundation settings without sensitive credential fields', () => {
     useSessionStore.getState().setP00Status('fallback', '2026-05-18T08:00:00.000Z');
+    useSessionStore.getState().setP01Status('fallback', '2026-05-18T08:00:00.000Z');
 
     const html = renderToStaticMarkup(<SettingsPage />);
 
@@ -19,6 +20,10 @@ describe('SettingsPage', () => {
     expect(html).toContain('Backend Contracts');
     expect(html).toContain('Mobile parity');
     expect(html).toContain('Bundled fallback');
+    expect(html).toContain('Urdu &amp; RTL Language');
+    expect(html).toContain('Roman Urdu');
+    expect(html).toContain('dir=&quot;rtl&quot;');
+    expect(html).toContain('اردو');
     expect(html).not.toMatch(/api key/i);
     expect(html).not.toMatch(/secret/i);
     expect(html).not.toMatch(/token/i);

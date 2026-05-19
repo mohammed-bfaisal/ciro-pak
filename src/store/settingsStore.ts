@@ -4,14 +4,25 @@ import {
   FOUNDATION_SETTING_KEYS,
   type P00Settings,
 } from '../foundation/contracts';
+import {
+  DEFAULT_P01_SETTINGS,
+  P01_SETTING_KEYS,
+  type P01Settings,
+} from '../foundation/urduRtlLanguage';
 
 interface SettingsState {
   p00: P00Settings;
+  p01: P01Settings;
   loadP00Settings: () => void;
+  loadP01Settings: () => void;
   setP00Enabled: (enabled: boolean) => void;
   setP00MobileParity: (mobileParity: boolean) => void;
   markP00Reviewed: (lastReviewedAt: string) => void;
   resetP00Settings: () => void;
+  setP01Enabled: (enabled: boolean) => void;
+  setP01MobileParity: (mobileParity: boolean) => void;
+  markP01Reviewed: (lastReviewedAt: string) => void;
+  resetP01Settings: () => void;
 }
 
 function getStorage(): Storage | null {
@@ -44,6 +55,14 @@ function readP00Settings(): P00Settings {
   };
 }
 
+function readP01Settings(): P01Settings {
+  return {
+    enabled: readBooleanSetting(P01_SETTING_KEYS.enabled, DEFAULT_P01_SETTINGS.enabled),
+    mobileParity: readBooleanSetting(P01_SETTING_KEYS.mobileParity, DEFAULT_P01_SETTINGS.mobileParity),
+    lastReviewedAt: readIsoSetting(P01_SETTING_KEYS.lastReviewedAt),
+  };
+}
+
 function persistP00Settings(settings: P00Settings): void {
   const storage = getStorage();
   if (!storage) return;
@@ -56,10 +75,24 @@ function persistP00Settings(settings: P00Settings): void {
   }
 }
 
+function persistP01Settings(settings: P01Settings): void {
+  const storage = getStorage();
+  if (!storage) return;
+  storage.setItem(P01_SETTING_KEYS.enabled, String(settings.enabled));
+  storage.setItem(P01_SETTING_KEYS.mobileParity, String(settings.mobileParity));
+  if (settings.lastReviewedAt) {
+    storage.setItem(P01_SETTING_KEYS.lastReviewedAt, settings.lastReviewedAt);
+  } else {
+    storage.removeItem(P01_SETTING_KEYS.lastReviewedAt);
+  }
+}
+
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   p00: { ...DEFAULT_P00_SETTINGS },
+  p01: { ...DEFAULT_P01_SETTINGS },
 
   loadP00Settings: () => set({ p00: readP00Settings() }),
+  loadP01Settings: () => set({ p01: readP01Settings() }),
 
   setP00Enabled: (enabled) => {
     const next = { ...get().p00, enabled };
@@ -80,4 +113,24 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   resetP00Settings: () => set({ p00: { ...DEFAULT_P00_SETTINGS } }),
+
+  setP01Enabled: (enabled) => {
+    const next = { ...get().p01, enabled };
+    persistP01Settings(next);
+    set({ p01: next });
+  },
+
+  setP01MobileParity: (mobileParity) => {
+    const next = { ...get().p01, mobileParity };
+    persistP01Settings(next);
+    set({ p01: next });
+  },
+
+  markP01Reviewed: (lastReviewedAt) => {
+    const next = { ...get().p01, lastReviewedAt };
+    persistP01Settings(next);
+    set({ p01: next });
+  },
+
+  resetP01Settings: () => set({ p01: { ...DEFAULT_P01_SETTINGS } }),
 }));
