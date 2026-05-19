@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { AgentTraceEvent, City, ImpactSnapshot } from '../types';
 import { getCityData } from '../data/cityData';
 import type { P00Status } from '../foundation/contracts';
+import type { P02Status } from '../displayAccessibility/contracts';
 import {
   advanceLiveSimulation,
   createLiveSimulation,
@@ -20,6 +21,9 @@ interface SessionState {
   p00Status: P00Status;
   p00LastUpdatedAt: string | null;
   p00ErrorState: string | null;
+  p02Status: P02Status;
+  p02LastUpdatedAt: string | null;
+  p02ErrorState: string | null;
   start: (city: City) => void;
   tick: (deltaMinutes: number) => void;
   resolve: (crisisId: string, responseMinutes: number) => void;
@@ -27,6 +31,8 @@ interface SessionState {
   addImpactSnapshots: (snapshots: ImpactSnapshot[]) => void;
   setP00Status: (status: P00Status, updatedAt: string) => void;
   setP00ErrorState: (message: string | null) => void;
+  setP02Status: (status: P02Status, updatedAt: string) => void;
+  setP02ErrorState: (message: string | null) => void;
   reset: () => void;
 }
 
@@ -37,6 +43,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   p00Status: 'idle',
   p00LastUpdatedAt: null,
   p00ErrorState: null,
+  p02Status: 'idle',
+  p02LastUpdatedAt: null,
+  p02ErrorState: null,
 
   start: (city) => {
     const cityData = getCityData(city);
@@ -121,6 +130,18 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     p00LastUpdatedAt: new Date().toISOString(),
   }),
 
+  setP02Status: (p02Status, p02LastUpdatedAt) => set({
+    p02Status,
+    p02LastUpdatedAt,
+    p02ErrorState: p02Status === 'error' ? get().p02ErrorState : null,
+  }),
+
+  setP02ErrorState: (message) => set({
+    p02Status: message ? 'error' : 'idle',
+    p02ErrorState: message,
+    p02LastUpdatedAt: new Date().toISOString(),
+  }),
+
   reset: () => set({
     live: null,
     traceEvents: [],
@@ -128,5 +149,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     p00Status: 'idle',
     p00LastUpdatedAt: null,
     p00ErrorState: null,
+    p02Status: 'idle',
+    p02LastUpdatedAt: null,
+    p02ErrorState: null,
   }),
 }));

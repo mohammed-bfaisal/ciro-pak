@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { BottomNav } from './BottomNav';
+import { resolveP02DisplayPreferences } from '../../displayAccessibility/contracts';
+import { useSettingsStore } from '../../store/settingsStore';
 
 interface ShellProps {
   children: ReactNode;
@@ -10,6 +12,22 @@ interface ShellProps {
 
 export function Shell({ children }: ShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const p02 = useSettingsStore((state) => state.p02);
+  const loadP02Settings = useSettingsStore((state) => state.loadP02Settings);
+
+  useEffect(() => {
+    loadP02Settings();
+  }, [loadP02Settings]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const preferences = resolveP02DisplayPreferences(p02);
+    const root = document.documentElement;
+    root.dataset.ciroP02Enabled = String(p02.enabled);
+    root.dataset.ciroP02Density = preferences.textDensity;
+    root.dataset.ciroP02LargeText = String(preferences.largeText);
+    root.dataset.ciroP02ColorblindSafe = String(preferences.colorblindSafe);
+  }, [p02]);
 
   return (
     <div className="app-shell flex flex-col w-full overflow-hidden bg-void">

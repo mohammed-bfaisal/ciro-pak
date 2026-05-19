@@ -7,6 +7,7 @@ import { useSessionStore } from '../store/sessionStore';
 describe('SettingsPage', () => {
   afterEach(() => {
     useSettingsStore.getState().resetP00Settings();
+    useSettingsStore.getState().resetP02Settings();
     useSessionStore.getState().reset();
   });
 
@@ -19,6 +20,21 @@ describe('SettingsPage', () => {
     expect(html).toContain('Backend Contracts');
     expect(html).toContain('Mobile parity');
     expect(html).toContain('Bundled fallback');
+    expect(html).not.toMatch(/api key/i);
+    expect(html).not.toMatch(/secret/i);
+    expect(html).not.toMatch(/token/i);
+  });
+
+  it('renders P02 display accessibility settings without sensitive credential fields', () => {
+    useSessionStore.getState().setP02Status('fallback', '2026-05-19T08:00:00.000Z');
+    useSettingsStore.getState().setP02Enabled(true);
+
+    const html = renderToStaticMarkup(<SettingsPage />);
+
+    expect(html).toContain('Display Accessibility');
+    expect(html).toContain('Larger text');
+    expect(html).toContain('Colorblind-safe');
+    expect(html).toContain('Text density');
     expect(html).not.toMatch(/api key/i);
     expect(html).not.toMatch(/secret/i);
     expect(html).not.toMatch(/token/i);

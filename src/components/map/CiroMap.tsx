@@ -8,6 +8,7 @@ import { useResourceStore } from '../../store/resourceStore';
 import { getCrisisColor, getCredColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
+import { removeDisplayAccessibilityLayers, syncDisplayAccessibilityLayers } from './displayAccessibilityLayers';
 import { removeFoundationLayers, syncFoundationLayers } from './foundationLayers';
 import { haversineDistance } from '../../utils/geo';
 import { fetchRoute } from '../../api/routing';
@@ -34,6 +35,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const selectedUnitId = useResourceStore((s) => s.selectedUnitId);
   const dispatchMode   = useResourceStore((s) => s.dispatchMode);
   const foundationEnabled = useSettingsStore((s) => s.p00.enabled);
+  const displayAccessibilityEnabled = useSettingsStore((s) => s.p02.enabled);
 
   // Initialize map
   useEffect(() => {
@@ -85,6 +87,14 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     if (map.isStyleLoaded()) sync();
     else map.once('load', sync);
   }, [city, foundationEnabled]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+    const sync = () => syncDisplayAccessibilityLayers(map, city, displayAccessibilityEnabled);
+    if (map.isStyleLoaded()) sync();
+    else map.once('load', sync);
+  }, [city, displayAccessibilityEnabled]);
 
   // Fly to selected unit (bidirectional: panel → map)
   useEffect(() => {
@@ -309,7 +319,10 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (mapInstance.current) removeFoundationLayers(mapInstance.current);
+      if (mapInstance.current) {
+        removeFoundationLayers(mapInstance.current);
+        removeDisplayAccessibilityLayers(mapInstance.current);
+      }
       signalMarkersRef.current.forEach((m) => m.remove());
       crisisMarkersRef.current.forEach((m) => m.remove());
       vehicleMarkersRef.current.forEach((m) => m.remove());

@@ -48,4 +48,24 @@ describe('session store integration', () => {
     expect(useSessionStore.getState().p00Status).toBe('idle');
     expect(useSessionStore.getState().p00ErrorState).toBeNull();
   });
+
+  it('tracks P02 runtime status without changing the live dispatch defaults', () => {
+    const session = useSessionStore.getState();
+
+    expect(session.p02Status).toBe('idle');
+    expect(session.p02LastUpdatedAt).toBeNull();
+    expect(session.p02ErrorState).toBeNull();
+
+    session.setP02Status('ready', '2026-05-19T08:00:00.000Z');
+    expect(useSessionStore.getState().p02Status).toBe('ready');
+    expect(useSessionStore.getState().p02LastUpdatedAt).toBe('2026-05-19T08:00:00.000Z');
+
+    session.setP02ErrorState('display backend unavailable');
+    expect(useSessionStore.getState().p02Status).toBe('error');
+    expect(useSessionStore.getState().p02ErrorState).toBe('display backend unavailable');
+
+    useSessionStore.getState().reset();
+    expect(useSessionStore.getState().p02Status).toBe('idle');
+    expect(useSessionStore.getState().p02ErrorState).toBeNull();
+  });
 });

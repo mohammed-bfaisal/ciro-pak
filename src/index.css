@@ -67,6 +67,36 @@ body {
   touch-action: manipulation;
 }
 
+html[data-ciro-p02-large-text="true"] {
+  font-size: 112.5%;
+}
+
+html[data-ciro-p02-density="comfortable"] .app-shell {
+  line-height: 1.55;
+}
+
+html[data-ciro-p02-density="comfortable"] .app-shell button,
+html[data-ciro-p02-density="comfortable"] .app-shell label {
+  min-height: 44px;
+}
+
+html[data-ciro-p02-density="comfortable"] .app-shell input[type='checkbox'] {
+  min-height: 22px;
+  min-width: 22px;
+}
+
+html[data-ciro-p02-colorblind-safe="true"] {
+  --color-amber: #f0e442;
+  --color-success: #009e73;
+  --color-warning: #f0e442;
+  --color-danger: #d55e00;
+  --color-info: #56b4e9;
+}
+
+html[data-ciro-p02-colorblind-safe="true"] .maplibregl-canvas {
+  filter: saturate(0.9) contrast(1.12);
+}
+
 button,
 a {
   touch-action: manipulation;
