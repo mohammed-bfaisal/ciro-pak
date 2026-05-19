@@ -33,7 +33,7 @@ describe('traffic-aware routing', () => {
     vi.stubGlobal('fetch', fetcher);
 
     try {
-      const route = await fetchRoute(73.02, 33.69, 73.05, 33.7);
+      const route = await fetchRoute(73.02, 33.69, 73.05, 33.7, { apiBaseUrl: null });
 
       expect(route?.coords).toHaveLength(3);
       expect(fetcher).toHaveBeenCalledOnce();
@@ -104,7 +104,7 @@ describe('traffic-aware routing', () => {
       }),
     })) as unknown as typeof fetch;
 
-    const route = await fetchRoute(73.02, 33.69, 73.05, 33.7, { fetcher });
+    const route = await fetchRoute(73.02, 33.69, 73.05, 33.7, { fetcher, apiBaseUrl: null });
 
     expect(route?.provider).toBe('osrm');
     expect(route?.etaSeconds).toBe(610);

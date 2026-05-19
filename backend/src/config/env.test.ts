@@ -9,3 +9,12 @@ test('readEnv defaults OpenRouter to the cheap hosted model with a tight token c
   assert.deepEqual(env.openrouterAllowedModels, ['mistralai/mistral-nemo']);
   assert.equal(env.openrouterMaxTokens, 240);
 });
+
+test('readEnv permits common local web and Capacitor origins by default', () => {
+  const env = readEnv({});
+
+  assert.ok(env.allowedOrigins.includes('http://localhost:5173'));
+  assert.ok(env.allowedOrigins.includes('http://127.0.0.1:5173'));
+  assert.ok(env.allowedOrigins.includes('http://localhost:5177'));
+  assert.ok(env.allowedOrigins.includes('capacitor://localhost'));
+});

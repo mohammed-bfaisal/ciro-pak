@@ -1,7 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
-import { apiFetch, apiUrl, BackendNotConfiguredError, getConfiguredApiBaseUrl } from './client';
+import {
+  apiFetch,
+  apiUrl,
+  BackendNotConfiguredError,
+  DEFAULT_API_BASE_URL,
+  getConfiguredApiBaseUrl,
+} from './client';
 
 describe('backend API client', () => {
+  it('uses the deployed Cloud Run backend when no env override is present', () => {
+    expect(getConfiguredApiBaseUrl()).toBe(DEFAULT_API_BASE_URL);
+  });
+
   it('normalizes configured backend base URLs', () => {
     expect(getConfiguredApiBaseUrl('https://example.com///')).toBe('https://example.com');
     expect(getConfiguredApiBaseUrl('   ')).toBeNull();

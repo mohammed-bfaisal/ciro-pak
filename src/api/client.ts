@@ -10,8 +10,12 @@ export interface ApiClientOptions {
   fetcher?: typeof fetch;
 }
 
-export function getConfiguredApiBaseUrl(raw = import.meta.env.VITE_API_BASE_URL as string | undefined): string | null {
-  const cleaned = raw?.trim();
+export const DEFAULT_API_BASE_URL = 'https://ciro-backend-nx552zjyba-el.a.run.app';
+
+export function getConfiguredApiBaseUrl(raw?: string | null): string | null {
+  const envBaseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
+  const configured = raw ?? envBaseUrl ?? DEFAULT_API_BASE_URL;
+  const cleaned = configured?.trim();
   if (!cleaned) return null;
   return cleaned.replace(/\/+$/, '');
 }

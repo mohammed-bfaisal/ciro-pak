@@ -11,6 +11,23 @@ export interface BackendEnv {
   openrouterAppTitle: string;
 }
 
+const DEFAULT_ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5174',
+  'http://localhost:5175',
+  'http://127.0.0.1:5175',
+  'http://localhost:5176',
+  'http://127.0.0.1:5176',
+  'http://localhost:5177',
+  'http://127.0.0.1:5177',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+  'capacitor://localhost',
+  'https://localhost',
+];
+
 export function readEnv(source: NodeJS.ProcessEnv = process.env): BackendEnv {
   const port = Number.parseInt(source.PORT ?? '8080', 10);
   const openrouterModel = cleanOptional(source.OPENROUTER_MODEL) ?? 'mistralai/mistral-nemo';
@@ -30,7 +47,7 @@ export function readEnv(source: NodeJS.ProcessEnv = process.env): BackendEnv {
 }
 
 export function parseAllowedOrigins(value: string | undefined): string[] {
-  return (value ?? 'http://localhost:5173,capacitor://localhost')
+  return (value ?? DEFAULT_ALLOWED_ORIGINS.join(','))
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
