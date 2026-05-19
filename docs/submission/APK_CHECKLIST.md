@@ -10,6 +10,8 @@ cd android
 .\gradlew.bat assembleDebug
 ```
 
+Java requirement: Java 11 or newer must be active in `JAVA_HOME` and `PATH`.
+
 Expected debug APK path:
 
 ```text
