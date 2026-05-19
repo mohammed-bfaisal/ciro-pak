@@ -5,6 +5,11 @@ import {
   type P00Settings,
 } from '../foundation/contracts';
 import {
+  DEFAULT_P04_SETTINGS,
+  P04_SETTING_KEYS,
+  type P04Settings,
+} from '../foundation/missionBriefing';
+import {
   DEFAULT_P01_SETTINGS,
   P01_SETTING_KEYS,
   type P01Settings,
@@ -13,8 +18,10 @@ import {
 interface SettingsState {
   p00: P00Settings;
   p01: P01Settings;
+  p04: P04Settings;
   loadP00Settings: () => void;
   loadP01Settings: () => void;
+  loadP04Settings: () => void;
   setP00Enabled: (enabled: boolean) => void;
   setP00MobileParity: (mobileParity: boolean) => void;
   markP00Reviewed: (lastReviewedAt: string) => void;
@@ -23,6 +30,10 @@ interface SettingsState {
   setP01MobileParity: (mobileParity: boolean) => void;
   markP01Reviewed: (lastReviewedAt: string) => void;
   resetP01Settings: () => void;
+  setP04Enabled: (enabled: boolean) => void;
+  setP04MobileParity: (mobileParity: boolean) => void;
+  markP04Reviewed: (lastReviewedAt: string) => void;
+  resetP04Settings: () => void;
 }
 
 function getStorage(): Storage | null {
@@ -63,6 +74,14 @@ function readP01Settings(): P01Settings {
   };
 }
 
+function readP04Settings(): P04Settings {
+  return {
+    enabled: readBooleanSetting(P04_SETTING_KEYS.enabled, DEFAULT_P04_SETTINGS.enabled),
+    mobileParity: readBooleanSetting(P04_SETTING_KEYS.mobileParity, DEFAULT_P04_SETTINGS.mobileParity),
+    lastReviewedAt: readIsoSetting(P04_SETTING_KEYS.lastReviewedAt),
+  };
+}
+
 function persistP00Settings(settings: P00Settings): void {
   const storage = getStorage();
   if (!storage) return;
@@ -87,12 +106,26 @@ function persistP01Settings(settings: P01Settings): void {
   }
 }
 
+function persistP04Settings(settings: P04Settings): void {
+  const storage = getStorage();
+  if (!storage) return;
+  storage.setItem(P04_SETTING_KEYS.enabled, String(settings.enabled));
+  storage.setItem(P04_SETTING_KEYS.mobileParity, String(settings.mobileParity));
+  if (settings.lastReviewedAt) {
+    storage.setItem(P04_SETTING_KEYS.lastReviewedAt, settings.lastReviewedAt);
+  } else {
+    storage.removeItem(P04_SETTING_KEYS.lastReviewedAt);
+  }
+}
+
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   p00: { ...DEFAULT_P00_SETTINGS },
   p01: { ...DEFAULT_P01_SETTINGS },
+  p04: { ...DEFAULT_P04_SETTINGS },
 
   loadP00Settings: () => set({ p00: readP00Settings() }),
   loadP01Settings: () => set({ p01: readP01Settings() }),
+  loadP04Settings: () => set({ p04: readP04Settings() }),
 
   setP00Enabled: (enabled) => {
     const next = { ...get().p00, enabled };
@@ -133,4 +166,24 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   resetP01Settings: () => set({ p01: { ...DEFAULT_P01_SETTINGS } }),
+
+  setP04Enabled: (enabled) => {
+    const next = { ...get().p04, enabled };
+    persistP04Settings(next);
+    set({ p04: next });
+  },
+
+  setP04MobileParity: (mobileParity) => {
+    const next = { ...get().p04, mobileParity };
+    persistP04Settings(next);
+    set({ p04: next });
+  },
+
+  markP04Reviewed: (lastReviewedAt) => {
+    const next = { ...get().p04, lastReviewedAt };
+    persistP04Settings(next);
+    set({ p04: next });
+  },
+
+  resetP04Settings: () => set({ p04: { ...DEFAULT_P04_SETTINGS } }),
 }));

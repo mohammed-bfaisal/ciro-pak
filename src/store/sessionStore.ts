@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { AgentTraceEvent, City, ImpactSnapshot } from '../types';
 import { getCityData } from '../data/cityData';
 import type { P00Status } from '../foundation/contracts';
+import type { P04Status } from '../foundation/missionBriefing';
 import type { P01Status } from '../foundation/urduRtlLanguage';
 import {
   advanceLiveSimulation,
@@ -24,6 +25,9 @@ interface SessionState {
   p01Status: P01Status;
   p01LastUpdatedAt: string | null;
   p01ErrorState: string | null;
+  p04Status: P04Status;
+  p04LastUpdatedAt: string | null;
+  p04ErrorState: string | null;
   start: (city: City) => void;
   tick: (deltaMinutes: number) => void;
   resolve: (crisisId: string, responseMinutes: number) => void;
@@ -33,6 +37,8 @@ interface SessionState {
   setP00ErrorState: (message: string | null) => void;
   setP01Status: (status: P01Status, updatedAt: string) => void;
   setP01ErrorState: (message: string | null) => void;
+  setP04Status: (status: P04Status, updatedAt: string) => void;
+  setP04ErrorState: (message: string | null) => void;
   reset: () => void;
 }
 
@@ -46,6 +52,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   p01Status: 'idle',
   p01LastUpdatedAt: null,
   p01ErrorState: null,
+  p04Status: 'idle',
+  p04LastUpdatedAt: null,
+  p04ErrorState: null,
 
   start: (city) => {
     const cityData = getCityData(city);
@@ -142,6 +151,18 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     p01LastUpdatedAt: new Date().toISOString(),
   }),
 
+  setP04Status: (p04Status, p04LastUpdatedAt) => set({
+    p04Status,
+    p04LastUpdatedAt,
+    p04ErrorState: p04Status === 'error' ? get().p04ErrorState : null,
+  }),
+
+  setP04ErrorState: (message) => set({
+    p04Status: message ? 'error' : 'idle',
+    p04ErrorState: message,
+    p04LastUpdatedAt: new Date().toISOString(),
+  }),
+
   reset: () => set({
     live: null,
     traceEvents: [],
@@ -152,5 +173,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     p01Status: 'idle',
     p01LastUpdatedAt: null,
     p01ErrorState: null,
+    p04Status: 'idle',
+    p04LastUpdatedAt: null,
+    p04ErrorState: null,
   }),
 }));

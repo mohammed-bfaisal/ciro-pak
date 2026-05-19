@@ -1,15 +1,14 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
-interface GlassPanelProps {
+interface GlassPanelProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   amber?: boolean;
   className?: string;
-  style?: React.CSSProperties;
 }
 
-export function GlassPanel({ children, amber, className = '', style }: GlassPanelProps) {
+export function GlassPanel({ children, amber, className = '', style, ...rest }: GlassPanelProps) {
   return (
-    <div className={`${amber ? 'glass-amber' : 'glass'} ${className}`} style={style}>
+    <div className={`${amber ? 'glass-amber' : 'glass'} ${className}`} style={style} {...rest}>
       {children}
     </div>
   );

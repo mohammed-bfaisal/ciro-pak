@@ -7,8 +7,14 @@ import { useCrisisStore } from '../../store/crisisStore';
 import { runAIDispatch } from '../../agents/orchestrator';
 import { colors } from '../../constants/colors';
 
-export function ControlBar() {
-  const [isAIDispatching, setIsAIDispatching] = useState(false);
+interface ControlBarProps {
+  onRequestSimulate?: () => void;
+  onRequestAIDispatch?: () => Promise<void> | void;
+  isAIDispatching?: boolean;
+}
+
+export function ControlBar({ onRequestSimulate, onRequestAIDispatch, isAIDispatching: externalAIDispatching }: ControlBarProps) {
+  const [localAIDispatching, setLocalAIDispatching] = useState(false);
   const city              = useCityStore((s) => s.city);
   const live              = useSessionStore((s) => s.live);
   const startSession      = useSessionStore((s) => s.start);
@@ -20,8 +26,14 @@ export function ControlBar() {
   const setDispatchMode   = useResourceStore((s) => s.setDispatchMode);
   const togglePause       = useResourceStore((s) => s.togglePause);
   const setSpeed          = useResourceStore((s) => s.setSimulationSpeed);
+  const isAIDispatching   = externalAIDispatching ?? localAIDispatching;
 
   const handleSimulate = () => {
+    if (onRequestSimulate) {
+      onRequestSimulate();
+      return;
+    }
+
     if (!live || live.session.city !== city) {
       startSession(city);
       useResourceStore.setState({ simulationRunning: true, isPaused: false });
@@ -37,6 +49,11 @@ export function ControlBar() {
 
   const handleAI = async () => {
     if (isAIDispatching) return;
+    if (onRequestAIDispatch) {
+      await onRequestAIDispatch();
+      return;
+    }
+
     if (!live || live.session.city !== city) {
       startSession(city);
       useResourceStore.setState({ simulationRunning: true, isPaused: false });
@@ -45,9 +62,9 @@ export function ControlBar() {
       useSessionStore.getState().tick(6);
     }
     setDispatchMode('off');
-    setIsAIDispatching(true);
+    setLocalAIDispatching(true);
     await runAIDispatch(city);
-    setIsAIDispatching(false);
+    setLocalAIDispatching(false);
   };
 
   const base = 'flex items-center gap-1.5 rounded-lg text-xs font-semibold transition-all px-2 py-1.5 sm:px-3';

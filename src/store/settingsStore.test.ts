@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_P00_SETTINGS, FOUNDATION_SETTING_KEYS } from '../foundation/contracts';
+import { DEFAULT_P04_SETTINGS, P04_SETTING_KEYS } from '../foundation/missionBriefing';
 import { DEFAULT_P01_SETTINGS, P01_SETTING_KEYS } from '../foundation/urduRtlLanguage';
 import { useSettingsStore } from './settingsStore';
 
@@ -32,6 +33,7 @@ describe('settings store', () => {
     localStorage.clear();
     useSettingsStore.getState().resetP00Settings();
     useSettingsStore.getState().resetP01Settings();
+    useSettingsStore.getState().resetP04Settings();
   });
 
   afterEach(() => {
@@ -42,6 +44,7 @@ describe('settings store', () => {
   it('loads default P00 settings without storing secrets', () => {
     expect(useSettingsStore.getState().p00).toEqual(DEFAULT_P00_SETTINGS);
     expect(useSettingsStore.getState().p01).toEqual(DEFAULT_P01_SETTINGS);
+    expect(useSettingsStore.getState().p04).toEqual(DEFAULT_P04_SETTINGS);
     expect(storageKeys(localStorage)).toEqual([]);
   });
 
@@ -67,6 +70,17 @@ describe('settings store', () => {
     expect(storageKeys(localStorage).sort()).toEqual(Object.values(P01_SETTING_KEYS).sort());
   });
 
+  it('persists only approved P04 setting keys', () => {
+    useSettingsStore.getState().setP04Enabled(false);
+    useSettingsStore.getState().setP04MobileParity(false);
+    useSettingsStore.getState().markP04Reviewed('2026-05-19T08:00:00.000Z');
+
+    expect(localStorage.getItem(P04_SETTING_KEYS.enabled)).toBe('false');
+    expect(localStorage.getItem(P04_SETTING_KEYS.mobileParity)).toBe('false');
+    expect(localStorage.getItem(P04_SETTING_KEYS.lastReviewedAt)).toBe('2026-05-19T08:00:00.000Z');
+    expect(storageKeys(localStorage).sort()).toEqual(Object.values(P04_SETTING_KEYS).sort());
+  });
+
   it('recovers from corrupt localStorage values with safe defaults', () => {
     localStorage.setItem(FOUNDATION_SETTING_KEYS.enabled, 'not-a-bool');
     localStorage.setItem(FOUNDATION_SETTING_KEYS.mobileParity, 'not-a-bool');
@@ -74,11 +88,16 @@ describe('settings store', () => {
     localStorage.setItem(P01_SETTING_KEYS.enabled, 'not-a-bool');
     localStorage.setItem(P01_SETTING_KEYS.mobileParity, 'not-a-bool');
     localStorage.setItem(P01_SETTING_KEYS.lastReviewedAt, '<script>alert(1)</script>');
+    localStorage.setItem(P04_SETTING_KEYS.enabled, 'not-a-bool');
+    localStorage.setItem(P04_SETTING_KEYS.mobileParity, 'not-a-bool');
+    localStorage.setItem(P04_SETTING_KEYS.lastReviewedAt, '<script>alert(1)</script>');
 
     useSettingsStore.getState().loadP00Settings();
     useSettingsStore.getState().loadP01Settings();
+    useSettingsStore.getState().loadP04Settings();
 
     expect(useSettingsStore.getState().p00).toEqual(DEFAULT_P00_SETTINGS);
     expect(useSettingsStore.getState().p01).toEqual(DEFAULT_P01_SETTINGS);
+    expect(useSettingsStore.getState().p04).toEqual(DEFAULT_P04_SETTINGS);
   });
 });

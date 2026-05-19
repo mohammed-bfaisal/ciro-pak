@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CiroMap } from '../components/map/CiroMap';
 import { SignalFeed } from '../components/panels/SignalFeed';
 import { CrisisPanel } from '../components/panels/CrisisPanel';
 import { GlassPanel } from '../components/ui/GlassPanel';
 import { ControlBar } from '../components/hud/ControlBar';
+import { MissionBriefingPanel } from '../components/hud/MissionBriefingPanel';
 import { UnitRoster } from '../components/hud/UnitRoster';
 import { IncidentRegistry } from '../components/hud/IncidentRegistry';
 import { SessionStats } from '../components/hud/SessionStats';
@@ -15,17 +17,26 @@ import { useSignalStore } from '../store/signalStore';
 import { useCityStore } from '../store/cityStore';
 import { useResourceStore } from '../store/resourceStore';
 import { useSessionStore } from '../store/sessionStore';
+import { useSettingsStore } from '../store/settingsStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
 import { getResources } from '../data/cityData';
 import { fetchRoute } from '../api/routing';
+import { runAIDispatch } from '../agents/orchestrator';
+import { checkMissionBriefingStatus, simulateMissionBriefing } from '../api/missionBriefing';
+import type { P04MissionAction } from '../foundation/missionBriefing';
 
 const MOVEMENT_TICK_MS = 250;
 const ROUTE_REFRESH_MS = 30_000;
 
 export function Dashboard() {
+  const navigate          = useNavigate();
   const city              = useCityStore((s) => s.city);
   const [showSignals, setShowSignals] = useState(false);
+  const [pendingBriefingAction, setPendingBriefingAction] = useState<P04MissionAction | null>(null);
+  const [briefingMessage, setBriefingMessage] = useState('Hosted backend status is being checked. Bundled briefing data remains available offline.');
+  const [briefingBusy, setBriefingBusy] = useState(false);
+  const [isAIDispatching, setIsAIDispatching] = useState(false);
   const selectedCrisisId  = useCrisisStore((s) => s.selectedCrisisId);
   const selectCrisis      = useCrisisStore((s) => s.selectCrisis);
   const crises            = useCrisisStore((s) => s.crises);
@@ -40,12 +51,23 @@ export function Dashboard() {
   const sessionTick       = useSessionStore((s) => s.tick);
   const resolveSession    = useSessionStore((s) => s.resolve);
   const trafficSignalCount = useSignalStore((s) => s.signals.filter((signal) => signal.source === 'traffic').length);
+  const p04               = useSettingsStore((s) => s.p04);
+  const loadP04Settings   = useSettingsStore((s) => s.loadP04Settings);
+  const markP04Reviewed   = useSettingsStore((s) => s.markP04Reviewed);
+  const p04Status         = useSessionStore((s) => s.p04Status);
+  const setP04Status      = useSessionStore((s) => s.setP04Status);
+  const setP04ErrorState  = useSessionStore((s) => s.setP04ErrorState);
+
+  useEffect(() => {
+    loadP04Settings();
+  }, [loadP04Settings]);
 
   // Close panels when city changes, and reload resources for new city
   useEffect(() => {
     selectCrisis(null);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowSignals(false);
+    setPendingBriefingAction(null);
     useSessionStore.getState().reset();
     useSignalStore.getState().reset();
     useCrisisStore.getState().reset();
@@ -106,13 +128,120 @@ export function Dashboard() {
     });
   }, [crises, resources, resolveSession]);
 
+  const runSimulationAction = () => {
+    const liveSession = useSessionStore.getState().live;
+    if (!liveSession || liveSession.session.city !== city) {
+      useSessionStore.getState().start(city);
+      useResourceStore.setState({ simulationRunning: true, isPaused: false });
+      return;
+    }
+
+    useResourceStore.getState().toggleSimulation();
+  };
+
+  const runAIDispatchAction = async () => {
+    if (isAIDispatching) return;
+
+    const liveSession = useSessionStore.getState().live;
+    if (!liveSession || liveSession.session.city !== city) {
+      useSessionStore.getState().start(city);
+      useResourceStore.setState({ simulationRunning: true, isPaused: false });
+    }
+    if (useCrisisStore.getState().crises.length === 0) {
+      useSessionStore.getState().tick(6);
+    }
+
+    useResourceStore.getState().setDispatchMode('off');
+    setIsAIDispatching(true);
+    try {
+      await runAIDispatch(city);
+    } finally {
+      setIsAIDispatching(false);
+    }
+  };
+
+  const executeMissionAction = async (action: P04MissionAction) => {
+    if (action === 'simulate') {
+      runSimulationAction();
+      return;
+    }
+
+    await runAIDispatchAction();
+  };
+
+  const requestMissionBriefing = (action: P04MissionAction) => {
+    if (!p04.enabled) {
+      void executeMissionAction(action);
+      return;
+    }
+
+    const checkedAt = new Date().toISOString();
+    setPendingBriefingAction(action);
+    setBriefingMessage('Checking hosted mission briefing backend. Bundled fallback remains ready for APK/offline use.');
+    setP04Status('checking', checkedAt);
+    void checkMissionBriefingStatus().then((result) => {
+      setP04Status(result.status, result.checkedAt);
+      setP04ErrorState(result.status === 'error' ? result.message : null);
+      setBriefingMessage(result.message);
+    });
+  };
+
+  const confirmMissionBriefing = async () => {
+    if (!pendingBriefingAction) return;
+    const action = pendingBriefingAction;
+    const requestedAt = new Date().toISOString();
+
+    setBriefingBusy(true);
+    setP04Status('checking', requestedAt);
+    try {
+      const result = await simulateMissionBriefing({
+        request: {
+          city,
+          requestedAt,
+          source: 'operator',
+          action,
+        },
+      });
+      setP04Status(result.status, result.simulatedAt);
+      markP04Reviewed(result.simulatedAt);
+      setP04ErrorState(result.status === 'error' ? result.message : null);
+      setBriefingMessage(`${result.message} ${result.events.join(' ')}`);
+      setPendingBriefingAction(null);
+      await executeMissionAction(action);
+    } finally {
+      setBriefingBusy(false);
+    }
+  };
+
+  const editMissionScenario = () => {
+    setPendingBriefingAction(null);
+    navigate('/whatif');
+  };
+
   return (
     <div className="absolute inset-0">
       {/* Map fills entire viewport */}
       <CiroMap city={city} onCrisisClick={(id) => selectCrisis(id)} />
 
       {/* 3-button control bar — top center */}
-      <ControlBar />
+      <ControlBar
+        onRequestSimulate={() => requestMissionBriefing('simulate')}
+        onRequestAIDispatch={() => requestMissionBriefing('ai_dispatch')}
+        isAIDispatching={isAIDispatching}
+      />
+
+      {pendingBriefingAction && (
+        <MissionBriefingPanel
+          action={pendingBriefingAction}
+          city={city}
+          backendStatus={p04Status}
+          message={briefingMessage}
+          busy={briefingBusy}
+          onStart={() => { void confirmMissionBriefing(); }}
+          onEditScenario={editMissionScenario}
+          onCancel={() => setPendingBriefingAction(null)}
+        />
+      )}
 
       {/* Signal feed toggle — top left */}
       <div className="hidden desktop:block absolute top-3 left-3 z-20">
@@ -180,6 +309,9 @@ export function Dashboard() {
         showSignals={showSignals}
         onToggleSignals={() => setShowSignals((value) => !value)}
         onSelectCrisis={(id) => selectCrisis(id)}
+        onRequestSimulate={() => requestMissionBriefing('simulate')}
+        onRequestAIDispatch={() => requestMissionBriefing('ai_dispatch')}
+        isAIDispatching={isAIDispatching}
       />
     </div>
   );

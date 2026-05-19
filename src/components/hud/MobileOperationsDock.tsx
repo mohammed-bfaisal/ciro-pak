@@ -28,6 +28,9 @@ interface MobileOperationsDockProps {
   showSignals: boolean;
   onToggleSignals: () => void;
   onSelectCrisis: (id: string) => void;
+  onRequestSimulate?: () => void;
+  onRequestAIDispatch?: () => Promise<void> | void;
+  isAIDispatching?: boolean;
 }
 
 const tabs: { id: MobileDockTab; label: string; icon: ComponentType<{ size?: number }> }[] = [
@@ -37,10 +40,17 @@ const tabs: { id: MobileDockTab; label: string; icon: ComponentType<{ size?: num
   { id: 'impact', label: 'Impact', icon: GitCompareArrows },
 ];
 
-export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCrisis }: MobileOperationsDockProps) {
+export function MobileOperationsDock({
+  showSignals,
+  onToggleSignals,
+  onSelectCrisis,
+  onRequestSimulate,
+  onRequestAIDispatch,
+  isAIDispatching: externalAIDispatching,
+}: MobileOperationsDockProps) {
   const [activeTab, setActiveTab] = useState<MobileDockTab>('units');
   const [collapsed, setCollapsed] = useState(false);
-  const [isAIDispatching, setIsAIDispatching] = useState(false);
+  const [localAIDispatching, setLocalAIDispatching] = useState(false);
   const city = useCityStore((s) => s.city);
   const crises = useCrisisStore((s) => s.crises);
   const resources = useResourceStore((s) => s.resources);
@@ -52,11 +62,17 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
   const live = useSessionStore((s) => s.live);
   const traceEvents = useSessionStore((s) => s.traceEvents);
   const impactSnapshots = useSessionStore((s) => s.impactSnapshots);
+  const isAIDispatching = externalAIDispatching ?? localAIDispatching;
 
   const score = live?.score;
   const busyUnits = resources.filter((resource) => resource.status !== 'available').length;
 
   const startOrToggle = () => {
+    if (onRequestSimulate) {
+      onRequestSimulate();
+      return;
+    }
+
     if (!live || live.session.city !== city) {
       useSessionStore.getState().start(city);
       useResourceStore.setState({ simulationRunning: true, isPaused: false });
@@ -67,6 +83,11 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
 
   const runAI = async () => {
     if (isAIDispatching) return;
+    if (onRequestAIDispatch) {
+      await onRequestAIDispatch();
+      return;
+    }
+
     if (!live || live.session.city !== city) {
       useSessionStore.getState().start(city);
       useResourceStore.setState({ simulationRunning: true, isPaused: false });
@@ -75,9 +96,9 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
       useSessionStore.getState().tick(6);
     }
     useResourceStore.getState().setDispatchMode('off');
-    setIsAIDispatching(true);
+    setLocalAIDispatching(true);
     await runAIDispatch(city);
-    setIsAIDispatching(false);
+    setLocalAIDispatching(false);
   };
 
   return (
