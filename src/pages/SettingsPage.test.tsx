@@ -7,6 +7,8 @@ import { useSessionStore } from '../store/sessionStore';
 describe('SettingsPage', () => {
   afterEach(() => {
     useSettingsStore.getState().resetP00Settings();
+    useSettingsStore.getState().resetP01Settings();
+    useSettingsStore.getState().resetP04Settings();
     useSessionStore.getState().reset();
   });
 
@@ -24,6 +26,9 @@ describe('SettingsPage', () => {
     expect(html).toContain('Roman Urdu');
     expect(html).toContain('dir=&quot;rtl&quot;');
     expect(html).toContain('اردو');
+    expect(html).toContain('Triggered Mission Briefing');
+    expect(html).toContain('Simulate briefing');
+    expect(html).toContain('Mission briefing enabled');
     expect(html).not.toMatch(/api key/i);
     expect(html).not.toMatch(/secret/i);
     expect(html).not.toMatch(/token/i);

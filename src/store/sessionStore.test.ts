@@ -68,4 +68,24 @@ describe('session store integration', () => {
     expect(useSessionStore.getState().p01Status).toBe('idle');
     expect(useSessionStore.getState().p01ErrorState).toBeNull();
   });
+
+  it('tracks P04 runtime status without changing the live dispatch defaults', () => {
+    const session = useSessionStore.getState();
+
+    expect(session.p04Status).toBe('idle');
+    expect(session.p04LastUpdatedAt).toBeNull();
+    expect(session.p04ErrorState).toBeNull();
+
+    session.setP04Status('fallback', '2026-05-19T08:00:00.000Z');
+    expect(useSessionStore.getState().p04Status).toBe('fallback');
+    expect(useSessionStore.getState().p04LastUpdatedAt).toBe('2026-05-19T08:00:00.000Z');
+
+    session.setP04ErrorState('mission briefing backend unavailable');
+    expect(useSessionStore.getState().p04Status).toBe('error');
+    expect(useSessionStore.getState().p04ErrorState).toBe('mission briefing backend unavailable');
+
+    useSessionStore.getState().reset();
+    expect(useSessionStore.getState().p04Status).toBe('idle');
+    expect(useSessionStore.getState().p04ErrorState).toBeNull();
+  });
 });

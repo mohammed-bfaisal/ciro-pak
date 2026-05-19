@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ComponentType } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Activity,
   AlertTriangle,
@@ -15,12 +16,16 @@ import {
   User,
 } from 'lucide-react';
 import { runAIDispatch } from '../../agents/orchestrator';
+import { simulateTriggeredMissionBriefing } from '../../api/triggeredMissionBriefing';
 import { colors, getSeverityColor, getStatusColor } from '../../constants/colors';
+import { createMissionBriefing, type MissionBriefing, type P04Trigger } from '../../foundation/triggeredMissionBriefing';
 import { formatRouteEta } from '../../utils/formatting';
 import { useCityStore } from '../../store/cityStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
 import { useSessionStore } from '../../store/sessionStore';
+import { useSettingsStore } from '../../store/settingsStore';
+import { MissionBriefingPanel } from './MissionBriefingPanel';
 
 type MobileDockTab = 'units' | 'incidents' | 'trace' | 'impact';
 
@@ -38,9 +43,13 @@ const tabs: { id: MobileDockTab; label: string; icon: ComponentType<{ size?: num
 ];
 
 export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCrisis }: MobileOperationsDockProps) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<MobileDockTab>('units');
   const [collapsed, setCollapsed] = useState(false);
   const [isAIDispatching, setIsAIDispatching] = useState(false);
+  const [briefing, setBriefing] = useState<MissionBriefing | null>(null);
+  const [briefingMessage, setBriefingMessage] = useState<string | undefined>(undefined);
+  const [briefingBusy, setBriefingBusy] = useState(false);
   const city = useCityStore((s) => s.city);
   const crises = useCrisisStore((s) => s.crises);
   const resources = useResourceStore((s) => s.resources);
@@ -52,11 +61,15 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
   const live = useSessionStore((s) => s.live);
   const traceEvents = useSessionStore((s) => s.traceEvents);
   const impactSnapshots = useSessionStore((s) => s.impactSnapshots);
+  const p04Enabled = useSettingsStore((s) => s.p04.enabled);
+  const markP04Reviewed = useSettingsStore((s) => s.markP04Reviewed);
+  const setP04Status = useSessionStore((s) => s.setP04Status);
+  const setP04ErrorState = useSessionStore((s) => s.setP04ErrorState);
 
   const score = live?.score;
   const busyUnits = resources.filter((resource) => resource.status !== 'available').length;
 
-  const startOrToggle = () => {
+  const executeSimulationToggle = () => {
     if (!live || live.session.city !== city) {
       useSessionStore.getState().start(city);
       useResourceStore.setState({ simulationRunning: true, isPaused: false });
@@ -65,7 +78,37 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
     useResourceStore.getState().toggleSimulation();
   };
 
-  const runAI = async () => {
+  const prepareBriefing = async (trigger: P04Trigger) => {
+    const requestedAt = new Date().toISOString();
+    setBriefing(createMissionBriefing(city, trigger, requestedAt));
+    setBriefingMessage('Preparing bundled briefing while checking the hosted backend path.');
+    setP04Status('checking', requestedAt);
+
+    const result = await simulateTriggeredMissionBriefing({
+      request: {
+        city,
+        requestedAt,
+        source: 'operator',
+        trigger,
+      },
+    });
+
+    setBriefing(result.briefing);
+    setBriefingMessage(result.message);
+    setP04Status(result.status, result.simulatedAt);
+    markP04Reviewed(result.simulatedAt);
+    if (result.status === 'error') setP04ErrorState(result.message);
+  };
+
+  const startOrToggle = () => {
+    if (!p04Enabled) {
+      executeSimulationToggle();
+      return;
+    }
+    void prepareBriefing('simulation');
+  };
+
+  const executeAI = async () => {
     if (isAIDispatching) return;
     if (!live || live.session.city !== city) {
       useSessionStore.getState().start(city);
@@ -80,18 +123,56 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
     setIsAIDispatching(false);
   };
 
+  const runAI = async () => {
+    if (!p04Enabled) {
+      await executeAI();
+      return;
+    }
+    await prepareBriefing('ai_dispatch');
+  };
+
+  const startBriefedAction = async () => {
+    if (!briefing) return;
+    const trigger = briefing.trigger;
+    setBriefingBusy(true);
+    setBriefing(null);
+    if (trigger === 'ai_dispatch') {
+      await executeAI();
+    } else {
+      executeSimulationToggle();
+    }
+    setBriefingBusy(false);
+  };
+
+  const editScenario = () => {
+    setBriefing(null);
+    navigate('/whatif');
+  };
+
   return (
-    <section
-      className="desktop:hidden absolute left-2 right-2 z-30 rounded-2xl overflow-hidden"
-      style={{
-        bottom: 8,
-        background: 'rgba(12,12,12,0.96)',
-        border: `1px solid ${colors.borderStrong}`,
-        boxShadow: '0 -12px 40px rgba(0,0,0,0.45)',
-        backdropFilter: 'blur(22px)',
-        WebkitBackdropFilter: 'blur(22px)',
-      }}
-    >
+    <>
+      {briefing && (
+        <MissionBriefingPanel
+          briefing={briefing}
+          busy={briefingBusy}
+          statusMessage={briefingMessage}
+          onStart={() => { void startBriefedAction(); }}
+          onEditScenario={editScenario}
+          onCancel={() => setBriefing(null)}
+        />
+      )}
+
+      <section
+        className="desktop:hidden absolute left-2 right-2 z-30 rounded-2xl overflow-hidden"
+        style={{
+          bottom: 8,
+          background: 'rgba(12,12,12,0.96)',
+          border: `1px solid ${colors.borderStrong}`,
+          boxShadow: '0 -12px 40px rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(22px)',
+          WebkitBackdropFilter: 'blur(22px)',
+        }}
+      >
       <button
         onClick={() => setCollapsed((value) => !value)}
         className="w-full flex items-center justify-between px-3 py-2 border-b"
@@ -263,7 +344,8 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
           </div>
         </div>
       )}
-    </section>
+      </section>
+    </>
   );
 }
 

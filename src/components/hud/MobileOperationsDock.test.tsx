@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { MemoryRouter } from 'react-router-dom';
 import { MobileOperationsDock } from './MobileOperationsDock';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
@@ -30,11 +31,13 @@ describe('MobileOperationsDock', () => {
     ]);
 
     const html = renderToStaticMarkup(
-      <MobileOperationsDock
-        showSignals={false}
-        onToggleSignals={() => undefined}
-        onSelectCrisis={() => undefined}
-      />,
+      <MemoryRouter>
+        <MobileOperationsDock
+          showSignals={false}
+          onToggleSignals={() => undefined}
+          onSelectCrisis={() => undefined}
+        />
+      </MemoryRouter>,
     );
 
     expect(html).toContain('OPS DOCK');

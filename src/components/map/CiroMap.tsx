@@ -9,6 +9,7 @@ import { getCrisisColor, getCredColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
 import { removeFoundationLayers, syncFoundationLayers } from './foundationLayers';
+import { removeTriggeredMissionBriefingLayers, syncTriggeredMissionBriefingLayers } from './triggeredMissionBriefingLayers';
 import { removeUrduRtlLanguageLayers, syncUrduRtlLanguageLayers } from './urduRtlLanguageLayers';
 import { haversineDistance } from '../../utils/geo';
 import { fetchRoute } from '../../api/routing';
@@ -36,6 +37,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const dispatchMode   = useResourceStore((s) => s.dispatchMode);
   const foundationEnabled = useSettingsStore((s) => s.p00.enabled);
   const urduRtlEnabled = useSettingsStore((s) => s.p01.enabled);
+  const missionBriefingEnabled = useSettingsStore((s) => s.p04.enabled);
 
   // Initialize map
   useEffect(() => {
@@ -95,6 +97,14 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     if (map.isStyleLoaded()) sync();
     else map.once('load', sync);
   }, [city, urduRtlEnabled]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+    const sync = () => syncTriggeredMissionBriefingLayers(map, city, missionBriefingEnabled);
+    if (map.isStyleLoaded()) sync();
+    else map.once('load', sync);
+  }, [city, missionBriefingEnabled]);
 
   // Fly to selected unit (bidirectional: panel → map)
   useEffect(() => {
@@ -322,6 +332,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       if (mapInstance.current) {
         removeFoundationLayers(mapInstance.current);
         removeUrduRtlLanguageLayers(mapInstance.current);
+        removeTriggeredMissionBriefingLayers(mapInstance.current);
       }
       signalMarkersRef.current.forEach((m) => m.remove());
       crisisMarkersRef.current.forEach((m) => m.remove());
