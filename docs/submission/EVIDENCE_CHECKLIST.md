@@ -18,6 +18,7 @@
 - `docs/submission/DEMO_SCRIPT.md`
 - `docs/submission/VIDEO_SHOTLIST.md`
 - `docs/submission/EVIDENCE_CHECKLIST.md`
+- `docs/submission/VERIFICATION_RESULTS.md`
 
 ## Verification Evidence
 
