@@ -33,7 +33,7 @@ flowchart LR
 | Manual dispatch | Manual mode lets an operator select a unit and tap/click an incident marker to dispatch. |
 | AI-assisted dispatch | The in-app allocation pipeline scores resource-crisis matches by severity, confidence, population, type match, travel time, and availability. |
 | Routes and movement | MapLibre renders route lines; units move through `available -> en_route -> on_scene -> returning -> available`. |
-| Live data path | Weather, traffic, and route requests use the backend when `VITE_API_BASE_URL` is configured and fall back locally when it is not. |
+| Live data path | Weather, traffic, route, and hosted AI requests use the backend when `VITE_API_BASE_URL` is configured and fall back safely when provider keys are unavailable. |
 | Settings | `/settings` exposes backend status, live update toggles, backend preference, and map overlay toggles. |
 | Mobile APK parity | The UI uses one mobile operations dock, safe-area aware shell layout, touch controls, and no frontend secrets. |
 | Traceability | Operations rail, trace page, and crisis details show observations, inferences, decisions, execution, actions, messages, and impact. |
@@ -64,6 +64,7 @@ flowchart LR
   - `backend/src/lib/weatherProvider.ts`
   - `backend/src/lib/trafficProvider.ts`
   - `backend/src/lib/routeProvider.ts`
+  - `backend/src/lib/openRouterProvider.ts`
 
 ## API And Secret Model
 
@@ -80,6 +81,12 @@ PORT=8080
 ALLOWED_ORIGINS=https://your-web-origin.example,http://localhost:5173
 WEATHER_API_KEY=server_side_weather_key
 TOMTOM_API_KEY=server_side_tomtom_key
+OPENROUTER_API_KEY=server_side_openrouter_key
+OPENROUTER_MODEL=google/gemini-2.0-flash-exp:free
+OPENROUTER_ALLOWED_MODELS=google/gemini-2.0-flash-exp:free
+OPENROUTER_MAX_TOKENS=240
+OPENROUTER_SITE_URL=https://your-web-origin.example
+OPENROUTER_APP_TITLE=CIRO
 ```
 
 Backend routes:
@@ -88,8 +95,9 @@ Backend routes:
 - `GET /api/weather/:city`
 - `GET /api/traffic/flow?lat=<number>&lng=<number>`
 - `GET /api/route?fromLng=<number>&fromLat=<number>&toLng=<number>&toLat=<number>`
+- `POST /api/openrouter/chat`
 
-If the backend is unavailable, the app falls back to mock weather, simulated traffic, OSRM routing, or stable straight-line paths.
+If the backend or provider key is unavailable, the app falls back to mock weather, simulated traffic, OSRM routing, stable straight-line paths, or a safe AI-unavailable message.
 
 ## Development
 

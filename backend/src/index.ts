@@ -5,6 +5,7 @@ import { createHealthRouter } from './routes/health.js';
 import { createWeatherRouter } from './routes/weather.js';
 import { createTrafficRouter } from './routes/traffic.js';
 import { createRouteRouter } from './routes/route.js';
+import { createOpenRouterRouter } from './routes/openrouter.js';
 
 const env = readEnv();
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/health', createHealthRouter(env));
 app.use('/api/weather', createWeatherRouter(env));
 app.use('/api/traffic', createTrafficRouter(env));
 app.use('/api/route', createRouteRouter(env));
+app.use('/api/openrouter', createOpenRouterRouter(env));
 
 app.listen(env.port, '0.0.0.0', () => {
   console.log(`CIRO backend listening on ${env.port}`);

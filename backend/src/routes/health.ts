@@ -13,6 +13,7 @@ export function createHealthRouter(env: BackendEnv): Router {
         weatherProxy: Boolean(env.weatherApiKey),
         trafficProxy: Boolean(env.tomtomApiKey),
         routingProxy: true,
+        openrouterProxy: Boolean(env.openrouterApiKey),
       },
     });
   });

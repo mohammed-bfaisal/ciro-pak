@@ -8,6 +8,7 @@ export interface BackendHealth {
     weatherProxy: boolean;
     trafficProxy: boolean;
     routingProxy: boolean;
+    openrouterProxy: boolean;
   };
 }
 
