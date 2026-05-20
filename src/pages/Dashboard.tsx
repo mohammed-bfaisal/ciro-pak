@@ -9,7 +9,7 @@ import { useSignalStore } from '../store/signalStore';
 import { useCityStore } from '../store/cityStore';
 import { useResourceStore } from '../store/resourceStore';
 import { useSessionStore } from '../store/sessionStore';
-import { makeTrafficScopeKey, useLiveDataStore } from '../store/liveDataStore';
+import { useLiveDataStore } from '../store/liveDataStore';
 import { getApiClientOptionsForSettings, useSettingsStore } from '../store/settingsStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
@@ -17,7 +17,7 @@ import { getResources } from '../data/cityData';
 import { fetchRoute } from '../api/routing';
 import { fetchTrafficFlow } from '../api/traffic';
 import { fetchWeather } from '../api/weather';
-import type { City } from '../types';
+import { getTrafficRefreshScopes } from '../utils/trafficScopes';
 
 const MOVEMENT_TICK_MS = 250;
 const ROUTE_REFRESH_MS = 30_000;
@@ -230,24 +230,4 @@ export function Dashboard() {
       )}
     </div>
   );
-}
-
-function getTrafficRefreshScopes(city: City): { key: string; lat: number; lng: number }[] {
-  const resourceScopes = useResourceStore.getState().resources
-    .filter((resource) => resource.status === 'en_route' && resource.targetPosition)
-    .map((resource) => ({
-      key: makeTrafficScopeKey(city, 'route', resource.id),
-      lat: resource.currentPosition.lat,
-      lng: resource.currentPosition.lng,
-    }));
-
-  const crisisScopes = useCrisisStore.getState().crises
-    .filter((crisis) => crisis.status === 'active' || crisis.status === 'responding')
-    .map((crisis) => ({
-      key: makeTrafficScopeKey(city, 'crisis', crisis.id),
-      lat: crisis.location.lat,
-      lng: crisis.location.lng,
-    }));
-
-  return [...resourceScopes, ...crisisScopes];
 }

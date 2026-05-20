@@ -103,7 +103,7 @@ export const useLiveDataStore = create<LiveDataState>((set) => ({
 
 export function makeTrafficScopeKey(
   city: City,
-  kind: 'crisis' | 'route',
+  kind: 'city' | 'crisis' | 'route',
   id: string,
 ): string {
   return `${city}:${kind}:${id}`;

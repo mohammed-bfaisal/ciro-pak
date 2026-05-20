@@ -9,10 +9,11 @@ import { crisisDetectionAgent } from './crisisDetector';
 import { resourceAllocationAgent } from './resourceAllocator';
 import { actionSimulatorAgent } from './actionSimulator';
 import { stakeholderAgent } from './stakeholderNotifier';
+import { chatWithOpenRouter } from '../api/openRouter';
 import { fetchWeather } from '../api/weather';
 import { haversineDistance } from '../utils/geo';
 import { fetchRoute } from '../api/routing';
-import type { AgentTraceEvent, City, ImpactSnapshot, Resource, Signal } from '../types';
+import type { AgentTraceEvent, City, Crisis, ImpactSnapshot, Resource, Signal } from '../types';
 import { getResources, getSignals } from '../data/cityData';
 
 const PHASE_DELAYS = {
@@ -129,6 +130,8 @@ export async function runAIDispatch(city: City) {
   if (existingResources.length === 0) {
     useResourceStore.getState().setResources(resources);
   }
+
+  await addOpenRouterDispatchBriefing(city, crises, resources);
 
   // Phase 4 — Resource Allocation
   trace.startPhase('Resource Allocation', [
@@ -250,6 +253,65 @@ export async function runAIDispatch(city: City) {
   });
 
   trace.finalise();
+}
+
+async function addOpenRouterDispatchBriefing(city: City, crises: Crisis[], resources: Resource[]) {
+  const trace = useTraceStore.getState();
+  try {
+    const briefing = await chatWithOpenRouter({
+      systemPrompt: 'You are a concise emergency dispatch advisor for a Pakistan disaster response dashboard. Return one operational paragraph. Do not mention API keys or implementation details.',
+      prompt: buildDispatchBriefingPrompt(city, crises, resources),
+      maxTokens: 160,
+      temperature: 0.2,
+    }, getApiClientOptionsForSettings());
+    const providerLabel = briefing.provider === 'openrouter'
+      ? 'OpenRouter dispatch briefing'
+      : `OpenRouter fallback briefing (${briefing.fallbackReason ?? 'provider_unavailable'})`;
+    const content = briefing.content.replace(/\s+/g, ' ').trim();
+    trace.log(`${providerLabel}: ${content}`);
+    useSessionStore.getState().addTraceEvents([
+      {
+        id: `openrouter-briefing-${Date.now()}`,
+        phase: 'AI Dispatch Briefing',
+        observation: `${crises.length} active crises and ${resources.filter((resource) => resource.status === 'available').length} available units were summarised for hosted AI review.`,
+        inference: content,
+        decision: 'Use the hosted briefing as advisory context while preserving deterministic route and resource allocation constraints.',
+        execution: `Provider ${briefing.provider}; model ${briefing.model}.`,
+        timestamp: new Date().toISOString(),
+      },
+    ]);
+  } catch (error) {
+    trace.log(`OpenRouter dispatch briefing unavailable: ${error instanceof Error ? error.message : 'request failed'}`);
+  }
+}
+
+function buildDispatchBriefingPrompt(city: City, crises: Crisis[], resources: Resource[]): string {
+  const crisisLines = crises
+    .slice(0, 6)
+    .map((crisis) => `- ${crisis.title} at ${crisis.location.label}; severity ${crisis.severity}; confidence ${Math.round(crisis.confidenceScore * 100)}%; population ${crisis.affectedPopulation}; status ${crisis.status}.`)
+    .join('\n');
+  const resourceLines = resources
+    .filter((resource) => resource.status === 'available')
+    .slice(0, 8)
+    .map((resource) => `- ${resource.label}; type ${resource.type}; capacity ${resource.capacity}; location ${resource.location.label}.`)
+    .join('\n');
+
+  return [
+    `City: ${cityLabel(city)}`,
+    `There are ${crises.length} active crises and ${resources.filter((resource) => resource.status === 'available').length} available response units.`,
+    'Active crises:',
+    crisisLines || '- None.',
+    'Available response units:',
+    resourceLines || '- None.',
+    'Give one short dispatch briefing covering priority, resource match, and operational risk.',
+  ].join('\n');
+}
+
+function cityLabel(city: City): string {
+  return city
+    .split('-')
+    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
+    .join(' ');
 }
 
 // ─── Legacy: full pipeline for backward compat ──────────────────────────────
