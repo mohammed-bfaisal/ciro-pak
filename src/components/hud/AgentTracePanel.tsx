@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { BrainCircuit, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSessionStore } from '../../store/sessionStore';
 import { colors } from '../../constants/colors';
@@ -11,6 +12,7 @@ export function AgentTracePanel() {
   if (traceEvents.length === 0) return null;
 
   const latest = traceEvents.slice(-6).reverse();
+  const newestEventId = latest[0]?.id;
 
   return (
     <div
@@ -39,21 +41,67 @@ export function AgentTracePanel() {
       </button>
       {!collapsed && (
         <div className="px-3 pb-3 space-y-2 overflow-y-auto hide-scrollbar" style={{ maxHeight: 284 }}>
-          {latest.map((event) => (
-            <div key={event.id} className="rounded-lg border p-2" style={{ borderColor: colors.borderSubtle, background: colors.raised }}>
-              <div className="text-[10px] font-semibold mb-1" style={{ color: colors.amber }}>
-                {event.phase}
-              </div>
-              <TraceReasoningFields event={event} />
-              <TraceLine label="Observation" value={event.observation} />
-              <TraceLine label="Inference" value={event.inference} />
-              <TraceLine label="Decision" value={event.decision} />
-              <TraceLine label="Execution" value={event.execution} />
-            </div>
-          ))}
+          <AnimatePresence initial={false}>
+            {latest.map((event) => (
+              <TraceEventCard key={event.id} event={event} isNew={event.id === newestEventId} />
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>
+  );
+}
+
+export function TraceEventCard({ event, isNew = false }: { event: AgentTraceEvent; isNew?: boolean }) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 18 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        boxShadow: isNew
+          ? [
+              '0 0 18px rgba(245, 158, 11, 0.42)',
+              '0 0 18px rgba(245, 158, 11, 0.42)',
+              '0 0 0 rgba(245, 158, 11, 0)',
+            ]
+          : '0 0 0 rgba(245, 158, 11, 0)',
+      }}
+      exit={{ opacity: 0, y: 8 }}
+      transition={{
+        opacity: { duration: 0.22, ease: 'easeOut' },
+        y: { duration: 0.22, ease: 'easeOut' },
+        boxShadow: { duration: isNew ? 2 : 0.22, times: isNew ? [0, 0.35, 1] : undefined, ease: 'easeOut' },
+      }}
+      className="rounded-lg border p-2"
+      style={{ borderColor: isNew ? colors.amber : colors.borderSubtle, background: colors.raised }}
+    >
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <div className="text-[10px] font-semibold" style={{ color: colors.amber }}>
+          {event.phase}
+        </div>
+        <AnimatePresence>
+          {isNew && (
+            <motion.span
+              initial={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: [1, 1, 0], scale: [1, 1, 0.96] }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 2, times: [0, 0.82, 1], ease: 'easeOut' }}
+              className="rounded px-1.5 py-0.5 text-[9px] font-semibold"
+              style={{ color: colors.void, background: colors.amber }}
+            >
+              NEW
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
+      <TraceReasoningFields event={event} />
+      <TraceLine label="Observation" value={event.observation} />
+      <TraceLine label="Inference" value={event.inference} />
+      <TraceLine label="Decision" value={event.decision} />
+      <TraceLine label="Execution" value={event.execution} />
+    </motion.div>
   );
 }
 

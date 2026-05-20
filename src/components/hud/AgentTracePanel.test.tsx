@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { TraceReasoningFields } from './AgentTracePanel';
+import { TraceEventCard, TraceReasoningFields } from './AgentTracePanel';
 import { useSessionStore } from '../../store/sessionStore';
 import type { AgentTraceEvent } from '../../types';
 
@@ -28,5 +28,23 @@ describe('AgentTracePanel', () => {
     expect(html).toContain('87.00');
     expect(html).toContain('AI Reasoning');
     expect(html).toContain('closest rescue team');
+  });
+
+  it('renders a temporary NEW badge for the latest live trace event', () => {
+    const event: AgentTraceEvent = {
+      id: 'trace-new',
+      phase: 'Resource Allocation',
+      observation: 'A new allocation entered the trace.',
+      inference: 'The card should be highlighted.',
+      decision: 'Show latest event badge.',
+      execution: 'Animate into the panel.',
+      timestamp: new Date('2026-05-20T12:00:00.000Z').toISOString(),
+    };
+
+    const html = renderToStaticMarkup(<TraceEventCard event={event} isNew />);
+
+    expect(html).toContain('NEW');
+    expect(html).toContain('Resource Allocation');
+    expect(html).toContain('Show latest event badge');
   });
 });
