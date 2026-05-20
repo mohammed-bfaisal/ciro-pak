@@ -145,6 +145,51 @@ Interpretation:
 - `/api/route` confirms vehicle routes now include Google traffic-aware route geometry and traffic segments.
 - Speech remains intentionally disabled until an OpenRouter speech model is configured.
 
+## Cloud Run Google Map Tiles Verification
+
+Date: 2026-05-20
+
+Deployment revision:
+
+```text
+ciro-backend-00007-dzw
+```
+
+Smoke result:
+
+```json
+{
+  "Version": "ea9d720",
+  "TrafficProvider": "google_routes",
+  "RoutingProvider": "google_routes",
+  "MapTilesProvider": "google_map_tiles",
+  "TrafficResponse": "google",
+  "TrafficSegments": 3,
+  "RouteProvider": "google",
+  "RouteTrafficSegments": 12,
+  "TileSessionProvider": "google",
+  "TileMode": "satellite",
+  "TileUrl": "/api/map-tiles/tiles/satellite/{z}/{x}/{y}",
+  "TileUrlLeaksKey": false
+}
+```
+
+Tile byte check:
+
+```json
+{
+  "Status": 200,
+  "ContentType": "image/png",
+  "Bytes": 12744
+}
+```
+
+Interpretation:
+
+- `/api/map-tiles/session` creates a backend-managed Google Map Tiles session.
+- Frontend receives only a proxied tile template, never the Google Maps API key.
+- `/api/map-tiles/tiles/dark/8/179/105` returns PNG tile bytes through Cloud Run.
+
 ## Final Submission Fields Still Needed
 
 - Cloud Run service URL.
