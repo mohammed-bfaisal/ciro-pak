@@ -13,9 +13,13 @@ import { chatWithOpenRouter } from '../api/openRouter';
 import { fetchWeather } from '../api/weather';
 import { haversineDistance } from '../utils/geo';
 import { fetchRoute } from '../api/routing';
-import type { AgentTraceEvent, City, Crisis, ImpactSnapshot, Resource, Signal } from '../types';
+import type { AgentTraceEvent, City, Crisis, ImpactSnapshot, Resource, ResourceAllocation, Signal } from '../types';
 import { getResources, getSignals } from '../data/cityData';
-import { buildDispatchBriefingPrompt, OPENROUTER_DISPATCH_SYSTEM_PROMPT } from './openRouterPrompts';
+import {
+  buildAllocationReasoningPrompt,
+  buildDispatchBriefingPrompt,
+  OPENROUTER_DISPATCH_SYSTEM_PROMPT,
+} from './openRouterPrompts';
 
 const PHASE_DELAYS = {
   ingestion:   800,
@@ -143,11 +147,14 @@ export async function runAIDispatch(city: City) {
   await delay(PHASE_DELAYS.allocation);
 
   const allocations = resourceAllocationAgent(crises, resources);
+  const allocationTraceIds = new Map<string, string>();
   const allocationTraceEvents: AgentTraceEvent[] = allocations.map((allocation) => {
     const crisis = crises.find((candidate) => candidate.id === allocation.crisisId);
     const unit = resources.find((candidate) => candidate.id === allocation.resourceId);
+    const eventId = `alloc-${allocation.resourceId}-${allocation.crisisId}-${Date.now()}`;
+    allocationTraceIds.set(allocationKey(allocation), eventId);
     return {
-      id: `alloc-${allocation.resourceId}-${allocation.crisisId}-${Date.now()}`,
+      id: eventId,
       phase: 'Resource Allocation',
       observation: `${unit?.label ?? allocation.resourceId} is available for ${crisis?.title ?? allocation.crisisId}.`,
       inference: `Score ${allocation.score} from type match, severity, confidence, population, travel time, and availability.`,
@@ -155,7 +162,7 @@ export async function runAIDispatch(city: City) {
       execution: `Queued route lookup and dispatch movement with ETA ${allocation.etaMinutes} minutes.`,
       timestamp: new Date().toISOString(),
       deterministicScore: allocation.score,
-      aiReasoning: `AI reasoning fallback: ${allocation.reasoning}; ${allocation.tradeoff}`,
+      aiReasoning: 'AI reasoning: thinking through risk, uncertainty, resource tradeoff, route/traffic impact, and next action...',
     };
   });
   useSessionStore.getState().addTraceEvents(allocationTraceEvents);
@@ -182,6 +189,21 @@ export async function runAIDispatch(city: City) {
     return { a, crisis, etaSeconds, routeCoordinates: routeResult?.coords, routeResult };
   });
   const routeResults = await Promise.all(routePromises);
+
+  startAllocationReasoningUpdates(city, routeResults.flatMap((result) => {
+    if (!result) return [];
+    const resource = resources.find((candidate) => candidate.id === result.a.resourceId);
+    const traceEventId = allocationTraceIds.get(allocationKey(result.a));
+    if (!resource || !traceEventId) return [];
+    return [{
+      traceEventId,
+      allocation: result.a,
+      crisis: result.crisis,
+      resource,
+      etaMinutes: Math.max(1, Math.ceil(result.etaSeconds / 60)),
+      trafficDelaySeconds: result.routeResult?.trafficDelaySeconds ?? 0,
+    }];
+  }));
 
   routeResults.forEach((r) => {
     if (!r) return;
@@ -256,6 +278,58 @@ export async function runAIDispatch(city: City) {
   });
 
   trace.finalise();
+}
+
+interface AllocationReasoningContext {
+  traceEventId: string;
+  allocation: ResourceAllocation;
+  crisis: Crisis;
+  resource: Resource;
+  etaMinutes: number;
+  trafficDelaySeconds: number;
+}
+
+function allocationKey(allocation: Pick<ResourceAllocation, 'resourceId' | 'crisisId'>) {
+  return `${allocation.resourceId}:${allocation.crisisId}`;
+}
+
+function startAllocationReasoningUpdates(city: City, contexts: AllocationReasoningContext[]) {
+  contexts.forEach((context) => {
+    void updateAllocationReasoning(city, context);
+  });
+}
+
+async function updateAllocationReasoning(city: City, context: AllocationReasoningContext) {
+  const fallbackReasoning = `AI reasoning fallback: ${context.allocation.reasoning}; ${context.allocation.tradeoff}`;
+
+  try {
+    const result = await chatWithOpenRouter({
+      systemPrompt: OPENROUTER_DISPATCH_SYSTEM_PROMPT,
+      prompt: buildAllocationReasoningPrompt({
+        city,
+        crisis: context.crisis,
+        resource: context.resource,
+        score: context.allocation.score,
+        etaMinutes: context.etaMinutes,
+        trafficDelaySeconds: context.trafficDelaySeconds,
+      }),
+      maxTokens: 120,
+      temperature: 0.2,
+    }, getApiClientOptionsForSettings());
+
+    const content = result.content.replace(/\s+/g, ' ').trim();
+    useSessionStore.getState().updateTraceEvent(context.traceEventId, {
+      aiReasoning: content
+        ? result.provider === 'fallback'
+          ? `AI reasoning fallback: ${content}`
+          : content
+        : fallbackReasoning,
+    });
+  } catch {
+    useSessionStore.getState().updateTraceEvent(context.traceEventId, {
+      aiReasoning: fallbackReasoning,
+    });
+  }
 }
 
 async function addOpenRouterDispatchBriefing(city: City, crises: Crisis[], resources: Resource[]) {

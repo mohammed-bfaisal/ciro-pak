@@ -60,7 +60,7 @@ describe('runAIDispatch OpenRouter integration', () => {
     await vi.runAllTimersAsync();
     await dispatch;
 
-    expect(chatWithOpenRouter).toHaveBeenCalledOnce();
+    expect(chatWithOpenRouter).toHaveBeenCalled();
     expect(vi.mocked(chatWithOpenRouter).mock.calls[0]?.[0].prompt).toContain('Karachi');
     expect(vi.mocked(chatWithOpenRouter).mock.calls[0]?.[0].prompt).toContain('Active crises');
     expect(useTraceStore.getState().logs.some((log) => log.includes('OpenRouter dispatch briefing'))).toBe(true);
@@ -88,4 +88,64 @@ describe('runAIDispatch OpenRouter integration', () => {
     expect(allocationEvents[0].deterministicScore).toBeGreaterThan(0);
     expect(allocationEvents[0].aiReasoning).toContain('fallback');
   });
+
+  it('updates allocation trace cards from thinking state to hosted OpenRouter reasoning', async () => {
+    const allocationReasoning = createDeferred<{
+      provider: 'openrouter';
+      model: string;
+      content: string;
+    }>();
+
+    vi.mocked(chatWithOpenRouter).mockImplementation((request) => {
+      if (request.prompt.includes('Active crises')) {
+        return Promise.resolve({
+          provider: 'openrouter',
+          model: 'openrouter/owl-alpha',
+          content: 'Hosted dispatch briefing.',
+        });
+      }
+      return allocationReasoning.promise;
+    });
+
+    const dispatch = runAIDispatch('karachi');
+    await vi.advanceTimersByTimeAsync(700);
+    await Promise.resolve();
+
+    const thinkingEvent = useSessionStore
+      .getState()
+      .traceEvents
+      .find((event) => event.phase === 'Resource Allocation');
+
+    expect(thinkingEvent?.aiReasoning).toContain('thinking');
+    expect(
+      vi.mocked(chatWithOpenRouter).mock.calls.some((call) =>
+        call[0].prompt.includes('Deterministic allocation score') &&
+        call[0].prompt.includes('traffic delay 90 seconds')
+      ),
+    ).toBe(true);
+
+    allocationReasoning.resolve({
+      provider: 'openrouter',
+      model: 'openrouter/owl-alpha',
+      content: 'AI chose this rescue unit because risk is highest, traffic impact is acceptable, and the next action is immediate dispatch.',
+    });
+    await vi.runAllTimersAsync();
+    await dispatch;
+
+    const updatedEvent = useSessionStore
+      .getState()
+      .traceEvents
+      .find((event) => event.id === thinkingEvent?.id);
+
+    expect(updatedEvent?.aiReasoning).toContain('AI chose this rescue unit');
+    expect(useResourceStore.getState().resources.some((resource) => resource.status === 'en_route')).toBe(true);
+  });
 });
+
+function createDeferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((resolver) => {
+    resolve = resolver;
+  });
+  return { promise, resolve };
+}

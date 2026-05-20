@@ -20,6 +20,7 @@ interface SessionState {
   tick: (deltaMinutes: number) => void;
   resolve: (crisisId: string, responseMinutes: number) => void;
   addTraceEvents: (events: AgentTraceEvent[]) => void;
+  updateTraceEvent: (eventId: string, patch: Partial<Omit<AgentTraceEvent, 'id'>>) => void;
   addImpactSnapshots: (snapshots: ImpactSnapshot[]) => void;
   reset: () => void;
 }
@@ -94,6 +95,12 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
   addTraceEvents: (events) => set((state) => ({
     traceEvents: [...state.traceEvents, ...events],
+  })),
+
+  updateTraceEvent: (eventId, patch) => set((state) => ({
+    traceEvents: state.traceEvents.map((event) =>
+      event.id === eventId ? { ...event, ...patch } : event
+    ),
   })),
 
   addImpactSnapshots: (snapshots) => set((state) => ({
