@@ -227,11 +227,24 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       signalMarkersRef.current.forEach((m) => m.remove());
       signalMarkersRef.current = [];
       signals.forEach((signal) => {
-        const el = document.createElement('div');
-        el.style.cssText = `width:10px;height:10px;border-radius:50%;background:${getCredColor(signal.credibilityScore)};border:2px solid rgba(0,0,0,0.3);cursor:pointer;box-shadow:0 0 6px ${getCredColor(signal.credibilityScore)}`;
-        el.title = `${signal.source}: ${signal.content.slice(0, 50)}...`;
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:relative;width:24px;height:24px;display:flex;align-items:center;justify-content:center;overflow:visible;cursor:pointer';
+        wrapper.title = `${signal.source}: ${signal.content.slice(0, 50)}...`;
+
+        if (signal.isFlagged) {
+          const ring = document.createElement('div');
+          ring.className = 'signal-flagged-ring';
+          ring.style.cssText = 'position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid #f87171;';
+          wrapper.appendChild(ring);
+        }
+
+        const dotColor = signal.isFlagged ? '#f87171' : getCredColor(signal.credibilityScore);
+        const dot = document.createElement('div');
+        dot.style.cssText = `width:${signal.isFlagged ? 12 : 10}px;height:${signal.isFlagged ? 12 : 10}px;border-radius:50%;background:${dotColor};border:2px solid rgba(0,0,0,0.3);box-shadow:0 0 6px ${dotColor}`;
+        wrapper.appendChild(dot);
+
         signalMarkersRef.current.push(
-          new maplibregl.Marker({ element: el, anchor: 'center' })
+          new maplibregl.Marker({ element: wrapper, anchor: 'center' })
             .setLngLat([signal.location.lng, signal.location.lat])
             .addTo(map)
         );
