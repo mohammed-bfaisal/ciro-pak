@@ -9,6 +9,7 @@ import { TracePage } from './pages/TracePage'
 import { ComparePage } from './pages/ComparePage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SessionCompleteBanner } from './components/hud/SessionCompleteBanner'
+import { RecoveryToast } from './components/hud/RecoveryToast'
 import { useResourceStore } from './store/resourceStore'
 import { useSessionStore } from './store/sessionStore'
 import { useCityStore } from './store/cityStore'
@@ -62,6 +63,7 @@ function App() {
   return (
     <Shell>
       <SessionCompleteBanner />
+      <RecoveryToast />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/signals" element={<SignalsPage />} />
