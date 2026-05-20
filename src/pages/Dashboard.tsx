@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { CiroMap } from '../components/map/CiroMap';
 import { SignalFeed } from '../components/panels/SignalFeed';
 import { CrisisPanel } from '../components/panels/CrisisPanel';
@@ -35,6 +35,8 @@ export function Dashboard() {
   const crises            = useCrisisStore((s) => s.crises);
   const signalCount       = useSignalStore((s) => s.signals.length);
   const crisisCount       = crises.length;
+
+  const handleCrisisClick = useCallback((id: string) => selectCrisis(id), [selectCrisis]);
 
   const isPaused          = useResourceStore((s) => s.isPaused);
   const simulationRunning = useResourceStore((s) => s.simulationRunning);
@@ -172,7 +174,7 @@ export function Dashboard() {
   return (
     <div className="absolute inset-0">
       {/* Map fills entire viewport */}
-      <CiroMap city={city} onCrisisClick={(id) => selectCrisis(id)} />
+      <CiroMap city={city} onCrisisClick={handleCrisisClick} />
       <SessionKpiBar />
 
       {/* Signal feed toggle — top left (desktop only) */}
