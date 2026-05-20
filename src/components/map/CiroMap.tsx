@@ -495,22 +495,21 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         const isSelectTarget = dispatchMode === 'manual' && selectedUnitId;
         const assignedCount = useResourceStore.getState().resources.filter((r) => r.assignedCrisisId === crisis.id).length;
         const size = isSelectTarget ? 40 : 32;
-        const innerSize = isSelectTarget ? 18 : 14;
         const isResolved = crisis.status === 'resolved' || crisis.status === 'false_alarm';
         const pulseRing = isResolved ? '' : 'animation:pulse-map-ring 1.8s ease-out infinite';
-        const pulseDot = isResolved ? '' : 'animation:pulse-map-dot 2s ease-in-out infinite';
         const typeIcon = CRISIS_TYPE_ICON[crisis.type] ?? '❓';
 
         const el = document.createElement('div');
         el.style.cssText = `position:absolute;width:${size}px;height:${size}px;cursor:pointer`;
         if (isResolved) el.style.opacity = '0.35';
+        const baseSize = 28;
+        const baseOffset = (size - baseSize) / 2;
         el.innerHTML = `
-          <div style="position:absolute;inset:0;border-radius:50%;border:3px solid ${color};${pulseRing};pointer-events:none"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;background:${color}33;border:${isSelectTarget ? 3 : 2}px solid ${color};pointer-events:none"></div>
-          <div style="position:absolute;top:calc(50% - ${innerSize / 2}px);left:calc(50% - ${innerSize / 2}px);width:${innerSize}px;height:${innerSize}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};${pulseDot};pointer-events:none"></div>
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;line-height:1;pointer-events:none">${typeIcon}</div>
-          <div style="position:absolute;top:0;right:0;width:9px;height:9px;border-radius:50%;background:${severityColor};border:1.5px solid rgba(0,0,0,0.7);pointer-events:none"></div>
-          ${assignedCount > 0 ? `<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#1a1a1a;border:1px solid ${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${color};font-family:monospace;pointer-events:none">${assignedCount}</div>` : ''}
+          <div style="position:absolute;inset:0;border-radius:50%;border:3px solid ${color};box-sizing:border-box;${pulseRing};pointer-events:none"></div>
+          <div style="position:absolute;top:${baseOffset}px;left:${baseOffset}px;width:${baseSize}px;height:${baseSize}px;border-radius:50%;background:${color};border:2px solid #ffffff;box-shadow:0 0 12px ${color},0 2px 6px rgba(0,0,0,0.6);box-sizing:border-box;pointer-events:none"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8))">${typeIcon}</div>
+          <div style="position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:${severityColor};border:2px solid #0a0a0a;box-shadow:0 0 6px ${severityColor};pointer-events:none"></div>
+          ${assignedCount > 0 ? `<div style="position:absolute;bottom:-4px;right:-4px;min-width:16px;height:16px;padding:0 3px;border-radius:8px;background:#0a0a0a;border:1px solid ${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${color};font-family:monospace;pointer-events:none">${assignedCount}</div>` : ''}
         `;
 
         el.onclick = async () => {
