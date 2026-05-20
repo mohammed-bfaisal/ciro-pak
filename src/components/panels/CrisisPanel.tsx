@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RTooltip } from 'recharts';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useSignalStore } from '../../store/signalStore';
 import { useResourceStore } from '../../store/resourceStore';
@@ -105,6 +106,22 @@ export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
                 <div className="flex flex-col items-center gap-1">
                   <ConfidenceSparkline history={crisis.confidenceHistory} width={90} height={50} />
                   <span className="text-[10px] mt-1" style={{ color: colors.textDim }}>Confidence</span>
+                  {crisis.confidenceHistory.length >= 2 && (() => {
+                    const h = crisis.confidenceHistory;
+                    const latest = h[h.length - 1].v;
+                    const prev = h[h.length - 2].v;
+                    const delta = latest - prev;
+                    const reason = delta > 0.1
+                      ? 'Rose — new corroborating signals added'
+                      : delta < -0.1
+                      ? 'Fell — conflicting or low-credibility signals flagged'
+                      : 'Stable — no significant new signal data';
+                    return (
+                      <span className="text-[9px] text-center leading-tight mt-0.5" style={{ color: colors.textDim }}>
+                        {delta > 0 ? '↑' : delta < 0 ? '↓' : '→'} {reason}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -140,6 +157,33 @@ export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
 
           {activeTab === 'signals' && (
             <div className="space-y-2">
+              {crisisSignals.length > 1 && (
+                <div className="mb-3">
+                  <div className="text-[10px] font-semibold mb-1" style={{ color: colors.textDim }}>Signal Arrival Timeline</div>
+                  <div style={{ height: 56 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={crisisSignals
+                          .slice()
+                          .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+                          .map((s) => ({
+                            t: new Date(s.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            score: Math.round(s.credibilityScore * 100),
+                          }))}
+                        barSize={8}
+                      >
+                        <XAxis dataKey="t" tick={{ fontSize: 8, fill: colors.textDim }} axisLine={false} tickLine={false} />
+                        <YAxis hide domain={[0, 100]} />
+                        <RTooltip
+                          contentStyle={{ background: colors.overlay, border: `1px solid ${colors.borderDefault}`, fontSize: 10 }}
+                          formatter={(v) => [`${v}% credibility`]}
+                        />
+                        <Bar dataKey="score" fill={colors.amber} radius={[2, 2, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
               {crisisSignals.map((s, i) => <SignalCard key={s.id} signal={s} index={i} />)}
               {crisis.conflictingSignalIds.length > 0 && (
                 <div className="mt-3">
@@ -194,6 +238,24 @@ export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
                           {step.toolResult && <span className="ml-1">→ {step.toolResult}</span>}
                         </div>
                       ))}
+                    </div>
+                  )}
+                  {(Object.keys(action.beforeState).length > 0 || Object.keys(action.afterState).length > 0) && (
+                    <div className="mt-2 rounded border overflow-hidden" style={{ borderColor: colors.borderSubtle }}>
+                      <div className="grid grid-cols-2 divide-x text-[10px]" style={{ borderColor: colors.borderSubtle }}>
+                        <div className="p-2" style={{ background: 'rgba(248,113,113,0.05)' }}>
+                          <div className="font-semibold mb-1" style={{ color: colors.danger }}>Before</div>
+                          {Object.entries(action.beforeState).map(([k, v]) => (
+                            <div key={k} style={{ color: colors.textSecondary }}>{k}: <span style={{ color: colors.textDim }}>{String(v)}</span></div>
+                          ))}
+                        </div>
+                        <div className="p-2" style={{ background: 'rgba(52,211,153,0.05)' }}>
+                          <div className="font-semibold mb-1" style={{ color: colors.success }}>After</div>
+                          {Object.entries(action.afterState).map(([k, v]) => (
+                            <div key={k} style={{ color: colors.textSecondary }}>{k}: <span style={{ color: colors.success }}>{String(v)}</span></div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
