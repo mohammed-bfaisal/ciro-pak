@@ -12,6 +12,7 @@ export interface BackendHealthPayload {
     routing: 'google_routes' | 'osrm';
     openrouter: 'openrouter' | 'disabled';
     speech: 'openrouter' | 'disabled';
+    mapTiles: 'google_map_tiles' | 'disabled';
   };
   features: {
     weatherProxy: boolean;
@@ -19,6 +20,7 @@ export interface BackendHealthPayload {
     routingProxy: boolean;
     openrouterProxy: boolean;
     speechProxy: boolean;
+    mapTilesProxy: boolean;
   };
 }
 
@@ -51,6 +53,7 @@ export function buildHealthPayload(
       routing: hasGoogleMaps ? 'google_routes' : 'osrm',
       openrouter: hasOpenRouter ? 'openrouter' : 'disabled',
       speech: hasSpeech ? 'openrouter' : 'disabled',
+      mapTiles: hasGoogleMaps ? 'google_map_tiles' : 'disabled',
     },
     features: {
       weatherProxy: Boolean(env.weatherApiKey),
@@ -58,6 +61,7 @@ export function buildHealthPayload(
       routingProxy: true,
       openrouterProxy: hasOpenRouter,
       speechProxy: hasSpeech,
+      mapTilesProxy: hasGoogleMaps,
     },
   };
 }

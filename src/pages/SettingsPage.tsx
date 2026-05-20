@@ -152,6 +152,23 @@ export function SettingsPage() {
           />
         </section>
 
+        <section className="grid gap-3 tablet:grid-cols-2">
+          <StatusCard
+            icon={<Map size={18} />}
+            label="Map tile proxy"
+            value={health?.features.mapTilesProxy ? 'Google Map Tiles' : 'Fallback style'}
+            tone={health?.features.mapTilesProxy ? 'good' : 'warn'}
+            detail={health?.providers.mapTiles === 'google_map_tiles' ? 'Dark, light, and satellite modes ready' : 'Using bundled fallback map style'}
+          />
+          <StatusCard
+            icon={<Radio size={18} />}
+            label="Speech proxy"
+            value={health?.features.speechProxy ? 'OpenRouter speech' : 'Captions only'}
+            tone={health?.features.speechProxy ? 'good' : 'muted'}
+            detail={health?.providers.speech === 'openrouter' ? 'Radio audio route ready' : 'No TTS model configured'}
+          />
+        </section>
+
         <SettingsSection title="Live Data">
           {liveDataRows.map((row) => (
             <SettingsRow

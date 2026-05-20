@@ -11,6 +11,7 @@ export interface BackendHealth {
     routing: 'google_routes' | 'osrm';
     openrouter: 'openrouter' | 'disabled';
     speech: 'openrouter' | 'disabled';
+    mapTiles: 'google_map_tiles' | 'disabled';
   };
   features: {
     weatherProxy: boolean;
@@ -18,6 +19,7 @@ export interface BackendHealth {
     routingProxy: boolean;
     openrouterProxy: boolean;
     speechProxy: boolean;
+    mapTilesProxy: boolean;
   };
 }
 

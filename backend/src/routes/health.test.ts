@@ -20,6 +20,7 @@ test('health payload exposes app version and active live provider stack', () => 
     routing: 'google_routes',
     openrouter: 'openrouter',
     speech: 'openrouter',
+    mapTiles: 'google_map_tiles',
   });
   assert.deepEqual(payload.features, {
     weatherProxy: true,
@@ -27,6 +28,7 @@ test('health payload exposes app version and active live provider stack', () => 
     routingProxy: true,
     openrouterProxy: true,
     speechProxy: true,
+    mapTilesProxy: true,
   });
 });
 
@@ -40,8 +42,10 @@ test('health payload labels deterministic fallback providers when keys are absen
     routing: 'osrm',
     openrouter: 'disabled',
     speech: 'disabled',
+    mapTiles: 'disabled',
   });
   assert.equal(payload.features.speechProxy, false);
+  assert.equal(payload.features.mapTilesProxy, false);
 });
 
 function makeEnv(overrides: Partial<BackendEnv> = {}): BackendEnv {
