@@ -1,6 +1,7 @@
 import { Download } from 'lucide-react';
 import { PipelineTimeline } from '../components/trace/PipelineTimeline';
 import { TerminalLog } from '../components/trace/TerminalLog';
+import { TracePhaseDurationChart } from '../components/trace/TracePhaseDurationChart';
 import { colors } from '../constants/colors';
 import { useTraceStore } from '../store/traceStore';
 import type { Workplan } from '../types';
@@ -38,6 +39,7 @@ export function TracePage() {
       <div className="border-b" style={{ borderColor: colors.borderDefault }}>
         <PipelineTimeline />
       </div>
+      {workplan && <TracePhaseDurationChart workplan={workplan} />}
 
       <div className="flex-1 overflow-hidden">
         <TerminalLog />
