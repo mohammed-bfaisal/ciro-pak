@@ -10,6 +10,7 @@ import { ComparePage } from './pages/ComparePage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SessionCompleteBanner } from './components/hud/SessionCompleteBanner'
 import { RecoveryToast } from './components/hud/RecoveryToast'
+import { RadioChatterPanel } from './components/hud/RadioChatterPanel'
 import { useResourceStore } from './store/resourceStore'
 import { useSessionStore } from './store/sessionStore'
 import { useCityStore } from './store/cityStore'
@@ -64,6 +65,7 @@ function App() {
     <Shell>
       <SessionCompleteBanner />
       <RecoveryToast />
+      <RadioChatterPanel />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/signals" element={<SignalsPage />} />

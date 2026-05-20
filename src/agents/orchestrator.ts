@@ -4,6 +4,7 @@ import { useCrisisStore } from '../store/crisisStore';
 import { useResourceStore } from '../store/resourceStore';
 import { useSessionStore } from '../store/sessionStore';
 import { getApiClientOptionsForSettings, useSettingsStore } from '../store/settingsStore';
+import { generateRadioLine } from './radioChatter';
 import { signalFusionAgent } from './signalFusion';
 import { crisisDetectionAgent } from './crisisDetector';
 import { resourceAllocationAgent } from './resourceAllocator';
@@ -210,6 +211,8 @@ export async function runAIDispatch(city: City) {
     useResourceStore.getState().dispatchUnit(r.a.resourceId, r.a.crisisId, r.crisis.location, r.etaSeconds, r.routeCoordinates, r.routeResult ?? undefined);
     useCrisisStore.getState().updateCrisis(r.a.crisisId, { status: 'responding' });
     trace.log(`Dispatched ${r.a.resourceId} → ${r.a.crisisId}: ${r.a.reasoning}`);
+    const dispatchedResource = resources.find((res) => res.id === r.a.resourceId);
+    void generateRadioLine(city, 'dispatch', r.crisis, dispatchedResource, Math.max(1, Math.ceil(r.etaSeconds / 60)));
   });
   trace.completePhase('Resource Allocation', PHASE_DELAYS.allocation);
 
