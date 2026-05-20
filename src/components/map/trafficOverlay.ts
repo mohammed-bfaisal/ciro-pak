@@ -4,7 +4,9 @@ import type { CongestionLevel, Resource, TrafficSegment } from '../../types';
 interface TrafficLineProperties {
   color: string;
   congestion: CongestionLevel;
-  source: 'flow' | 'route';
+  source: 'flow' | 'route' | 'fallback_probe';
+  isFallback?: boolean;
+  label?: string;
 }
 
 type TrafficLineFeature = GeoJSON.Feature<GeoJSON.LineString, TrafficLineProperties>;
@@ -13,9 +15,10 @@ export function buildTrafficLineFeatureCollection(
   flows: TrafficFlow[],
   resources: Resource[],
 ): GeoJSON.FeatureCollection<GeoJSON.LineString, TrafficLineProperties> {
-  const flowFeatures = flows.flatMap((flow) =>
-    buildSegmentFeatures(flow.trafficSegments, 'flow'),
-  );
+  const flowFeatures = flows.flatMap((flow) => {
+    const segmentFeatures = buildSegmentFeatures(flow.trafficSegments, 'flow');
+    return segmentFeatures.length > 0 ? segmentFeatures : [buildFallbackProbeFeature(flow)];
+  });
   const routeFeatures = resources
     .filter((resource) => resource.status === 'en_route' || resource.status === 'dispatched')
     .flatMap((resource) => buildSegmentFeatures(resource.routeTrafficSegments, 'route'));
@@ -23,6 +26,29 @@ export function buildTrafficLineFeatureCollection(
   return {
     type: 'FeatureCollection',
     features: [...flowFeatures, ...routeFeatures],
+  };
+}
+
+function buildFallbackProbeFeature(flow: TrafficFlow): TrafficLineFeature {
+  const lngOffset = 0.008;
+  const latOffset = 0.0035;
+
+  return {
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        [flow.lng - lngOffset, flow.lat - latOffset],
+        [flow.lng + lngOffset, flow.lat + latOffset],
+      ],
+    },
+    properties: {
+      color: '#f59e0b',
+      congestion: flow.congestionLevel,
+      source: 'fallback_probe',
+      isFallback: true,
+      label: flow.provider === 'google' ? 'No Google road geometry' : 'Simulated traffic probe',
+    },
   };
 }
 

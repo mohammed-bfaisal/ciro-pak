@@ -23,6 +23,7 @@ const CRISIS_RADIUS_SOURCE_ID = 'crisis-radius-source';
 const CRISIS_RADIUS_LAYER_ID = 'crisis-radius-layer';
 const TRAFFIC_FLOW_SOURCE_ID = 'traffic-flow-source';
 const TRAFFIC_FLOW_LAYER_ID = 'traffic-flow-layer';
+const TRAFFIC_FLOW_LABEL_LAYER_ID = 'traffic-flow-label-layer';
 const RESOURCE_COVERAGE_SOURCE_ID = 'resource-coverage-source';
 const RESOURCE_COVERAGE_LAYER_ID = 'resource-coverage-layer';
 
@@ -254,7 +255,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       const data = buildTrafficLineFeatureCollection(flows, resources);
 
       if (!showTrafficLayer || data.features.length === 0) {
-        removeLayerAndSource(map, TRAFFIC_FLOW_LAYER_ID, TRAFFIC_FLOW_SOURCE_ID);
+        removeTrafficLayers(map);
         return;
       }
 
@@ -273,11 +274,40 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
             'line-width': ['match', ['get', 'congestion'], 'standstill', 7, 'heavy', 6, 'moderate', 5, 4],
             'line-opacity': 0.82,
             'line-blur': 0.35,
+            'line-dasharray': [
+              'case',
+              ['==', ['get', 'isFallback'], true],
+              ['literal', [2, 2]],
+              ['literal', [1, 0]],
+            ],
+          },
+        });
+      }
+      if (!map.getLayer(TRAFFIC_FLOW_LABEL_LAYER_ID)) {
+        map.addLayer({
+          id: TRAFFIC_FLOW_LABEL_LAYER_ID,
+          type: 'symbol',
+          source: TRAFFIC_FLOW_SOURCE_ID,
+          filter: ['==', ['get', 'isFallback'], true],
+          layout: {
+            'symbol-placement': 'line',
+            'text-field': ['get', 'label'],
+            'text-size': 10,
+            'text-offset': [0, 0.6],
+            'text-allow-overlap': false,
+          },
+          paint: {
+            'text-color': '#fbbf24',
+            'text-halo-color': '#111827',
+            'text-halo-width': 1.2,
           },
         });
       }
       if (map.getLayer(TRAFFIC_FLOW_LAYER_ID)) {
         map.moveLayer(TRAFFIC_FLOW_LAYER_ID);
+      }
+      if (map.getLayer(TRAFFIC_FLOW_LABEL_LAYER_ID)) {
+        map.moveLayer(TRAFFIC_FLOW_LABEL_LAYER_ID);
       }
     };
 
@@ -499,4 +529,11 @@ function removeLayerAndSource(map: maplibregl.Map, layerId: string, sourceId: st
   if (map.getSource(sourceId)) {
     map.removeSource(sourceId);
   }
+}
+
+function removeTrafficLayers(map: maplibregl.Map) {
+  if (map.getLayer(TRAFFIC_FLOW_LABEL_LAYER_ID)) {
+    map.removeLayer(TRAFFIC_FLOW_LABEL_LAYER_ID);
+  }
+  removeLayerAndSource(map, TRAFFIC_FLOW_LAYER_ID, TRAFFIC_FLOW_SOURCE_ID);
 }

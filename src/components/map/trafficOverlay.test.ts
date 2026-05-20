@@ -44,7 +44,7 @@ describe('traffic overlay feature builder', () => {
     expect(collection.features[0].geometry.coordinates).toEqual([[67.0, 24.86], [67.02, 24.87]]);
   });
 
-  it('does not invent road geometry when a fallback flow has no Google route segments', () => {
+  it('renders a labeled fallback probe when a fallback flow has no Google route segments', () => {
     const collection = buildTrafficLineFeatureCollection([
       {
         ...flow,
@@ -53,6 +53,27 @@ describe('traffic overlay feature builder', () => {
       },
     ], []);
 
-    expect(collection.features).toHaveLength(0);
+    expect(collection.features).toHaveLength(1);
+    expect(collection.features[0].properties).toMatchObject({
+      color: '#f59e0b',
+      congestion: 'heavy',
+      source: 'fallback_probe',
+      isFallback: true,
+      label: 'Simulated traffic probe',
+    });
+    expect(collection.features[0].geometry.coordinates).toHaveLength(2);
+  });
+
+  it('renders a no-route-geometry probe when Google traffic has no drawable segments', () => {
+    const collection = buildTrafficLineFeatureCollection([
+      {
+        ...flow,
+        trafficSegments: [],
+      },
+    ], []);
+
+    expect(collection.features).toHaveLength(1);
+    expect(collection.features[0].properties?.source).toBe('fallback_probe');
+    expect(collection.features[0].properties?.label).toBe('No Google road geometry');
   });
 });
