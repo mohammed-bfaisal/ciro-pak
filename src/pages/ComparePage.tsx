@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { colors } from '../constants/colors';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Play, Loader2 } from 'lucide-react';
+import { useCityStore } from '../store/cityStore';
+import { getCityData } from '../data/cityData';
+import { resourceAllocationAgent } from '../agents/resourceAllocator';
 
 const comparisonData = [
   {
@@ -60,7 +64,70 @@ const chartData = comparisonData.map((d) => ({
   CIRO: d.ciro,
 }));
 
+interface BaselineResult {
+  crisisCount: number;
+  resourcesDispatched: number;
+  avgEtaMin: number;
+}
+
+function runBaselineMode(city: ReturnType<typeof useCityStore.getState>['city']): BaselineResult {
+  const cityData = getCityData(city);
+  // Baseline: no credibility scoring, dispatch all resources to first crisis only
+  const crises = cityData.signals
+    .filter((s) => s.credibilityScore > 0)
+    .slice(0, 3)
+    .map((s, i) => ({
+      id: `baseline-crisis-${i}`,
+      type: 'unknown' as const,
+      title: `Baseline Incident ${i + 1}`,
+      location: { ...s.location, affectedRadiusKm: 1 },
+      severity: 'medium' as const,
+      confidenceScore: s.credibilityScore,
+      confidenceHistory: [],
+      status: 'active' as const,
+      detectedAt: s.timestamp,
+      estimatedDuration: '30 min',
+      affectedPopulation: 1000,
+      spreadRisk: 'unknown' as const,
+      signalIds: [s.id],
+      conflictingSignalIds: [],
+      verificationStatus: 'unverified' as const,
+      agentReasoning: 'Baseline: no multi-source verification',
+      actions: [],
+      stakeholderMessages: [],
+      city,
+    }));
+
+  if (crises.length === 0) return { crisisCount: 0, resourcesDispatched: 0, avgEtaMin: 0 };
+
+  const firstCrisis = crises[0];
+  const allocations = resourceAllocationAgent([firstCrisis], cityData.resources);
+  const dispatched = allocations.slice(0, 1);
+  const avgEta = dispatched.length > 0
+    ? Math.round(dispatched.reduce((s: number, a: { etaMinutes: number }) => s + a.etaMinutes, 0) / dispatched.length)
+    : 0;
+
+  return {
+    crisisCount: crises.length,
+    resourcesDispatched: dispatched.length,
+    avgEtaMin: avgEta,
+  };
+}
+
 export function ComparePage() {
+  const [baselineResult, setBaselineResult] = useState<BaselineResult | null>(null);
+  const [running, setRunning] = useState(false);
+  const city = useCityStore((s) => s.city);
+
+  const handleRunBaseline = () => {
+    setRunning(true);
+    setTimeout(() => {
+      const result = runBaselineMode(city);
+      setBaselineResult(result);
+      setRunning(false);
+    }, 800);
+  };
+
   return (
     <div className="h-full overflow-y-auto pb-20" style={{ background: colors.void }}>
       <div className="px-4 py-3 border-b" style={{ borderColor: colors.borderDefault }}>
@@ -132,6 +199,50 @@ export function ComparePage() {
           <li>• <strong style={{ color: colors.textPrimary }}>Multi-crisis coordination</strong> splits resources by severity, not first-come-first-served</li>
           <li>• <strong style={{ color: colors.textPrimary }}>Stakeholder targeting</strong> sends tailored messages to 6 different audiences</li>
         </ul>
+      </div>
+
+      {/* Baseline runner */}
+      <div className="mx-4 mt-4 mb-8 p-4 rounded-xl border" style={{ borderColor: colors.borderDefault, background: colors.raised }}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="text-sm font-bold" style={{ color: colors.textPrimary }}>Baseline Simulation</h3>
+            <p className="text-[11px]" style={{ color: colors.textDim }}>Runs non-agentic mode: no credibility scoring, first-crisis-only dispatch</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleRunBaseline}
+            disabled={running}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
+            style={{
+              background: running ? colors.overlay : colors.raised,
+              border: `1px solid ${colors.borderStrong}`,
+              color: running ? colors.textDim : colors.textPrimary,
+              cursor: running ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {running ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+            {running ? 'Running…' : 'Run Baseline'}
+          </button>
+        </div>
+        {baselineResult && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-3 gap-3"
+          >
+            {[
+              { label: 'Crises detected', value: baselineResult.crisisCount, note: 'No false-alarm filter' },
+              { label: 'Resources dispatched', value: baselineResult.resourcesDispatched, note: 'All to first crisis' },
+              { label: 'Avg ETA', value: `${baselineResult.avgEtaMin}m`, note: 'No severity weighting' },
+            ].map((item) => (
+              <div key={item.label} className="p-2 rounded-lg border text-center" style={{ borderColor: colors.borderDefault, background: colors.overlay }}>
+                <div className="text-lg font-bold font-mono" style={{ color: colors.danger }}>{item.value}</div>
+                <div className="text-[10px] font-semibold" style={{ color: colors.textSecondary }}>{item.label}</div>
+                <div className="text-[9px]" style={{ color: colors.textDim }}>{item.note}</div>
+              </div>
+            ))}
+          </motion.div>
+        )}
       </div>
     </div>
   );
