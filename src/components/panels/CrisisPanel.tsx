@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { useState } from 'react';
+import { Share } from '@capacitor/share';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RTooltip } from 'recharts';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useSignalStore } from '../../store/signalStore';
@@ -32,6 +33,20 @@ export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
   const crisisResources = resources.filter((r) => r.assignedCrisisId === crisis.id);
   const crisisColor = getCrisisColor(crisis.type);
 
+  const shareIncident = async () => {
+    const latestConf = crisis.confidenceHistory.at(-1)?.v ?? 0;
+    const text = [
+      `CIRO Incident Report`,
+      `${crisis.title}`,
+      `Type: ${crisis.type} | Severity: ${crisis.severity} | Status: ${crisis.status}`,
+      `Signals: ${crisisSignals.length} | Resources: ${crisisResources.length}`,
+      `Confidence: ${Math.round(latestConf * 100)}%`,
+    ].join('\n');
+    try {
+      await Share.share({ title: crisis.title, text, dialogTitle: 'Share Incident' });
+    } catch { /* cancelled or web */ }
+  };
+
   const tabs = ['overview', 'signals', 'resources', 'actions', 'messages'];
 
   return (
@@ -57,9 +72,14 @@ export function CrisisPanel({ crisisId, onClose }: CrisisPanelProps) {
               <div className="w-3 h-3 rounded-full animate-pulse-dot" style={{ background: crisisColor }} />
               <span className="text-sm font-semibold">{capitalize(crisis.type)}</span>
             </div>
-            <button onClick={onClose} className="p-1 rounded" style={{ color: colors.textDim }}>
-              <X size={18} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button onClick={() => void shareIncident()} className="p-1 rounded" style={{ color: colors.textDim }} aria-label="Share incident">
+                <Share2 size={16} />
+              </button>
+              <button onClick={onClose} className="p-1 rounded" style={{ color: colors.textDim }}>
+                <X size={18} />
+              </button>
+            </div>
           </div>
           <h2 className="text-base font-semibold mb-1">{crisis.title}</h2>
           <div className="flex gap-2">
