@@ -20,6 +20,7 @@ import { useResourceStore } from '../../store/resourceStore';
 import { useSessionStore } from '../../store/sessionStore';
 import { resetDashboardRun } from '../../utils/dashboardRunState';
 import { formatRouteEta } from '../../utils/formatting';
+import { TraceReasoningFields } from './AgentTracePanel';
 
 type RailTab = 'units' | 'incidents' | 'trace' | 'impact';
 
@@ -284,6 +285,9 @@ export function DesktopOperationsRail({ onSelectCrisis }: DesktopOperationsRailP
               <div key={event.id} className="rounded-lg border p-3" style={{ background: colors.raised, borderColor: colors.borderSubtle }}>
                 <div className="text-[11px] font-semibold" style={{ color: colors.amber }}>
                   {event.phase}
+                </div>
+                <div className="mt-2">
+                  <TraceReasoningFields event={event} />
                 </div>
                 <div className="mt-2 text-[11px] leading-snug" style={{ color: colors.textSecondary }}>
                   {event.decision}

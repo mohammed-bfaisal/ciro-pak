@@ -142,6 +142,8 @@ export interface AgentTraceEvent {
   decision: string;
   execution: string;
   timestamp: string;
+  deterministicScore?: number;
+  aiReasoning?: string;
 }
 
 export interface SignalCluster {

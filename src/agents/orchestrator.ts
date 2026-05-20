@@ -154,6 +154,8 @@ export async function runAIDispatch(city: City) {
       decision: allocation.reasoning,
       execution: `Queued route lookup and dispatch movement with ETA ${allocation.etaMinutes} minutes.`,
       timestamp: new Date().toISOString(),
+      deterministicScore: allocation.score,
+      aiReasoning: `AI reasoning fallback: ${allocation.reasoning}; ${allocation.tradeoff}`,
     };
   });
   useSessionStore.getState().addTraceEvents(allocationTraceEvents);

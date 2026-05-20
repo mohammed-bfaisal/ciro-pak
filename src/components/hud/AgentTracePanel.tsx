@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrainCircuit, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSessionStore } from '../../store/sessionStore';
 import { colors } from '../../constants/colors';
+import type { AgentTraceEvent } from '../../types';
 
 export function AgentTracePanel() {
   const [collapsed, setCollapsed] = useState(false);
@@ -43,12 +44,37 @@ export function AgentTracePanel() {
               <div className="text-[10px] font-semibold mb-1" style={{ color: colors.amber }}>
                 {event.phase}
               </div>
+              <TraceReasoningFields event={event} />
               <TraceLine label="Observation" value={event.observation} />
               <TraceLine label="Inference" value={event.inference} />
               <TraceLine label="Decision" value={event.decision} />
               <TraceLine label="Execution" value={event.execution} />
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function TraceReasoningFields({ event }: { event: AgentTraceEvent }) {
+  const hasScore = typeof event.deterministicScore === 'number';
+  const hasReasoning = Boolean(event.aiReasoning);
+
+  if (!hasScore && !hasReasoning) return null;
+
+  return (
+    <div className="mb-2 grid grid-cols-1 desktop:grid-cols-2 gap-1.5 text-[10px] leading-snug">
+      {hasScore && (
+        <div className="rounded-md px-2 py-1" style={{ background: 'rgba(245,158,11,0.10)', border: `1px solid ${colors.borderSubtle}` }}>
+          <div className="font-semibold" style={{ color: colors.textDim }}>Deterministic Score</div>
+          <div style={{ color: colors.textPrimary }}>{event.deterministicScore?.toFixed(2)}</div>
+        </div>
+      )}
+      {hasReasoning && (
+        <div className="rounded-md px-2 py-1" style={{ background: 'rgba(59,130,246,0.10)', border: `1px solid ${colors.borderSubtle}` }}>
+          <div className="font-semibold" style={{ color: colors.textDim }}>AI Reasoning</div>
+          <div style={{ color: colors.textSecondary }}>{event.aiReasoning}</div>
         </div>
       )}
     </div>

@@ -23,6 +23,7 @@ import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
 import { useSessionStore } from '../../store/sessionStore';
 import { resetDashboardRun } from '../../utils/dashboardRunState';
+import { TraceReasoningFields } from './AgentTracePanel';
 
 type MobileDockTab = 'units' | 'incidents' | 'trace' | 'impact';
 
@@ -254,6 +255,9 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
                 {traceEvents.slice(-3).reverse().map((event) => (
                   <div key={event.id} className="rounded-lg px-2 py-2" style={{ background: colors.raised }}>
                     <div className="text-[10px] font-semibold" style={{ color: colors.amber }}>{event.phase}</div>
+                    <div className="mt-1">
+                      <TraceReasoningFields event={event} />
+                    </div>
                     <div className="mt-1 text-[10px] leading-snug" style={{ color: colors.textSecondary }}>{event.decision}</div>
                   </div>
                 ))}

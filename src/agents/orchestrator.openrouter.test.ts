@@ -66,4 +66,26 @@ describe('runAIDispatch OpenRouter integration', () => {
     expect(useTraceStore.getState().logs.some((log) => log.includes('OpenRouter dispatch briefing'))).toBe(true);
     expect(useResourceStore.getState().resources.some((resource) => resource.status === 'en_route')).toBe(true);
   });
+
+  it('adds deterministic score and fallback AI reasoning fields to allocation trace events', async () => {
+    vi.mocked(chatWithOpenRouter).mockResolvedValue({
+      provider: 'fallback',
+      model: 'openrouter/owl-alpha',
+      fallbackReason: 'openrouter_unavailable',
+      content: 'Fallback briefing generated.',
+    });
+
+    const dispatch = runAIDispatch('karachi');
+    await vi.runAllTimersAsync();
+    await dispatch;
+
+    const allocationEvents = useSessionStore
+      .getState()
+      .traceEvents
+      .filter((event) => event.phase === 'Resource Allocation');
+
+    expect(allocationEvents.length).toBeGreaterThan(0);
+    expect(allocationEvents[0].deterministicScore).toBeGreaterThan(0);
+    expect(allocationEvents[0].aiReasoning).toContain('fallback');
+  });
 });
