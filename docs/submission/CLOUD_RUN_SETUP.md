@@ -17,6 +17,7 @@ OPENROUTER_ALLOWED_MODELS=mistralai/mistral-nemo
 OPENROUTER_MAX_TOKENS=240
 OPENROUTER_SITE_URL=https://your-web-origin.example
 OPENROUTER_APP_TITLE=CIRO
+CIRO_BACKEND_VERSION=commit_or_release_identifier
 ```
 
 ## Local Backend Verification
@@ -43,6 +44,7 @@ curl -X POST http://localhost:8080/api/openrouter/chat -H "Content-Type: applica
 
 - Use backend environment variables in Cloud Run service configuration.
 - Enable the Google Routes API for the Google Cloud project used by `GOOGLE_MAPS_API_KEY`.
+- Store `GOOGLE_MAPS_API_KEY` in Secret Manager and mount it only as a Cloud Run environment secret.
 - Do not bake provider keys into frontend build artifacts.
 - Set `ALLOWED_ORIGINS` to the deployed web origin and any approved local demo origin.
 - Keep `OPENROUTER_MAX_TOKENS` low for judge demos and keep `OPENROUTER_ALLOWED_MODELS` narrow so the public APK cannot request arbitrary expensive models.
