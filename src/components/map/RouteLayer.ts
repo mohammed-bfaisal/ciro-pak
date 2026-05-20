@@ -6,22 +6,25 @@ const SOURCE_ID = 'unit-routes';
 const LAYER_ID  = 'unit-routes-layer';
 
 export function initRouteLayer(map: maplibregl.Map): void {
-  if (map.getSource(SOURCE_ID)) return;
-  map.addSource(SOURCE_ID, {
-    type: 'geojson',
-    data: { type: 'FeatureCollection', features: [] },
-  });
-  map.addLayer({
-    id: LAYER_ID,
-    type: 'line',
-    source: SOURCE_ID,
-    paint: {
-      'line-color': ['get', 'color'],
-      'line-width': 2.5,
-      'line-dasharray': [4, 3],
-      'line-opacity': 0.85,
-    },
-  });
+  if (!map.getSource(SOURCE_ID)) {
+    map.addSource(SOURCE_ID, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+  }
+  if (!map.getLayer(LAYER_ID)) {
+    map.addLayer({
+      id: LAYER_ID,
+      type: 'line',
+      source: SOURCE_ID,
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-width': 2.5,
+        'line-dasharray': [4, 3],
+        'line-opacity': 0.85,
+      },
+    });
+  }
 }
 
 export function updateRouteLayer(map: maplibregl.Map, resources: Resource[]): void {
