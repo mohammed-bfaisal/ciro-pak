@@ -1,8 +1,10 @@
+import { Download } from 'lucide-react';
 import { PipelineTimeline } from '../components/trace/PipelineTimeline';
 import { TerminalLog } from '../components/trace/TerminalLog';
 import { colors } from '../constants/colors';
 import { useTraceStore } from '../store/traceStore';
 import type { Workplan } from '../types';
+import { downloadTraceJson } from '../utils/traceExport';
 
 export function TracePage() {
   const workplan = useTraceStore((s) => s.workplan);
@@ -10,20 +12,33 @@ export function TracePage() {
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ background: colors.void }}>
       <div className="px-4 py-3 border-b" style={{ borderColor: colors.borderDefault }}>
-        <h1 className="font-display text-xl" style={{ color: colors.textPrimary }}>Agent Trace</h1>
-        {workplan && (
-          <p className="text-xs mt-1" style={{ color: colors.textDim }}>
-            Session: {workplan.sessionId} • {workplan.city.toUpperCase()}
-          </p>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="font-display text-xl" style={{ color: colors.textPrimary }}>Agent Trace</h1>
+            {workplan && (
+              <p className="text-xs mt-1" style={{ color: colors.textDim }}>
+                Session: {workplan.sessionId} | {workplan.city.toUpperCase()}
+              </p>
+            )}
+          </div>
+          {workplan && (
+            <button
+              type="button"
+              onClick={() => downloadTraceJson(workplan)}
+              className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold"
+              style={{ borderColor: colors.borderStrong, color: colors.textPrimary, background: colors.raised }}
+            >
+              <Download size={14} />
+              Copy trace as JSON
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Pipeline timeline */}
       <div className="border-b" style={{ borderColor: colors.borderDefault }}>
         <PipelineTimeline />
       </div>
 
-      {/* Terminal log */}
       <div className="flex-1 overflow-hidden">
         <TerminalLog />
       </div>
