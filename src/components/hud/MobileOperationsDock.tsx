@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ComponentType } from 'react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import {
   Activity,
   AlertTriangle,
@@ -134,7 +135,7 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
 
           <div className="flex items-center gap-2 px-2 py-2 border-b" style={{ borderColor: colors.borderSubtle }}>
             <button
-              onClick={() => resetDashboardRun(city)}
+              onClick={() => { void triggerHaptic(); resetDashboardRun(city); }}
               className="h-8 w-9 flex items-center justify-center rounded-lg"
               style={{
                 color: colors.textSecondary,
@@ -146,7 +147,7 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
               <RotateCcw size={14} />
             </button>
             <button
-              onClick={() => useResourceStore.getState().togglePause()}
+              onClick={() => { void triggerHaptic(); useResourceStore.getState().togglePause(); }}
               disabled={!simulationRunning}
               className="h-8 w-9 flex items-center justify-center rounded-lg"
               style={{
@@ -285,6 +286,10 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
   );
 }
 
+async function triggerHaptic() {
+  try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch { /* web */ }
+}
+
 function TinyStat({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="min-w-0 rounded-lg px-1.5 py-1.5" style={{ background: colors.raised }}>
@@ -307,7 +312,7 @@ function CommandButton({
 }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => { void triggerHaptic(); onClick(); }}
       className="h-9 min-w-0 flex items-center justify-center gap-1 rounded-lg text-[11px] font-semibold"
       style={{
         background: active ? colors.amberMuted : colors.raised,
