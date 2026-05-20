@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { CiroMap } from '../components/map/CiroMap';
 import { SignalFeed } from '../components/panels/SignalFeed';
 import { CrisisPanel } from '../components/panels/CrisisPanel';
@@ -13,11 +13,11 @@ import { useLiveDataStore } from '../store/liveDataStore';
 import { getApiClientOptionsForSettings, useSettingsStore } from '../store/settingsStore';
 import { colors } from '../constants/colors';
 import { Radio, X } from 'lucide-react';
-import { getResources } from '../data/cityData';
 import { fetchRoute } from '../api/routing';
 import { fetchTrafficFlow } from '../api/traffic';
 import { fetchWeather } from '../api/weather';
 import { getTrafficRefreshScopes } from '../utils/trafficScopes';
+import { ensureDashboardCityState } from '../utils/dashboardRunState';
 
 const MOVEMENT_TICK_MS = 250;
 const ROUTE_REFRESH_MS = 30_000;
@@ -27,6 +27,7 @@ const MAX_TRAFFIC_SCOPES = 8;
 
 export function Dashboard() {
   const city              = useCityStore((s) => s.city);
+  const previousCityRef   = useRef<typeof city | null>(null);
   const [showSignals, setShowSignals] = useState(false);
   const selectedCrisisId  = useCrisisStore((s) => s.selectedCrisisId);
   const selectCrisis      = useCrisisStore((s) => s.selectCrisis);
@@ -46,16 +47,14 @@ export function Dashboard() {
   const preferBackendData = useSettingsStore((s) => s.preferBackendData);
   const trafficSignalCount = useSignalStore((s) => s.signals.filter((signal) => signal.source === 'traffic').length);
 
-  // Close panels when city changes, and reload resources for new city
+  // Close local panels when city changes, and reload resources only when the city really changes.
   useEffect(() => {
+    const previousCity = previousCityRef.current;
+    previousCityRef.current = city;
     selectCrisis(null);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowSignals(false);
-    useSessionStore.getState().reset();
-    useSignalStore.getState().reset();
-    useCrisisStore.getState().reset();
-    useLiveDataStore.getState().reset();
-    useResourceStore.getState().setResources(getResources(city));
+    ensureDashboardCityState(city, previousCity);
   }, [city, selectCrisis]);
 
   useEffect(() => {

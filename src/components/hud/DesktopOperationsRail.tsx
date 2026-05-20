@@ -8,6 +8,7 @@ import {
   Loader2,
   Pause,
   Play,
+  RotateCcw,
   Truck,
   User,
 } from 'lucide-react';
@@ -17,6 +18,7 @@ import { useCityStore } from '../../store/cityStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
 import { useSessionStore } from '../../store/sessionStore';
+import { resetDashboardRun } from '../../utils/dashboardRunState';
 import { formatRouteEta } from '../../utils/formatting';
 
 type RailTab = 'units' | 'incidents' | 'trace' | 'impact';
@@ -127,6 +129,19 @@ export function DesktopOperationsRail({ onSelectCrisis }: DesktopOperationsRailP
         </div>
 
         <div className="mt-3 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => resetDashboardRun(city)}
+            className="flex h-10 w-11 items-center justify-center rounded-lg"
+            style={{
+              background: colors.raised,
+              color: colors.textSecondary,
+            }}
+            aria-label="Reset current run"
+            title="Reset current run"
+          >
+            <RotateCcw size={15} />
+          </button>
           <button
             type="button"
             onClick={() => useResourceStore.getState().togglePause()}

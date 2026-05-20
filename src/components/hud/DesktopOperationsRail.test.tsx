@@ -28,6 +28,7 @@ describe('DesktopOperationsRail', () => {
     expect(html).toContain('Simulate');
     expect(html).toContain('Manual');
     expect(html).toContain('AI Dispatch');
+    expect(html).toContain('Reset current run');
     expect(html).toContain('Units');
     expect(html).toContain('Incidents');
     expect(html).toContain('Trace');

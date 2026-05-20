@@ -38,6 +38,7 @@ describe('MobileOperationsDock', () => {
     );
 
     expect(html).toContain('OPS DOCK');
+    expect(html).toContain('Reset current run');
     expect(html).toContain('Units');
     expect(html).toContain('Incidents');
     expect(html).toContain('Trace');

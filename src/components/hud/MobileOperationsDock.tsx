@@ -11,6 +11,7 @@ import {
   Pause,
   Play,
   Radio,
+  RotateCcw,
   Truck,
   User,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ import { useCityStore } from '../../store/cityStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
 import { useSessionStore } from '../../store/sessionStore';
+import { resetDashboardRun } from '../../utils/dashboardRunState';
 
 type MobileDockTab = 'units' | 'incidents' | 'trace' | 'impact';
 
@@ -130,6 +132,18 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
           </div>
 
           <div className="flex items-center gap-2 px-2 py-2 border-b" style={{ borderColor: colors.borderSubtle }}>
+            <button
+              onClick={() => resetDashboardRun(city)}
+              className="h-8 w-9 flex items-center justify-center rounded-lg"
+              style={{
+                color: colors.textSecondary,
+                background: colors.raised,
+              }}
+              aria-label="Reset current run"
+              title="Reset current run"
+            >
+              <RotateCcw size={14} />
+            </button>
             <button
               onClick={() => useResourceStore.getState().togglePause()}
               disabled={!simulationRunning}
