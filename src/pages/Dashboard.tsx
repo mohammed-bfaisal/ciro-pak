@@ -146,6 +146,7 @@ export function Dashboard() {
     };
   }, [city, simulationRunning, isPaused, trafficSignalCount, crisisCount, enableTrafficUpdates, preferBackendData]);
 
+  const resolutionKey = resources.map((r) => `${r.id}:${r.status}`).join(',');
   useEffect(() => {
     crises.forEach((crisis) => {
       if (crisis.status !== 'responding') return;
@@ -161,7 +162,12 @@ export function Dashboard() {
       );
       resolveSession(crisis.id, responseMinutes);
     });
-  }, [crises, resources, resolveSession]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [crises, resolutionKey, resolveSession]);
+
+  const activeIncidentCount = crises.filter(
+    (c) => c.status !== 'resolved' && c.status !== 'false_alarm',
+  ).length;
 
   return (
     <div className="absolute inset-0">
@@ -169,9 +175,7 @@ export function Dashboard() {
       <CiroMap city={city} onCrisisClick={(id) => selectCrisis(id)} />
       <SessionKpiBar />
 
-      {/* 3-button control bar — top center */}
-
-      {/* Signal feed toggle — top left */}
+      {/* Signal feed toggle — top left (desktop only) */}
       <div className="hidden desktop:block absolute top-3 left-3 z-20">
         <button
           onClick={() => setShowSignals(!showSignals)}
@@ -196,14 +200,31 @@ export function Dashboard() {
         </button>
       </div>
 
-      {/* Active crises badge — top right */}
-      {/* Signal feed panel */}
+      {/* Active incident count badge — top right (desktop only) */}
+      {activeIncidentCount > 0 && (
+        <div
+          className="hidden desktop:block absolute top-3 right-3 z-20 text-[11px] font-semibold rounded-md px-2 py-1"
+          style={{
+            background: colors.raised,
+            color: colors.amber,
+            border: `1px solid ${colors.borderAmber}`,
+          }}
+        >
+          {activeIncidentCount} active
+        </div>
+      )}
+
+      {/* Signal feed panel — stops above BottomNav on mobile */}
       {showSignals && (
-        <div className="absolute top-0 left-0 bottom-0 z-20 w-[320px] mobile:w-full border-r" style={{
-          background: 'rgba(17,17,17,0.92)',
-          backdropFilter: 'blur(20px)',
-          borderColor: colors.borderDefault,
-        }}>
+        <div
+          className="absolute top-0 left-0 z-20 w-[320px] mobile:w-full border-r"
+          style={{
+            bottom: 'var(--bottomnav-height, 0px)',
+            background: 'rgba(17,17,17,0.92)',
+            backdropFilter: 'blur(20px)',
+            borderColor: colors.borderDefault,
+          }}
+        >
           <div className="absolute top-3 right-3 z-10">
             <button onClick={() => setShowSignals(false)} style={{ color: colors.textDim }}>
               <X size={18} />
@@ -213,22 +234,21 @@ export function Dashboard() {
         </div>
       )}
 
-      {/* Crisis detail panel */}
+      {/* Crisis detail panel — z-30 sits above rail (z-20) */}
       {selectedCrisisId && (
         <CrisisPanel crisisId={selectedCrisisId} onClose={() => selectCrisis(null)} />
       )}
 
-      {!selectedCrisisId && (
-        <DesktopOperationsRail onSelectCrisis={(id) => selectCrisis(id)} />
-      )}
+      {/* Desktop rail — always rendered; CrisisPanel overlaps it when open */}
+      <DesktopOperationsRail onSelectCrisis={(id) => selectCrisis(id)} />
 
-      {!selectedCrisisId && !showSignals && (
-        <MobileOperationsDock
-          showSignals={showSignals}
-          onToggleSignals={() => setShowSignals((value) => !value)}
-          onSelectCrisis={(id) => selectCrisis(id)}
-        />
-      )}
+      {/* Mobile dock — always rendered; auto-collapses when a crisis is selected */}
+      <MobileOperationsDock
+        showSignals={showSignals}
+        onToggleSignals={() => setShowSignals((value) => !value)}
+        onSelectCrisis={(id) => selectCrisis(id)}
+        selectedCrisisId={selectedCrisisId}
+      />
     </div>
   );
 }

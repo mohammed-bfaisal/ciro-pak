@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import {
@@ -32,6 +32,7 @@ interface MobileOperationsDockProps {
   showSignals: boolean;
   onToggleSignals: () => void;
   onSelectCrisis: (id: string) => void;
+  selectedCrisisId?: string | null;
 }
 
 const tabs: { id: MobileDockTab; label: string; icon: ComponentType<{ size?: number }> }[] = [
@@ -41,9 +42,13 @@ const tabs: { id: MobileDockTab; label: string; icon: ComponentType<{ size?: num
   { id: 'impact', label: 'Impact', icon: GitCompareArrows },
 ];
 
-export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCrisis }: MobileOperationsDockProps) {
+export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCrisis, selectedCrisisId }: MobileOperationsDockProps) {
   const [activeTab, setActiveTab] = useState<MobileDockTab>('units');
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (selectedCrisisId) window.setTimeout(() => setCollapsed(true), 0);
+  }, [selectedCrisisId]);
   const [isAIDispatching, setIsAIDispatching] = useState(false);
   const city = useCityStore((s) => s.city);
   const crises = useCrisisStore((s) => s.crises);
@@ -200,7 +205,7 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
           <div className="mobile-dock-panel px-2 py-2 overflow-y-auto hide-scrollbar">
             {activeTab === 'units' && (
               <div className="space-y-1.5">
-                {resources.slice(0, 5).map((resource) => {
+                {resources.map((resource) => {
                   const selected = resource.id === selectedUnitId;
                   const remainingEta = (resource.etaSeconds ?? ((resource.etaMinutes ?? 0) * 60)) * (1 - resource.movementProgress);
                   const routeLabel = resource.routeProvider === 'google'
@@ -233,7 +238,7 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
             {activeTab === 'incidents' && (
               <div className="space-y-1.5">
                 {crises.length === 0 && <EmptyRow label="No active incidents yet" />}
-                {crises.slice(0, 5).map((crisis) => (
+                {crises.map((crisis) => (
                   <button
                     key={crisis.id}
                     onClick={() => onSelectCrisis(crisis.id)}
@@ -313,7 +318,7 @@ function CommandButton({
   return (
     <button
       onClick={() => { void triggerHaptic(); onClick(); }}
-      className="h-9 min-w-0 flex items-center justify-center gap-1 rounded-lg text-[11px] font-semibold"
+      className="h-11 min-w-0 flex items-center justify-center gap-1 rounded-lg text-[11px] font-semibold"
       style={{
         background: active ? colors.amberMuted : colors.raised,
         color: active ? colors.amber : colors.textSecondary,

@@ -6,6 +6,7 @@ import { colors } from '../../constants/colors';
 export function RecoveryToast() {
   const logs = useTraceStore((s) => s.logs);
   const prevLenRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -15,9 +16,11 @@ export function RecoveryToast() {
     const recoveryLine = newLogs.find((l) => l.includes('RECOVERED') || l.includes('↻'));
     if (recoveryLine) {
       setMessage(recoveryLine.replace(/^\[[\d:]+\]\s*/, '').slice(0, 80));
-      const id = setTimeout(() => setMessage(null), 5000);
-      return () => clearTimeout(id);
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setMessage(null), 5000);
     }
+    // No cleanup here — intentionally let the timer run to completion even
+    // when logs change again, so the toast always shows for the full 5 s.
   }, [logs]);
 
   if (!message) return null;
