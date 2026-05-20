@@ -505,11 +505,12 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         el.style.cssText = `position:absolute;width:${size}px;height:${size}px;cursor:pointer`;
         if (isResolved) el.style.opacity = '0.35';
         el.innerHTML = `
-          <div style="position:absolute;inset:0;border-radius:50%;background:${color}33;border:${isSelectTarget ? 3 : 2}px solid ${color};${pulseRing}"></div>
-          <div style="position:absolute;top:calc(50% - ${innerSize / 2}px);left:calc(50% - ${innerSize / 2}px);width:${innerSize}px;height:${innerSize}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};${pulseDot}"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;border:3px solid ${color};${pulseRing};pointer-events:none"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;background:${color}33;border:${isSelectTarget ? 3 : 2}px solid ${color};pointer-events:none"></div>
+          <div style="position:absolute;top:calc(50% - ${innerSize / 2}px);left:calc(50% - ${innerSize / 2}px);width:${innerSize}px;height:${innerSize}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};${pulseDot};pointer-events:none"></div>
           <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;line-height:1;pointer-events:none">${typeIcon}</div>
-          <div style="position:absolute;top:0;right:0;width:9px;height:9px;border-radius:50%;background:${severityColor};border:1.5px solid rgba(0,0,0,0.7)"></div>
-          ${assignedCount > 0 ? `<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#1a1a1a;border:1px solid ${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${color};font-family:monospace">${assignedCount}</div>` : ''}
+          <div style="position:absolute;top:0;right:0;width:9px;height:9px;border-radius:50%;background:${severityColor};border:1.5px solid rgba(0,0,0,0.7);pointer-events:none"></div>
+          ${assignedCount > 0 ? `<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#1a1a1a;border:1px solid ${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${color};font-family:monospace;pointer-events:none">${assignedCount}</div>` : ''}
         `;
 
         el.onclick = async () => {
