@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import type { MapTileMode } from '../api/mapTiles';
 
 export interface AppSettings {
+  mapTileMode: MapTileMode;
   showTrafficLayer: boolean;
   showSignalHeatmap: boolean;
   showCrisisRadius: boolean;
@@ -10,10 +12,12 @@ export interface AppSettings {
   preferBackendData: boolean;
 }
 
-export type SettingKey = keyof AppSettings;
+export type SettingKey = {
+  [K in keyof AppSettings]: AppSettings[K] extends boolean ? K : never
+}[keyof AppSettings];
 
 interface SettingsState extends AppSettings {
-  setSetting: <K extends SettingKey>(key: K, value: AppSettings[K]) => void;
+  setSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
   toggleSetting: (key: SettingKey) => void;
   resetSettings: () => void;
 }
@@ -21,6 +25,7 @@ interface SettingsState extends AppSettings {
 export const SETTINGS_STORAGE_KEY = 'ciro.settings.v1';
 
 export const DEFAULT_SETTINGS: AppSettings = {
+  mapTileMode: 'dark',
   showTrafficLayer: true,
   showSignalHeatmap: true,
   showCrisisRadius: true,
@@ -64,6 +69,7 @@ export function getApiClientOptionsForSettings(): { baseUrl?: string | null } {
 function pickSettings(state: AppSettings): AppSettings {
   return {
     showTrafficLayer: state.showTrafficLayer,
+    mapTileMode: state.mapTileMode,
     showSignalHeatmap: state.showSignalHeatmap,
     showCrisisRadius: state.showCrisisRadius,
     showResourceCoverage: state.showResourceCoverage,
@@ -83,13 +89,28 @@ function readStoredSettings(): AppSettings {
     const parsed = JSON.parse(raw) as Partial<AppSettings>;
     return {
       ...DEFAULT_SETTINGS,
-      ...Object.fromEntries(
-        Object.entries(parsed).filter(([, value]) => typeof value === 'boolean'),
-      ),
+      ...pickStoredSettings(parsed),
     };
   } catch {
     return DEFAULT_SETTINGS;
   }
+}
+
+function pickStoredSettings(parsed: Partial<AppSettings>): Partial<AppSettings> {
+  const result: Partial<AppSettings> = {};
+  for (const key of Object.keys(DEFAULT_SETTINGS) as Array<keyof AppSettings>) {
+    const value = parsed[key];
+    if (key === 'mapTileMode' && isMapTileMode(value)) {
+      result.mapTileMode = value;
+    } else if (typeof DEFAULT_SETTINGS[key] === 'boolean' && typeof value === 'boolean') {
+      Object.assign(result, { [key]: value });
+    }
+  }
+  return result;
+}
+
+function isMapTileMode(value: unknown): value is MapTileMode {
+  return value === 'dark' || value === 'light' || value === 'satellite';
 }
 
 function writeStoredSettings(settings: AppSettings) {

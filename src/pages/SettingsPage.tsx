@@ -19,6 +19,7 @@ import { colors } from '../constants/colors';
 import { useLiveDataStore } from '../store/liveDataStore';
 import { type SettingKey, useSettingsStore } from '../store/settingsStore';
 import { getTrafficProxyDetail, getTrafficProxyTone, getTrafficProxyValue } from '../utils/liveDataStatusLabels';
+import type { MapTileMode } from '../api/mapTiles';
 
 const liveDataRows: Array<{
   key: SettingKey;
@@ -183,6 +184,10 @@ export function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection title="Map Layers">
+          <MapModeSelector
+            value={settings.mapTileMode}
+            onChange={(mode) => settings.setSetting('mapTileMode', mode)}
+          />
           {mapRows.map((row) => (
             <SettingsRow
               key={row.key}
@@ -262,6 +267,57 @@ function formatTime(timestamp: string): string {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(timestamp));
+}
+
+const mapModeOptions: Array<{ mode: MapTileMode; label: string; description: string }> = [
+  { mode: 'dark', label: 'Dark', description: 'Low-glare operations map' },
+  { mode: 'light', label: 'Light', description: 'Higher daylight contrast' },
+  { mode: 'satellite', label: 'Satellite', description: 'Imagery with roads' },
+];
+
+function MapModeSelector({
+  value,
+  onChange,
+}: {
+  value: MapTileMode;
+  onChange: (mode: MapTileMode) => void;
+}) {
+  return (
+    <div className="border-b px-4 py-3" style={{ borderColor: colors.borderSubtle }}>
+      <div className="flex items-center gap-2">
+        <Map size={16} style={{ color: colors.amber }} />
+        <div>
+          <div className="text-sm font-semibold" style={{ color: colors.textPrimary }}>
+            Map style
+          </div>
+          <div className="text-xs" style={{ color: colors.textSecondary }}>
+            Uses backend-proxied Google Map Tiles when available.
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {mapModeOptions.map((option) => {
+          const selected = value === option.mode;
+          return (
+            <button
+              key={option.mode}
+              type="button"
+              onClick={() => onChange(option.mode)}
+              className="min-h-11 rounded-lg border px-2 py-2 text-left"
+              style={{
+                borderColor: selected ? colors.borderAmber : colors.borderDefault,
+                background: selected ? colors.amberMuted : colors.raised,
+                color: selected ? colors.amber : colors.textSecondary,
+              }}
+            >
+              <span className="block text-xs font-semibold">{option.label}</span>
+              <span className="mt-0.5 block text-[10px] leading-tight">{option.description}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 function formatBackendProviderDetail(health: BackendHealth, checkedAt: string | null): string {

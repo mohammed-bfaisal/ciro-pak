@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { DARK_STYLE, CITY_COORDS } from '../../constants/mapStyles';
+import { buildGoogleRasterStyle, DARK_STYLE, CITY_COORDS } from '../../constants/mapStyles';
 import { useSignalStore } from '../../store/signalStore';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
@@ -14,6 +14,7 @@ import { buildTrafficLineFeatureCollection } from './trafficOverlay';
 import { runWhenStyleReady } from './mapOverlayLifecycle';
 import { haversineDistance } from '../../utils/geo';
 import { fetchRoute } from '../../api/routing';
+import { fetchMapTileSession, toAbsoluteTileUrl } from '../../api/mapTiles';
 import { getMapTilePreloader, scheduleMapTilePreload } from '../../utils/mapTilePreloader';
 import type { City } from '../../types';
 
@@ -46,6 +47,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const selectedUnitId = useResourceStore((s) => s.selectedUnitId);
   const dispatchMode   = useResourceStore((s) => s.dispatchMode);
   const preferBackendData = useSettingsStore((s) => s.preferBackendData);
+  const mapTileMode = useSettingsStore((s) => s.mapTileMode);
   const showSignalHeatmap = useSettingsStore((s) => s.showSignalHeatmap);
   const showCrisisRadius = useSettingsStore((s) => s.showCrisisRadius);
   const showResourceCoverage = useSettingsStore((s) => s.showResourceCoverage);
@@ -93,6 +95,42 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       essential: true,
     });
   }, [city]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+    let cancelled = false;
+
+    async function applyMapStyle() {
+      if (!preferBackendData) {
+        map.setStyle(DARK_STYLE);
+        return;
+      }
+
+      try {
+        const descriptor = await fetchMapTileSession(mapTileMode, getApiClientOptionsForSettings());
+        if (cancelled) return;
+        if (descriptor.provider === 'google' && descriptor.tileUrl) {
+          map.setStyle(buildGoogleRasterStyle(
+            toAbsoluteTileUrl(descriptor.tileUrl),
+            descriptor.attribution,
+            descriptor.mode,
+          ));
+        } else {
+          map.setStyle(DARK_STYLE);
+        }
+      } catch {
+        if (!cancelled) {
+          map.setStyle(DARK_STYLE);
+        }
+      }
+    }
+
+    void applyMapStyle();
+    return () => {
+      cancelled = true;
+    };
+  }, [mapTileMode, preferBackendData]);
 
   useEffect(() => {
     if (!mapInstance.current) return;

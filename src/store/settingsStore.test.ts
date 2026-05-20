@@ -8,6 +8,7 @@ describe('settings store', () => {
 
   it('starts with mobile-safe data and map defaults', () => {
     expect(useSettingsStore.getState()).toMatchObject(DEFAULT_SETTINGS);
+    expect(useSettingsStore.getState().mapTileMode).toBe('dark');
   });
 
   it('shows resource coverage ranges by default', () => {
@@ -25,5 +26,11 @@ describe('settings store', () => {
     useSettingsStore.getState().setSetting('preferBackendData', false);
 
     expect(getApiClientOptionsForSettings()).toEqual({ baseUrl: null });
+  });
+
+  it('persists map tile mode separately from boolean toggles', () => {
+    useSettingsStore.getState().setSetting('mapTileMode', 'satellite');
+
+    expect(useSettingsStore.getState().mapTileMode).toBe('satellite');
   });
 });
