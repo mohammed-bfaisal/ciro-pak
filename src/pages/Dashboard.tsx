@@ -3,6 +3,7 @@ import { CiroMap } from '../components/map/CiroMap';
 import { SignalFeed } from '../components/panels/SignalFeed';
 import { CrisisPanel } from '../components/panels/CrisisPanel';
 import { DesktopOperationsRail } from '../components/hud/DesktopOperationsRail';
+import { SessionKpiBar } from '../components/hud/SessionKpiBar';
 import { MobileOperationsDock } from '../components/hud/MobileOperationsDock';
 import { useCrisisStore } from '../store/crisisStore';
 import { useSignalStore } from '../store/signalStore';
@@ -166,6 +167,7 @@ export function Dashboard() {
     <div className="absolute inset-0">
       {/* Map fills entire viewport */}
       <CiroMap city={city} onCrisisClick={(id) => selectCrisis(id)} />
+      <SessionKpiBar />
 
       {/* 3-button control bar — top center */}
 
