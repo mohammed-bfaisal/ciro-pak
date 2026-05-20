@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { TrafficFlow } from '../api/traffic';
 import type { Signal } from '../types';
-import { makeTrafficScopeKey, useLiveDataStore } from './liveDataStore';
+import { deriveTrafficStatus, makeTrafficScopeKey, useLiveDataStore } from './liveDataStore';
 
 const weatherSignal: Signal = {
   id: 'weather-karachi-live',
@@ -49,6 +49,53 @@ describe('live data store', () => {
     expect(useLiveDataStore.getState().trafficFlows[scopeKey]).toBe(trafficFlow);
     expect(useLiveDataStore.getState().trafficStatus.state).toBe('live');
     expect(useLiveDataStore.getState().trafficStatus.provider).toBe('google');
+  });
+
+  it('derives Google road segment status when live traffic includes drawable geometry', () => {
+    const status = deriveTrafficStatus({
+      ...trafficFlow,
+      trafficSegments: [
+        { coords: [[67.0, 24.86], [67.02, 24.87]], congestionLevel: 'heavy' },
+        { coords: [[67.02, 24.87]], congestionLevel: 'moderate' },
+      ],
+    });
+
+    expect(status).toMatchObject({
+      state: 'live',
+      provider: 'google',
+      trafficMode: 'google_segments',
+      segmentCount: 1,
+    });
+  });
+
+  it('derives no-route-geometry status when Google traffic is live but not drawable', () => {
+    const status = deriveTrafficStatus({
+      ...trafficFlow,
+      trafficSegments: [],
+    });
+
+    expect(status).toMatchObject({
+      state: 'live',
+      provider: 'google',
+      trafficMode: 'no_route_geometry',
+      segmentCount: 0,
+    });
+  });
+
+  it('derives fallback status when traffic is simulated', () => {
+    const status = deriveTrafficStatus({
+      ...trafficFlow,
+      provider: 'simulated',
+      fallbackReason: 'backend_unavailable',
+    });
+
+    expect(status).toMatchObject({
+      state: 'fallback',
+      provider: 'simulated',
+      fallbackReason: 'backend_unavailable',
+      trafficMode: 'fallback',
+      segmentCount: 0,
+    });
   });
 
   it('removes city-scoped live data without touching other cities', () => {

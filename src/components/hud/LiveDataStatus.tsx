@@ -1,6 +1,7 @@
 import { Cloud, CloudOff, Gauge } from 'lucide-react';
 import { colors } from '../../constants/colors';
 import { useLiveDataStore, type LiveDataStatus as LiveDataStatusValue } from '../../store/liveDataStore';
+import { formatTrafficMode } from '../../utils/liveDataStatusLabels';
 
 export function LiveDataStatus() {
   const weatherStatus = useLiveDataStore((state) => state.weatherStatus);
@@ -38,5 +39,7 @@ function formatTitle(label: string, status: LiveDataStatusValue): string {
   if (status.state === 'disabled') return `${label}: disabled`;
   if (status.state === 'idle') return `${label}: idle`;
   const reason = status.fallbackReason ? `, ${status.fallbackReason}` : '';
-  return `${label}: ${status.provider}${reason}`;
+  const trafficMode = status.trafficMode ? `, ${formatTrafficMode(status.trafficMode)}` : '';
+  const segmentCount = typeof status.segmentCount === 'number' ? `, ${status.segmentCount} segment${status.segmentCount === 1 ? '' : 's'}` : '';
+  return `${label}: ${status.provider}${trafficMode}${segmentCount}${reason}`;
 }

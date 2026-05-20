@@ -16,7 +16,9 @@ import { fetchBackendHealth, type BackendHealth } from '../api/backendHealth';
 import { isBackendConfigured } from '../api/client';
 import { SettingsRow } from '../components/settings/SettingsRow';
 import { colors } from '../constants/colors';
+import { useLiveDataStore } from '../store/liveDataStore';
 import { type SettingKey, useSettingsStore } from '../store/settingsStore';
+import { getTrafficProxyDetail, getTrafficProxyTone, getTrafficProxyValue } from '../utils/liveDataStatusLabels';
 
 const liveDataRows: Array<{
   key: SettingKey;
@@ -82,6 +84,7 @@ export function SettingsPage() {
   const [checkedAt, setCheckedAt] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
   const backendConfigured = isBackendConfigured();
+  const trafficStatus = useLiveDataStore((state) => state.trafficStatus);
 
   const refreshHealth = useCallback(async () => {
     setChecking(true);
@@ -143,9 +146,9 @@ export function SettingsPage() {
           <StatusCard
             icon={<Activity size={18} />}
             label="Google traffic proxy"
-            value={health?.features.trafficProxy ? 'Ready' : 'Fallback'}
-            tone={health?.features.trafficProxy ? 'good' : 'warn'}
-            detail={settings.enableTrafficUpdates ? 'Updates enabled' : 'Updates disabled'}
+            value={getTrafficProxyValue(trafficStatus, settings.enableTrafficUpdates, Boolean(health?.features.trafficProxy))}
+            tone={getTrafficProxyTone(trafficStatus, settings.enableTrafficUpdates, Boolean(health?.features.trafficProxy))}
+            detail={getTrafficProxyDetail(trafficStatus, settings.enableTrafficUpdates)}
           />
         </section>
 

@@ -9,6 +9,8 @@ export interface LiveDataStatus {
   provider: 'none' | 'google' | 'simulated' | 'backend' | 'mock';
   updatedAt?: string;
   fallbackReason?: string;
+  trafficMode?: 'google_segments' | 'fallback' | 'no_route_geometry';
+  segmentCount?: number;
 }
 
 interface LiveDataState {
@@ -55,12 +57,7 @@ export const useLiveDataStore = create<LiveDataState>((set) => ({
       ...state.trafficFlows,
       [scopeKey]: flow,
     },
-    trafficStatus: {
-      state: flow.provider === 'google' ? 'live' : 'fallback',
-      provider: flow.provider,
-      updatedAt: flow.updatedAt,
-      fallbackReason: flow.fallbackReason,
-    },
+    trafficStatus: deriveTrafficStatus(flow),
   })),
 
   setWeatherDisabled: () => set({
@@ -107,4 +104,30 @@ export function makeTrafficScopeKey(
   id: string,
 ): string {
   return `${city}:${kind}:${id}`;
+}
+
+export function deriveTrafficStatus(flow: TrafficFlow): LiveDataStatus {
+  const segmentCount = (flow.trafficSegments ?? [])
+    .filter((segment) => segment.coords.length >= 2)
+    .length;
+
+  if (flow.provider === 'google') {
+    return {
+      state: 'live',
+      provider: 'google',
+      updatedAt: flow.updatedAt,
+      fallbackReason: flow.fallbackReason,
+      trafficMode: segmentCount > 0 ? 'google_segments' : 'no_route_geometry',
+      segmentCount,
+    };
+  }
+
+  return {
+    state: 'fallback',
+    provider: flow.provider,
+    updatedAt: flow.updatedAt,
+    fallbackReason: flow.fallbackReason,
+    trafficMode: 'fallback',
+    segmentCount,
+  };
 }
