@@ -22,8 +22,17 @@ describe('traffic API adapter', () => {
         congestionLevel: 'heavy',
         currentSpeed: 12,
         freeFlowSpeed: 45,
-        provider: 'tomtom',
+        provider: 'google',
         updatedAt: '2026-05-19T09:00:00.000Z',
+        trafficSegments: [
+          {
+            coords: [
+              [67.0, 24.86],
+              [67.02, 24.87],
+            ],
+            congestionLevel: 'heavy',
+          },
+        ],
       }),
     })) as unknown as typeof fetch;
 
@@ -32,8 +41,9 @@ describe('traffic API adapter', () => {
       fetcher,
     });
 
-    expect(flow.provider).toBe('tomtom');
+    expect(flow.provider).toBe('google');
     expect(flow.congestionLevel).toBe('heavy');
+    expect(flow.trafficSegments?.[0]?.coords).toEqual([[67.0, 24.86], [67.02, 24.87]]);
     expect(fetcher).toHaveBeenCalledWith(
       'https://backend.example/api/traffic/flow?lat=24.8607&lng=67.0011',
       {},

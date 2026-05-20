@@ -21,7 +21,7 @@ const trafficFlow: TrafficFlow = {
   congestionLevel: 'heavy',
   currentSpeed: 12,
   freeFlowSpeed: 45,
-  provider: 'tomtom',
+  provider: 'google',
   updatedAt: '2026-05-19T09:00:00.000Z',
 };
 
@@ -48,7 +48,7 @@ describe('live data store', () => {
 
     expect(useLiveDataStore.getState().trafficFlows[scopeKey]).toBe(trafficFlow);
     expect(useLiveDataStore.getState().trafficStatus.state).toBe('live');
-    expect(useLiveDataStore.getState().trafficStatus.provider).toBe('tomtom');
+    expect(useLiveDataStore.getState().trafficStatus.provider).toBe('google');
   });
 
   it('removes city-scoped live data without touching other cities', () => {

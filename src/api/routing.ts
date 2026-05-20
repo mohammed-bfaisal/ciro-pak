@@ -1,8 +1,9 @@
 import { apiFetch, getConfiguredApiBaseUrl, type ApiClientOptions } from './client';
+import type { TrafficSegment } from '../types';
 
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving';
 
-export type RoutingProvider = 'tomtom' | 'osrm';
+export type RoutingProvider = 'google' | 'osrm';
 
 export interface RouteResult {
   coords: [number, number][]; // [lng, lat] pairs
@@ -13,7 +14,8 @@ export interface RouteResult {
   trafficDelaySeconds?: number;
   freeFlowEtaSeconds?: number;
   trafficUpdatedAt?: string;
-  fallbackReason?: 'tomtom_key_missing' | 'tomtom_unavailable' | 'osrm_unavailable';
+  trafficSegments?: TrafficSegment[];
+  fallbackReason?: 'google_maps_key_missing' | 'google_routes_unavailable' | 'osrm_unavailable';
 }
 
 interface RoutingOptions extends ApiClientOptions {
@@ -48,7 +50,7 @@ export async function fetchRoute(
 
   return fetchOsrmRoute(fromLng, fromLat, toLng, toLat, {
     fetcher,
-    fallbackReason: apiBaseUrl ? 'tomtom_unavailable' : 'tomtom_key_missing',
+    fallbackReason: apiBaseUrl ? 'google_routes_unavailable' : 'google_maps_key_missing',
   });
 }
 
@@ -105,5 +107,5 @@ function isRouteResult(value: unknown): value is RouteResult {
   return Array.isArray(route.coords) &&
     typeof route.etaSeconds === 'number' &&
     typeof route.etaMinutes === 'number' &&
-    (route.provider === 'tomtom' || route.provider === 'osrm');
+    (route.provider === 'google' || route.provider === 'osrm');
 }

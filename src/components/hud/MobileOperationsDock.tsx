@@ -187,8 +187,8 @@ export function MobileOperationsDock({ showSignals, onToggleSignals, onSelectCri
                 {resources.slice(0, 5).map((resource) => {
                   const selected = resource.id === selectedUnitId;
                   const remainingEta = (resource.etaSeconds ?? ((resource.etaMinutes ?? 0) * 60)) * (1 - resource.movementProgress);
-                  const routeLabel = resource.routeProvider === 'tomtom'
-                    ? 'Traffic'
+                  const routeLabel = resource.routeProvider === 'google'
+                    ? 'Google'
                     : resource.routeProvider === 'osrm'
                       ? 'OSRM'
                       : null;

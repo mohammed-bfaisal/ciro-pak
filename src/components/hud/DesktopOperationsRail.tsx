@@ -195,8 +195,8 @@ export function DesktopOperationsRail({ onSelectCrisis }: DesktopOperationsRailP
             {resources.map((resource) => {
               const selected = resource.id === selectedUnitId;
               const remainingEta = (resource.etaSeconds ?? ((resource.etaMinutes ?? 0) * 60)) * (1 - resource.movementProgress);
-              const routeLabel = resource.routeProvider === 'tomtom'
-                ? 'Traffic-aware'
+              const routeLabel = resource.routeProvider === 'google'
+                ? 'Google traffic'
                 : resource.routeProvider === 'osrm'
                   ? 'OSRM fallback'
                   : 'No route data';
@@ -226,7 +226,7 @@ export function DesktopOperationsRail({ onSelectCrisis }: DesktopOperationsRailP
                       {resource.type.replace('_', ' ')}
                     </span>
                   </div>
-                  <div className="mt-2 text-[11px]" style={{ color: resource.routeProvider === 'tomtom' ? colors.success : colors.textDim }}>
+                  <div className="mt-2 text-[11px]" style={{ color: resource.routeProvider === 'google' ? colors.success : colors.textDim }}>
                     {routeLabel}
                     {routeUpdated ? ` - refreshed ${formatShortTime(routeUpdated)}` : ''}
                   </div>

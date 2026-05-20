@@ -28,14 +28,38 @@ export function getTrafficRefreshScopes(city: City): TrafficRefreshScope[] {
     }));
 
   const liveScopes = [...resourceScopes, ...crisisScopes];
-  if (liveScopes.length > 0) return liveScopes;
+  return [...liveScopes, ...getCityArterialScopes(city)];
+}
 
+function getCityArterialScopes(city: City): TrafficRefreshScope[] {
   const [lng, lat] = CITY_REGISTRY[city].center;
+  const lngOffset = 0.025 / Math.max(0.35, Math.cos((lat * Math.PI) / 180));
+  const latOffset = 0.018;
   return [
     {
       key: makeTrafficScopeKey(city, 'city', 'center'),
       lat,
       lng,
+    },
+    {
+      key: makeTrafficScopeKey(city, 'city', 'north'),
+      lat: lat + latOffset,
+      lng,
+    },
+    {
+      key: makeTrafficScopeKey(city, 'city', 'south'),
+      lat: lat - latOffset,
+      lng,
+    },
+    {
+      key: makeTrafficScopeKey(city, 'city', 'east'),
+      lat,
+      lng: lng + lngOffset,
+    },
+    {
+      key: makeTrafficScopeKey(city, 'city', 'west'),
+      lat,
+      lng: lng - lngOffset,
     },
   ];
 }

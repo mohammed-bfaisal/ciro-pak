@@ -42,7 +42,7 @@ describe('traffic-aware routing', () => {
     }
   });
 
-  it('uses backend traffic route when an API base URL is configured', async () => {
+  it('uses backend Google traffic-aware route when an API base URL is configured', async () => {
     const fetcher = vi.fn(async () => ({
       ok: true,
       json: async () => ({
@@ -53,10 +53,19 @@ describe('traffic-aware routing', () => {
         etaSeconds: 720,
         etaMinutes: 12,
         distanceMeters: 4800,
-        provider: 'tomtom',
+        provider: 'google',
         trafficDelaySeconds: 180,
         freeFlowEtaSeconds: 540,
         trafficUpdatedAt: '2026-05-18T08:00:00.000Z',
+        trafficSegments: [
+          {
+            coords: [
+              [67.01, 24.86],
+              [67.04, 24.88],
+            ],
+            congestionLevel: 'heavy',
+          },
+        ],
       }),
     })) as unknown as typeof fetch;
 
@@ -73,10 +82,19 @@ describe('traffic-aware routing', () => {
       etaSeconds: 720,
       etaMinutes: 12,
       distanceMeters: 4800,
-      provider: 'tomtom',
+      provider: 'google',
       trafficDelaySeconds: 180,
       freeFlowEtaSeconds: 540,
       trafficUpdatedAt: '2026-05-18T08:00:00.000Z',
+      trafficSegments: [
+        {
+          coords: [
+            [67.01, 24.86],
+            [67.04, 24.88],
+          ],
+          congestionLevel: 'heavy',
+        },
+      ],
     });
     expect(fetcher).toHaveBeenCalledWith(
       'https://backend.example/api/route?fromLng=67.01&fromLat=24.86&toLng=67.04&toLat=24.88',
@@ -84,7 +102,7 @@ describe('traffic-aware routing', () => {
     );
   });
 
-  it('falls back to OSRM without a TomTom key and marks the route non-traffic-aware', async () => {
+  it('falls back to OSRM without a Google Maps key and marks the route non-traffic-aware', async () => {
     const fetcher = vi.fn(async () => ({
       ok: true,
       json: async () => ({
@@ -110,7 +128,7 @@ describe('traffic-aware routing', () => {
     expect(route?.etaSeconds).toBe(610);
     expect(route?.etaMinutes).toBe(11);
     expect(route?.trafficDelaySeconds).toBeUndefined();
-    expect(route?.fallbackReason).toBe('tomtom_key_missing');
+    expect(route?.fallbackReason).toBe('google_maps_key_missing');
   });
 
   it('falls back to direct OSRM if the configured backend route is unavailable', async () => {
@@ -145,7 +163,7 @@ describe('traffic-aware routing', () => {
     });
 
     expect(route?.provider).toBe('osrm');
-    expect(route?.fallbackReason).toBe('tomtom_unavailable');
+    expect(route?.fallbackReason).toBe('google_routes_unavailable');
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });

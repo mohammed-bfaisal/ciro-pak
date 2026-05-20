@@ -13,7 +13,7 @@ interface CapturedRouteFeature {
 }
 
 describe('RouteLayer', () => {
-  it('keeps dispatch routes above map overlays after updating route data', () => {
+  it('leaves dispatch routes below traffic overlays after updating route data', () => {
     const source = { setData: () => undefined };
     const movedLayers: string[] = [];
     const map = {
@@ -26,7 +26,7 @@ describe('RouteLayer', () => {
 
     updateRouteLayer(map, [makeEnRouteResource()]);
 
-    expect(movedLayers).toContain('unit-routes-layer');
+    expect(movedLayers).not.toContain('unit-routes-layer');
   });
 
   it('emits a drawable route feature for every supported city', () => {

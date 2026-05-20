@@ -10,6 +10,7 @@ import { getApiClientOptionsForSettings, useSettingsStore } from '../../store/se
 import { getCrisisColor, getCredColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
+import { buildTrafficLineFeatureCollection } from './trafficOverlay';
 import { haversineDistance } from '../../utils/geo';
 import { fetchRoute } from '../../api/routing';
 import { getMapTilePreloader, scheduleMapTilePreload } from '../../utils/mapTilePreloader';
@@ -249,37 +250,33 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     const flows = Object.values(trafficFlows);
 
     const updateTrafficLayer = () => {
-      if (!showTrafficLayer || flows.length === 0) {
+      const data = buildTrafficLineFeatureCollection(flows, resources);
+
+      if (!showTrafficLayer || data.features.length === 0) {
         removeLayerAndSource(map, TRAFFIC_FLOW_LAYER_ID, TRAFFIC_FLOW_SOURCE_ID);
         return;
       }
-
-      const data = {
-        type: 'FeatureCollection' as const,
-        features: flows.map((flow) => ({
-          type: 'Feature' as const,
-          geometry: { type: 'Point' as const, coordinates: [flow.lng, flow.lat] },
-          properties: {
-            color: getTrafficColor(flow.congestionLevel),
-            congestion: flow.congestionLevel,
-          },
-        })),
-      };
 
       upsertGeoJsonSource(map, TRAFFIC_FLOW_SOURCE_ID, data);
       if (!map.getLayer(TRAFFIC_FLOW_LAYER_ID)) {
         map.addLayer({
           id: TRAFFIC_FLOW_LAYER_ID,
-          type: 'circle',
+          type: 'line',
           source: TRAFFIC_FLOW_SOURCE_ID,
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+          },
           paint: {
-            'circle-radius': ['match', ['get', 'congestion'], 'standstill', 20, 'heavy', 17, 'moderate', 14, 11],
-            'circle-color': ['get', 'color'],
-            'circle-opacity': 0.72,
-            'circle-stroke-color': '#080808',
-            'circle-stroke-width': 2,
+            'line-color': ['get', 'color'],
+            'line-width': ['match', ['get', 'congestion'], 'standstill', 7, 'heavy', 6, 'moderate', 5, 4],
+            'line-opacity': 0.82,
+            'line-blur': 0.35,
           },
         });
+      }
+      if (map.getLayer(TRAFFIC_FLOW_LAYER_ID)) {
+        map.moveLayer(TRAFFIC_FLOW_LAYER_ID);
       }
     };
 
@@ -288,7 +285,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     return () => {
       map.off('load', updateTrafficLayer);
     };
-  }, [trafficFlows, showTrafficLayer]);
+  }, [trafficFlows, resources, showTrafficLayer]);
 
   useEffect(() => {
     if (!mapInstance.current) return;
@@ -508,20 +505,5 @@ function removeLayerAndSource(map: maplibregl.Map, layerId: string, sourceId: st
   }
   if (map.getSource(sourceId)) {
     map.removeSource(sourceId);
-  }
-}
-
-function getTrafficColor(congestionLevel: string): string {
-  switch (congestionLevel) {
-    case 'free':
-      return '#34d399';
-    case 'moderate':
-      return '#fbbf24';
-    case 'heavy':
-      return '#fb923c';
-    case 'standstill':
-      return '#f87171';
-    default:
-      return '#60a5fa';
   }
 }

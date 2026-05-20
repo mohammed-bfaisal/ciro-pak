@@ -42,14 +42,20 @@ export interface RouteResult {
   etaSeconds: number;
   etaMinutes: number;
   distanceMeters?: number;
-  provider: 'tomtom' | 'osrm';
+  provider: 'google' | 'osrm';
   trafficDelaySeconds?: number;
   freeFlowEtaSeconds?: number;
   trafficUpdatedAt?: string;
-  fallbackReason?: 'tomtom_key_missing' | 'tomtom_unavailable' | 'osrm_unavailable';
+  trafficSegments?: TrafficSegment[];
+  fallbackReason?: 'google_maps_key_missing' | 'google_routes_unavailable' | 'osrm_unavailable';
 }
 
 export type CongestionLevel = 'free' | 'moderate' | 'heavy' | 'standstill';
+
+export interface TrafficSegment {
+  coords: [number, number][];
+  congestionLevel: CongestionLevel;
+}
 
 export interface TrafficFlow {
   lat: number;
@@ -57,9 +63,10 @@ export interface TrafficFlow {
   congestionLevel: CongestionLevel;
   currentSpeed: number;
   freeFlowSpeed: number;
-  provider: 'tomtom' | 'simulated';
+  provider: 'google' | 'simulated';
   updatedAt: string;
-  fallbackReason?: 'tomtom_key_missing' | 'tomtom_unavailable';
+  fallbackReason?: 'google_maps_key_missing' | 'google_routes_unavailable';
+  trafficSegments?: TrafficSegment[];
   rawData?: Record<string, unknown>;
 }
 

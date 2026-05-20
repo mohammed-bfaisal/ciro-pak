@@ -11,7 +11,7 @@ export function createHealthRouter(env: BackendEnv): Router {
       timestamp: new Date().toISOString(),
       features: {
         weatherProxy: Boolean(env.weatherApiKey),
-        trafficProxy: Boolean(env.tomtomApiKey),
+        trafficProxy: Boolean(env.googleMapsApiKey),
         routingProxy: true,
         openrouterProxy: Boolean(env.openrouterApiKey),
       },

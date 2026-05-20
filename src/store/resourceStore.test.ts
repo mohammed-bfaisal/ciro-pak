@@ -157,7 +157,7 @@ describe('resource dispatch movement', () => {
         [10, 0],
       ],
       {
-        provider: 'tomtom',
+        provider: 'google',
         trafficDelaySeconds: 180,
         freeFlowEtaSeconds: 420,
         trafficUpdatedAt: '2026-05-18T08:00:00.000Z',
@@ -178,7 +178,7 @@ describe('resource dispatch movement', () => {
         etaSeconds: 500,
         etaMinutes: 9,
         provider: 'osrm',
-        fallbackReason: 'tomtom_unavailable',
+        fallbackReason: 'google_routes_unavailable',
       },
       '2026-05-18T08:00:30.000Z',
     );
@@ -189,7 +189,7 @@ describe('resource dispatch movement', () => {
     expect(refreshed.etaSeconds).toBe(500);
     expect(refreshed.routeCoordinates?.[0]).toEqual([beforeRefresh.currentPosition.lng, beforeRefresh.currentPosition.lat]);
     expect(refreshed.routeProvider).toBe('osrm');
-    expect(refreshed.routeFallbackReason).toBe('tomtom_unavailable');
+    expect(refreshed.routeFallbackReason).toBe('google_routes_unavailable');
     expect(refreshed.routeRefreshedAt).toBe('2026-05-18T08:00:30.000Z');
   });
 });

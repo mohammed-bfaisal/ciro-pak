@@ -23,7 +23,7 @@ const MOVEMENT_TICK_MS = 250;
 const ROUTE_REFRESH_MS = 30_000;
 const WEATHER_REFRESH_MS = 120_000;
 const TRAFFIC_REFRESH_MS = 30_000;
-const MAX_TRAFFIC_SCOPES = 6;
+const MAX_TRAFFIC_SCOPES = 8;
 
 export function Dashboard() {
   const city              = useCityStore((s) => s.city);

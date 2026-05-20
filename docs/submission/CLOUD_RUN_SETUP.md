@@ -10,7 +10,7 @@ Required environment variables:
 PORT=8080
 ALLOWED_ORIGINS=https://your-web-origin.example,http://localhost:5173
 WEATHER_API_KEY=server_side_weather_key
-TOMTOM_API_KEY=server_side_tomtom_key
+GOOGLE_MAPS_API_KEY=server_side_google_maps_key
 OPENROUTER_API_KEY=server_side_openrouter_key
 OPENROUTER_MODEL=mistralai/mistral-nemo
 OPENROUTER_ALLOWED_MODELS=mistralai/mistral-nemo
@@ -42,6 +42,7 @@ curl -X POST http://localhost:8080/api/openrouter/chat -H "Content-Type: applica
 ## Cloud Run Deployment Notes
 
 - Use backend environment variables in Cloud Run service configuration.
+- Enable the Google Routes API for the Google Cloud project used by `GOOGLE_MAPS_API_KEY`.
 - Do not bake provider keys into frontend build artifacts.
 - Set `ALLOWED_ORIGINS` to the deployed web origin and any approved local demo origin.
 - Keep `OPENROUTER_MAX_TOKENS` low for judge demos and keep `OPENROUTER_ALLOWED_MODELS` narrow so the public APK cannot request arbitrary expensive models.

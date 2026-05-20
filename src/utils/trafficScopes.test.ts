@@ -11,13 +11,21 @@ describe('traffic refresh scopes', () => {
     useResourceStore.getState().reset();
   });
 
-  it('returns a city-center backend traffic probe when no crisis or route scopes exist', () => {
-    expect(getTrafficRefreshScopes('islamabad')).toEqual([
-      {
-        key: makeTrafficScopeKey('islamabad', 'city', 'center'),
-        lat: 33.6844,
-        lng: 73.0479,
-      },
+  it('returns city arterial backend traffic probes when no crisis or route scopes exist', () => {
+    const scopes = getTrafficRefreshScopes('islamabad');
+
+    expect(scopes).toHaveLength(5);
+    expect(scopes[0]).toEqual({
+      key: makeTrafficScopeKey('islamabad', 'city', 'center'),
+      lat: 33.6844,
+      lng: 73.0479,
+    });
+    expect(scopes.map((scope) => scope.key)).toEqual([
+      'islamabad:city:center',
+      'islamabad:city:north',
+      'islamabad:city:south',
+      'islamabad:city:east',
+      'islamabad:city:west',
     ]);
   });
 
@@ -45,6 +53,6 @@ describe('traffic refresh scopes', () => {
       lat: crisis.location.lat,
       lng: crisis.location.lng,
     });
-    expect(scopes.some((scope) => scope.key === makeTrafficScopeKey('karachi', 'city', 'center'))).toBe(false);
+    expect(scopes.some((scope) => scope.key === makeTrafficScopeKey('karachi', 'city', 'center'))).toBe(true);
   });
 });

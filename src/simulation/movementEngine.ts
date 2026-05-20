@@ -114,6 +114,9 @@ export function tickMovement(resources: Resource[], deltaSeconds: number): Resou
           etaMinutes: undefined,
           routeCoordinates: undefined,
           returnRouteCoordinates: undefined,
+          routeTrafficSegments: undefined,
+          routeProvider: undefined,
+          routeFallbackReason: undefined,
           assignmentHistory: closeAssignmentHistory(r.assignmentHistory, r.assignedCrisisId),
         };
       }

@@ -2,7 +2,7 @@ export interface BackendEnv {
   port: number;
   allowedOrigins: string[];
   weatherApiKey?: string;
-  tomtomApiKey?: string;
+  googleMapsApiKey?: string;
   openrouterApiKey?: string;
   openrouterModel: string;
   openrouterAllowedModels: string[];
@@ -36,7 +36,7 @@ export function readEnv(source: NodeJS.ProcessEnv = process.env): BackendEnv {
     port: Number.isFinite(port) ? port : 8080,
     allowedOrigins: parseAllowedOrigins(source.ALLOWED_ORIGINS),
     weatherApiKey: cleanOptional(source.WEATHER_API_KEY),
-    tomtomApiKey: cleanOptional(source.TOMTOM_API_KEY),
+    googleMapsApiKey: cleanOptional(source.GOOGLE_MAPS_API_KEY) ?? cleanOptional(source.GOOGLE_ROUTES_API_KEY),
     openrouterApiKey: cleanOptional(source.OPENROUTER_API_KEY),
     openrouterModel,
     openrouterAllowedModels: parseAllowedModels(source.OPENROUTER_ALLOWED_MODELS, openrouterModel),

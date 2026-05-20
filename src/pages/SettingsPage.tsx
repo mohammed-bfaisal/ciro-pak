@@ -39,7 +39,7 @@ const liveDataRows: Array<{
   {
     key: 'enableTrafficUpdates',
     title: 'Traffic updates',
-    description: 'Refresh scoped traffic around active incidents and moving routes.',
+    description: 'Refresh Google road traffic around city arteries, active incidents, and moving routes.',
     icon: <Gauge size={16} />,
   },
 ];
@@ -53,7 +53,7 @@ const mapRows: Array<{
   {
     key: 'showTrafficLayer',
     title: 'Traffic layer',
-    description: 'Show traffic conditions when the map overlay is available.',
+    description: 'Show Google traffic-aware road segments when the map overlay is available.',
     icon: <Route size={16} />,
   },
   {
@@ -142,7 +142,7 @@ export function SettingsPage() {
           />
           <StatusCard
             icon={<Activity size={18} />}
-            label="Traffic proxy"
+            label="Google traffic proxy"
             value={health?.features.trafficProxy ? 'Ready' : 'Fallback'}
             tone={health?.features.trafficProxy ? 'good' : 'warn'}
             detail={settings.enableTrafficUpdates ? 'Updates enabled' : 'Updates disabled'}

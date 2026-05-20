@@ -22,8 +22,8 @@ export function ResourceCard({ resource }: ResourceCardProps) {
   const Icon = typeIcons[resource.type] || Truck;
   const statusColor = getStatusColor(resource.status);
   const remainingEtaSeconds = (resource.etaSeconds ?? ((resource.etaMinutes ?? 0) * 60)) * (1 - resource.movementProgress);
-  const routeBadge = resource.routeProvider === 'tomtom'
-    ? `Traffic-aware${resource.trafficDelaySeconds ? ` +${Math.ceil(resource.trafficDelaySeconds / 60)}m` : ''}`
+  const routeBadge = resource.routeProvider === 'google'
+    ? `Google traffic${resource.trafficDelaySeconds ? ` +${Math.ceil(resource.trafficDelaySeconds / 60)}m` : ''}`
     : resource.routeProvider === 'osrm'
       ? 'OSRM fallback'
       : undefined;
@@ -54,7 +54,7 @@ export function ResourceCard({ resource }: ResourceCardProps) {
         <div className="flex items-center gap-3 text-[11px]" style={{ color: colors.textDim }}>
           <span>{capitalize(resource.type)}</span>
           {(resource.etaSeconds || resource.etaMinutes) && <span>ETA: {formatRouteEta(remainingEtaSeconds)}</span>}
-          {routeBadge && <span style={{ color: resource.routeProvider === 'tomtom' ? colors.success : colors.textDim }}>{routeBadge}</span>}
+          {routeBadge && <span style={{ color: resource.routeProvider === 'google' ? colors.success : colors.textDim }}>{routeBadge}</span>}
           <span>📍 {resource.location.label}</span>
         </div>
       </div>

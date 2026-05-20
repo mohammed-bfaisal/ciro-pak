@@ -6,7 +6,7 @@ export type LiveDataStateKind = 'idle' | 'live' | 'fallback' | 'disabled';
 
 export interface LiveDataStatus {
   state: LiveDataStateKind;
-  provider: 'none' | 'tomtom' | 'simulated' | 'backend' | 'mock';
+  provider: 'none' | 'google' | 'simulated' | 'backend' | 'mock';
   updatedAt?: string;
   fallbackReason?: string;
 }
@@ -56,7 +56,7 @@ export const useLiveDataStore = create<LiveDataState>((set) => ({
       [scopeKey]: flow,
     },
     trafficStatus: {
-      state: flow.provider === 'tomtom' ? 'live' : 'fallback',
+      state: flow.provider === 'google' ? 'live' : 'fallback',
       provider: flow.provider,
       updatedAt: flow.updatedAt,
       fallbackReason: flow.fallbackReason,

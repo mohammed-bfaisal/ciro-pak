@@ -18,3 +18,12 @@ test('readEnv permits common local web and Capacitor origins by default', () => 
   assert.ok(env.allowedOrigins.includes('http://localhost:5177'));
   assert.ok(env.allowedOrigins.includes('capacitor://localhost'));
 });
+
+test('readEnv reads Google Maps key with Google Routes alias fallback', () => {
+  assert.equal(readEnv({ GOOGLE_MAPS_API_KEY: ' maps-key ' }).googleMapsApiKey, 'maps-key');
+  assert.equal(readEnv({ GOOGLE_ROUTES_API_KEY: ' routes-key ' }).googleMapsApiKey, 'routes-key');
+  assert.equal(
+    readEnv({ GOOGLE_MAPS_API_KEY: ' maps-key ', GOOGLE_ROUTES_API_KEY: ' routes-key ' }).googleMapsApiKey,
+    'maps-key',
+  );
+});

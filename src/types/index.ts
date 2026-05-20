@@ -10,6 +10,7 @@ export type CrisisType =
 export type Severity = 'low' | 'medium' | 'high' | 'critical';
 export type CrisisStatus = 'detecting' | 'active' | 'responding' | 'resolved' | 'false_alarm';
 export type SimulationSpeed = 1 | 2 | 5 | 10 | 20;
+export type CongestionLevel = 'free' | 'moderate' | 'heavy' | 'standstill';
 export type City =
   | 'karachi' | 'islamabad'
   | 'lahore' | 'rawalpindi' | 'faisalabad' | 'multan'
@@ -22,6 +23,11 @@ export interface GeoPoint {
   lat: number;
   lng: number;
   label: string;
+}
+
+export interface TrafficSegment {
+  coords: [number, number][];
+  congestionLevel: CongestionLevel;
 }
 
 export interface Signal {
@@ -77,9 +83,10 @@ export interface Resource {
   movementProgress: number;
   routeCoordinates?: [number, number][]; // [lng, lat] pairs — actual road path
   returnRouteCoordinates?: [number, number][];
-  routeProvider?: 'tomtom' | 'osrm';
+  routeProvider?: 'google' | 'osrm';
   routeFallbackReason?: string;
   routeRefreshedAt?: string;
+  routeTrafficSegments?: TrafficSegment[];
   trafficDelaySeconds?: number;
   freeFlowEtaSeconds?: number;
   trafficUpdatedAt?: string;

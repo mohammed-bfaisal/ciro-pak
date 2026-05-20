@@ -1,6 +1,5 @@
 import { apiFetch, type ApiClientOptions } from './client';
-
-export type CongestionLevel = 'free' | 'moderate' | 'heavy' | 'standstill';
+import type { CongestionLevel, TrafficSegment } from '../types';
 
 export interface TrafficFlow {
   lat: number;
@@ -8,9 +7,10 @@ export interface TrafficFlow {
   congestionLevel: CongestionLevel;
   currentSpeed: number;
   freeFlowSpeed: number;
-  provider: 'tomtom' | 'simulated';
+  provider: 'google' | 'simulated';
   updatedAt: string;
-  fallbackReason?: 'tomtom_key_missing' | 'tomtom_unavailable' | 'backend_not_configured' | 'backend_unavailable';
+  fallbackReason?: 'google_maps_key_missing' | 'google_routes_unavailable' | 'backend_not_configured' | 'backend_unavailable';
+  trafficSegments?: TrafficSegment[];
   rawData?: Record<string, unknown>;
 }
 

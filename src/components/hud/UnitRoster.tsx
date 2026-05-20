@@ -49,8 +49,8 @@ export function UnitRoster() {
             const isSelected = r.id === selectedUnitId;
             const assignedCrisis = crises.find((c) => c.id === r.assignedCrisisId);
             const statusColor = getStatusColor(r.status);
-            const routeBadge = r.routeProvider === 'tomtom'
-              ? `Traffic-aware${r.trafficDelaySeconds ? ` +${Math.ceil(r.trafficDelaySeconds / 60)}m` : ''}`
+            const routeBadge = r.routeProvider === 'google'
+              ? `Google traffic${r.trafficDelaySeconds ? ` +${Math.ceil(r.trafficDelaySeconds / 60)}m` : ''}`
               : r.routeProvider === 'osrm'
                 ? 'OSRM fallback'
                 : 'No traffic data';
@@ -93,7 +93,7 @@ export function UnitRoster() {
                     </div>
                   )}
                   {r.status === 'en_route' && (
-                    <div className="text-[10px]" style={{ color: r.routeProvider === 'tomtom' ? colors.success : colors.textDim }}>
+                    <div className="text-[10px]" style={{ color: r.routeProvider === 'google' ? colors.success : colors.textDim }}>
                       {routeBadge}
                     </div>
                   )}

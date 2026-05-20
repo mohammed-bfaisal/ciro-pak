@@ -32,7 +32,7 @@ describe('runAIDispatch OpenRouter integration', () => {
       etaSeconds: 600,
       etaMinutes: 10,
       distanceMeters: 2400,
-      provider: 'tomtom',
+      provider: 'google',
       trafficDelaySeconds: 90,
       freeFlowEtaSeconds: 510,
       trafficUpdatedAt: '2026-05-20T12:00:00.000Z',

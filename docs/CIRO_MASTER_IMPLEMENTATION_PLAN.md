@@ -175,11 +175,11 @@ No runtime branch after this plan should depend on the stale generated HTML plan
   - Returns deterministic mock weather if key/provider fails.
 - `GET /api/traffic/flow?lat=<number>&lng=<number>`
   - Returns congestion level, current speed, free-flow speed, provider, and fallback reason.
-  - Uses backend `TOMTOM_API_KEY` if set.
+  - Uses backend `GOOGLE_MAPS_API_KEY` or `GOOGLE_ROUTES_API_KEY` if set.
   - Returns simulated traffic if key/provider fails.
 - `GET /api/route?fromLng=<number>&fromLat=<number>&toLng=<number>&toLat=<number>`
   - Returns the existing frontend `RouteResult` shape.
-  - Uses backend TomTom routing if key exists.
+  - Uses backend Google Routes routing if key exists.
   - Falls back to OSRM.
   - If OSRM fails, frontend must still be able to fall back to straight-line local routing.
 
@@ -188,7 +188,7 @@ No runtime branch after this plan should depend on the stale generated HTML plan
 - `PORT`
 - `ALLOWED_ORIGINS`
 - `WEATHER_API_KEY`
-- `TOMTOM_API_KEY`
+- `GOOGLE_MAPS_API_KEY`
 
 **No Runtime App Changes In This PR:**
 
@@ -233,7 +233,7 @@ No runtime branch after this plan should depend on the stale generated HTML plan
 - `VITE_API_BASE_URL` is optional.
 - If `VITE_API_BASE_URL` is absent, existing behavior continues.
 - If backend request fails, the app uses current mock/OSRM/straight-line fallback.
-- No frontend code reads `VITE_TOMTOM_API_KEY` or `VITE_WEATHER_API_KEY` after this migration, unless retained only for backward compatibility with a deprecation note and no APK production usage.
+- No frontend code reads provider API keys such as `VITE_GOOGLE_MAPS_API_KEY` or `VITE_WEATHER_API_KEY` after this migration, unless retained only for backward compatibility with a deprecation note and no APK production usage.
 
 **APK Rules:**
 
@@ -441,7 +441,7 @@ The dashboard currently renders several competing surfaces at once: control bar,
 - Crisis affected-radius overlay toggle.
 - Signal heatmap toggle.
 - Resource coverage overlay toggle.
-- Route provider badges: backend TomTom, OSRM fallback, straight-line fallback.
+- Route provider badges: backend Google Routes, OSRM fallback, straight-line fallback.
 - Route refresh timestamp/status in unit detail.
 
 **Files Likely To Modify/Create:**
