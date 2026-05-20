@@ -30,9 +30,12 @@ const DEFAULT_ALLOWED_ORIGINS = [
   'https://localhost',
 ];
 
+const DEFAULT_OPENROUTER_MODEL = 'openrouter/owl-alpha';
+const DEFAULT_OPENROUTER_FALLBACK_MODEL = 'openrouter/free';
+
 export function readEnv(source: NodeJS.ProcessEnv = process.env): BackendEnv {
   const port = Number.parseInt(source.PORT ?? '8080', 10);
-  const openrouterModel = cleanOptional(source.OPENROUTER_MODEL) ?? 'mistralai/mistral-nemo';
+  const openrouterModel = cleanOptional(source.OPENROUTER_MODEL) ?? DEFAULT_OPENROUTER_MODEL;
 
   return {
     port: Number.isFinite(port) ? port : 8080,
@@ -63,7 +66,7 @@ function cleanOptional(value: string | undefined): string | undefined {
 }
 
 function parseAllowedModels(value: string | undefined, fallbackModel: string): string[] {
-  const models = (value ?? fallbackModel)
+  const models = (value ?? `${fallbackModel},${DEFAULT_OPENROUTER_FALLBACK_MODEL}`)
     .split(',')
     .map((model) => model.trim())
     .filter(Boolean);

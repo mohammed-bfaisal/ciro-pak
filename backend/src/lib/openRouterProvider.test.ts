@@ -13,7 +13,7 @@ test('openrouter provider returns fallback without a server key', async () => {
     { prompt: 'Summarize the Karachi flood response.' },
     {
       openrouterModel: 'mistralai/mistral-nemo',
-      openrouterAllowedModels: ['mistralai/mistral-nemo'],
+      openrouterAllowedModels: ['mistralai/mistral-nemo', 'openrouter/free'],
       openrouterMaxTokens: 240,
       openrouterAppTitle: 'CIRO',
     },
@@ -101,4 +101,34 @@ test('openrouter provider rejects models outside the allowlist', async () => {
       return true;
     },
   );
+});
+
+test('openrouter provider allows the free router fallback model when configured', async () => {
+  const fetcher = async (_url: string | URL | Request, init?: RequestInit) => {
+    const body = JSON.parse(String(init?.body));
+    assert.equal(body.model, 'openrouter/free');
+    return new Response(JSON.stringify({
+      model: 'openrouter/free',
+      choices: [{ message: { content: 'Free router briefing generated.' } }],
+    }), { status: 200 });
+  };
+
+  const result = await getOpenRouterChatCompletion(
+    {
+      prompt: 'Summarize dispatch risk.',
+      model: 'openrouter/free',
+    },
+    {
+      openrouterApiKey: 'test-openrouter-key',
+      openrouterModel: 'openrouter/owl-alpha',
+      openrouterAllowedModels: ['openrouter/owl-alpha', 'openrouter/free'],
+      openrouterMaxTokens: 240,
+      openrouterAppTitle: 'CIRO',
+    },
+    { fetcher },
+  );
+
+  assert.equal(result.provider, 'openrouter');
+  assert.equal(result.model, 'openrouter/free');
+  assert.equal(result.content, 'Free router briefing generated.');
 });

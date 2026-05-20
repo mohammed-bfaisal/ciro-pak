@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readEnv } from './env.js';
 
-test('readEnv defaults OpenRouter to the cheap hosted model with a tight token cap', () => {
+test('readEnv defaults OpenRouter to the free agentic model and free router fallback', () => {
   const env = readEnv({});
 
-  assert.equal(env.openrouterModel, 'mistralai/mistral-nemo');
-  assert.deepEqual(env.openrouterAllowedModels, ['mistralai/mistral-nemo']);
+  assert.equal(env.openrouterModel, 'openrouter/owl-alpha');
+  assert.deepEqual(env.openrouterAllowedModels, ['openrouter/owl-alpha', 'openrouter/free']);
   assert.equal(env.openrouterMaxTokens, 240);
 });
 
