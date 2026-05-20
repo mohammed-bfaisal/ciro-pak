@@ -560,6 +560,29 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         if (s.dispatchMode !== 'ai') {
           s.selectUnit(s.selectedUnitId === resource.id ? null : resource.id);
         }
+
+        // Show allocation reasoning popup if resource has score/reasoning
+        if (resource.assignedCrisisId && mapInstance.current) {
+          const existingPopup = document.getElementById(`popup-${resource.id}`);
+          if (existingPopup) { existingPopup.remove(); return; }
+
+          const alloc = useResourceStore.getState().resources.find((r) => r.id === resource.id);
+          const popupEl = document.createElement('div');
+          popupEl.id = `popup-${resource.id}`;
+          popupEl.style.cssText = 'background:#1a1a1a;border:1px solid rgba(255,255,255,0.16);border-radius:8px;padding:10px 12px;font-size:11px;color:#a3a3a3;min-width:180px;max-width:240px;pointer-events:auto;';
+          popupEl.innerHTML = `
+            <div style="font-weight:700;color:#f5f5f5;margin-bottom:4px">${resource.label}</div>
+            <div>Status: <span style="color:#f59e0b">${resource.status}</span></div>
+            ${resource.etaMinutes ? `<div>ETA: ${resource.etaMinutes} min</div>` : ''}
+            ${(alloc as typeof resource & { allocationScore?: number })?.allocationScore != null ? `<div>Score: ${((alloc as typeof resource & { allocationScore?: number }).allocationScore! * 100).toFixed(0)}%</div>` : ''}
+            ${(alloc as typeof resource & { allocationReasoning?: string })?.allocationReasoning ? `<div style="margin-top:4px;color:#737373">${(alloc as typeof resource & { allocationReasoning?: string }).allocationReasoning!.slice(0, 120)}…</div>` : ''}
+          `;
+
+          new maplibregl.Popup({ closeOnClick: true, closeButton: true, offset: 16, className: '' })
+            .setLngLat([resource.currentPosition.lng, resource.currentPosition.lat])
+            .setDOMContent(popupEl)
+            .addTo(mapInstance.current);
+        }
       };
 
       const key = `${resource.currentPosition.lng.toFixed(5)},${resource.currentPosition.lat.toFixed(5)}`;
