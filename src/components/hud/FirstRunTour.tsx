@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { colors } from '../../constants/colors';
 
@@ -40,11 +40,7 @@ function safeSetLocalStorage(key: string, value: string): void {
 
 export function FirstRunTour() {
   const [step, setStep] = useState(0);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    if (!safeLocalStorage(STORAGE_KEY)) setVisible(true);
-  }, []);
+  const [visible, setVisible] = useState(() => !safeLocalStorage(STORAGE_KEY));
 
   const dismiss = () => {
     safeSetLocalStorage(STORAGE_KEY, 'true');

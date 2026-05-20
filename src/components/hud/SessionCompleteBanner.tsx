@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CheckCircle, X } from 'lucide-react';
 import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
@@ -9,7 +9,7 @@ export function SessionCompleteBanner() {
   const resources = useResourceStore((s) => s.resources);
   const simulationRunning = useResourceStore((s) => s.simulationRunning);
   const [visible, setVisible] = useState(false);
-  const [shownForSession, setShownForSession] = useState(false);
+  const shownForSessionRef = useRef(false);
 
   const allResolved = crises.length > 0 && crises.every(
     (c) => c.status === 'resolved' || c.status === 'false_alarm',
@@ -19,18 +19,20 @@ export function SessionCompleteBanner() {
   );
 
   useEffect(() => {
-    if (!simulationRunning || shownForSession) return;
+    if (!simulationRunning || shownForSessionRef.current) return;
     if (allResolved && allReturned) {
-      setVisible(true);
-      setShownForSession(true);
-      const id = setTimeout(() => setVisible(false), 8000);
-      return () => clearTimeout(id);
+      shownForSessionRef.current = true;
+      const showId = window.setTimeout(() => setVisible(true), 0);
+      const hideId = window.setTimeout(() => setVisible(false), 8000);
+      return () => { clearTimeout(showId); clearTimeout(hideId); };
     }
-  }, [allResolved, allReturned, simulationRunning, shownForSession]);
+  }, [allResolved, allReturned, simulationRunning]);
 
-  // Reset when simulation restarts
   useEffect(() => {
-    if (!simulationRunning) setShownForSession(false);
+    if (!simulationRunning) {
+      shownForSessionRef.current = false;
+      window.setTimeout(() => setVisible(false), 0);
+    }
   }, [simulationRunning]);
 
   if (!visible) return null;

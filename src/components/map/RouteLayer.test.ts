@@ -25,7 +25,7 @@ describe('RouteLayer', () => {
 
     initRouteLayer(map);
 
-    expect(addedLayers).toEqual(['unit-routes-layer']);
+    expect(addedLayers).toEqual(['unit-routes-layer', 'unit-routes-label-layer']);
   });
 
   it('leaves dispatch routes below traffic overlays after updating route data', () => {
@@ -47,13 +47,14 @@ describe('RouteLayer', () => {
   it('emits a drawable route feature for every supported city', () => {
     for (const city of ALL_CITIES) {
       let routeFeatures: CapturedRouteFeature[] = [];
-      const source = {
+      const routeSource = {
         setData: (data: { features: CapturedRouteFeature[] }) => {
           routeFeatures = data.features;
         },
       };
+      const labelSource = { setData: () => undefined };
       const map = {
-        getSource: () => source,
+        getSource: (id: string) => id === 'unit-routes' ? routeSource : labelSource,
         getLayer: () => true,
         moveLayer: () => undefined,
       } as unknown as maplibregl.Map;
