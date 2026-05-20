@@ -7,7 +7,7 @@ import { useCrisisStore } from '../../store/crisisStore';
 import { useResourceStore } from '../../store/resourceStore';
 import { useLiveDataStore } from '../../store/liveDataStore';
 import { getApiClientOptionsForSettings, useSettingsStore } from '../../store/settingsStore';
-import { getCrisisColor, getCredColor } from '../../constants/colors';
+import { getCrisisColor, getCredColor, getSeverityColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
 import { buildTrafficLineFeatureCollection } from './trafficOverlay';
@@ -30,6 +30,16 @@ const RESOURCE_COVERAGE_LAYER_ID = 'resource-coverage-layer';
 const SIGNAL_ATTR_SOURCE_ID = 'signal-attribution-source';
 const SIGNAL_ATTR_LAYER_ID = 'signal-attribution-layer';
 
+const CRISIS_TYPE_ICON: Record<string, string> = {
+  flood: '🌊',
+  heatwave: '🔥',
+  accident: '💥',
+  power_outage: '⚡',
+  infrastructure: '🏗️',
+  protest: '📢',
+  disease_cluster: '🦠',
+};
+
 interface CiroMapProps {
   city: City;
   onCrisisClick?: (crisisId: string) => void;
@@ -43,6 +53,8 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const crisisElsRef      = useRef<Map<string, HTMLElement>>(new Map());
   const vehicleMarkersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const prevResourceStatusRef = useRef<Map<string, string>>(new Map());
+  const activeCrisisPopupRef  = useRef<maplibregl.Popup | null>(null);
+  const activeVehiclePopupRef = useRef<maplibregl.Popup | null>(null);
 
   const signals        = useSignalStore((s) => s.signals);
   const crises         = useCrisisStore((s) => s.crises);
@@ -71,6 +83,11 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       refreshExpiredTiles: false,
       maxTileCacheSize: 320,
       maxTileCacheZoomLevels: 8,
+      dragRotate: false,
+    });
+    mapInstance.current.on('click', () => {
+      activeCrisisPopupRef.current?.remove();
+      activeCrisisPopupRef.current = null;
     });
     const observer = new ResizeObserver(() => mapInstance.current?.resize());
     observer.observe(container);
@@ -466,55 +483,82 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   useEffect(() => {
     if (!mapInstance.current) return;
     const map = mapInstance.current;
-    crisisMarkersRef.current.forEach((m) => m.remove());
-    crisisMarkersRef.current = [];
-    crisisElsRef.current.clear();
 
-    crises.forEach((crisis) => {
-      const color = getCrisisColor(crisis.type);
-      const isSelectTarget = dispatchMode === 'manual' && selectedUnitId;
-      const assignedCount = useResourceStore.getState().resources.filter((r) => r.assignedCrisisId === crisis.id).length;
-      const size = isSelectTarget ? 40 : 32;
+    const rebuildCrisisMarkers = () => {
+      crisisMarkersRef.current.forEach((m) => m.remove());
+      crisisMarkersRef.current = [];
+      crisisElsRef.current.clear();
 
-      const el = document.createElement('div');
-      el.style.cssText = `position:absolute;width:${size}px;height:${size}px;cursor:pointer`;
-      el.innerHTML = `
-        <div style="position:absolute;inset:0;border-radius:50%;background:${color}33;border:${isSelectTarget ? 3 : 2}px solid ${color};animation:pulse-ring 1.5s cubic-bezier(0.215,0.61,0.355,1) infinite"></div>
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${isSelectTarget ? 18 : 14}px;height:${isSelectTarget ? 18 : 14}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};animation:pulse-dot 2s ease-in-out infinite"></div>
-        ${assignedCount > 0 ? `<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#1a1a1a;border:1px solid ${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${color};font-family:monospace">${assignedCount}</div>` : ''}
-      `;
+      crises.forEach((crisis) => {
+        const color = getCrisisColor(crisis.type);
+        const severityColor = getSeverityColor(crisis.severity);
+        const isSelectTarget = dispatchMode === 'manual' && selectedUnitId;
+        const assignedCount = useResourceStore.getState().resources.filter((r) => r.assignedCrisisId === crisis.id).length;
+        const size = isSelectTarget ? 40 : 32;
+        const innerSize = isSelectTarget ? 18 : 14;
+        const isResolved = crisis.status === 'resolved' || crisis.status === 'false_alarm';
+        const pulseRing = isResolved ? '' : 'animation:pulse-ring 1.5s cubic-bezier(0.215,0.61,0.355,1) infinite';
+        const pulseDot = isResolved ? '' : 'animation:pulse-dot 2s ease-in-out infinite';
+        const typeIcon = CRISIS_TYPE_ICON[crisis.type] ?? '❓';
 
-      el.onclick = async () => {
-        const store = useResourceStore.getState();
-        if (store.dispatchMode === 'manual' && store.selectedUnitId) {
-          const unit = store.resources.find((r) => r.id === store.selectedUnitId);
-          const fromLat = unit?.currentPosition.lat ?? crisis.location.lat;
-          const fromLng = unit?.currentPosition.lng ?? crisis.location.lng;
+        const el = document.createElement('div');
+        el.style.cssText = `position:absolute;width:${size}px;height:${size}px;cursor:pointer`;
+        if (isResolved) el.style.opacity = '0.35';
+        el.innerHTML = `
+          <div style="position:absolute;inset:0;border-radius:50%;background:${color}33;border:${isSelectTarget ? 3 : 2}px solid ${color};${pulseRing}"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${innerSize}px;height:${innerSize}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};${pulseDot}"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;line-height:1;pointer-events:none">${typeIcon}</div>
+          <div style="position:absolute;top:0;right:0;width:9px;height:9px;border-radius:50%;background:${severityColor};border:1.5px solid rgba(0,0,0,0.7)"></div>
+          ${assignedCount > 0 ? `<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#1a1a1a;border:1px solid ${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${color};font-family:monospace">${assignedCount}</div>` : ''}
+        `;
 
-          const routeResult = await fetchRoute(
-            fromLng,
-            fromLat,
-            crisis.location.lng,
-            crisis.location.lat,
-            getApiClientOptionsForSettings(),
-          );
-          const etaSeconds = routeResult?.etaSeconds
-            ?? Math.max(120, Math.round((haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng) / 30) * 3600));
+        el.onclick = async () => {
+          const store = useResourceStore.getState();
+          if (store.dispatchMode === 'manual' && store.selectedUnitId) {
+            const unit = store.resources.find((r) => r.id === store.selectedUnitId);
+            const fromLat = unit?.currentPosition.lat ?? crisis.location.lat;
+            const fromLng = unit?.currentPosition.lng ?? crisis.location.lng;
+            const routeResult = await fetchRoute(
+              fromLng, fromLat,
+              crisis.location.lng, crisis.location.lat,
+              getApiClientOptionsForSettings(),
+            );
+            const etaSeconds = routeResult?.etaSeconds
+              ?? Math.max(120, Math.round((haversineDistance(fromLat, fromLng, crisis.location.lat, crisis.location.lng) / 30) * 3600));
+            store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaSeconds, routeResult?.coords, routeResult ?? undefined);
+          } else {
+            activeCrisisPopupRef.current?.remove();
+            activeCrisisPopupRef.current = null;
+            const currentMap = mapInstance.current;
+            if (currentMap) {
+              const popupEl = document.createElement('div');
+              popupEl.style.cssText = 'background:#1a1a1a;border:1px solid rgba(255,255,255,0.16);border-radius:8px;padding:8px 10px;font-size:11px;color:#f5f5f5;min-width:160px;max-width:220px;';
+              popupEl.innerHTML = `
+                <div style="font-weight:700;margin-bottom:4px">${crisis.title}</div>
+                <div>${crisis.type} · <span style="color:${severityColor}">${crisis.severity}</span></div>
+                <div style="color:#a3a3a3">${crisis.status}</div>
+                <div style="color:#a3a3a3">~${crisis.affectedPopulation.toLocaleString()} affected</div>
+              `;
+              activeCrisisPopupRef.current = new maplibregl.Popup({ closeOnClick: true, closeButton: false, offset: 18, maxWidth: '220px' })
+                .setLngLat([crisis.location.lng, crisis.location.lat])
+                .setDOMContent(popupEl)
+                .addTo(currentMap);
+            }
+            onCrisisClick?.(crisis.id);
+          }
+        };
 
-          store.dispatchUnit(store.selectedUnitId, crisis.id, crisis.location, etaSeconds, routeResult?.coords, routeResult ?? undefined);
-        } else {
-          onCrisisClick?.(crisis.id);
-        }
-      };
+        crisisElsRef.current.set(crisis.id, el);
+        crisisMarkersRef.current.push(
+          new maplibregl.Marker({ element: el, anchor: 'center' })
+            .setLngLat([crisis.location.lng, crisis.location.lat])
+            .addTo(map)
+        );
+      });
+    };
 
-      crisisElsRef.current.set(crisis.id, el);
-      crisisMarkersRef.current.push(
-        new maplibregl.Marker({ element: el, anchor: 'center' })
-          .setLngLat([crisis.location.lng, crisis.location.lat])
-          .addTo(map)
-      );
-    });
-  }, [crises, dispatchMode, selectedUnitId, preferBackendData]);
+    return runWhenStyleReady(map, rebuildCrisisMarkers);
+  }, [crises, dispatchMode, selectedUnitId, onCrisisClick]);
 
   // Pulse crisis marker white when a resource reaches on_scene
   useEffect(() => {
@@ -563,12 +607,11 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
 
         // Show allocation reasoning popup if resource has score/reasoning
         if (resource.assignedCrisisId && mapInstance.current) {
-          const existingPopup = document.getElementById(`popup-${resource.id}`);
-          if (existingPopup) { existingPopup.remove(); return; }
+          activeVehiclePopupRef.current?.remove();
+          activeVehiclePopupRef.current = null;
 
           const alloc = useResourceStore.getState().resources.find((r) => r.id === resource.id);
           const popupEl = document.createElement('div');
-          popupEl.id = `popup-${resource.id}`;
           popupEl.style.cssText = 'background:#1a1a1a;border:1px solid rgba(255,255,255,0.16);border-radius:8px;padding:10px 12px;font-size:11px;color:#a3a3a3;min-width:180px;max-width:240px;pointer-events:auto;';
           popupEl.innerHTML = `
             <div style="font-weight:700;color:#f5f5f5;margin-bottom:4px">${resource.label}</div>
@@ -578,7 +621,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
             ${(alloc as typeof resource & { allocationReasoning?: string })?.allocationReasoning ? `<div style="margin-top:4px;color:#737373">${(alloc as typeof resource & { allocationReasoning?: string }).allocationReasoning!.slice(0, 120)}…</div>` : ''}
           `;
 
-          new maplibregl.Popup({ closeOnClick: true, closeButton: true, offset: 16, className: '' })
+          activeVehiclePopupRef.current = new maplibregl.Popup({ closeOnClick: true, closeButton: true, offset: 16, className: '' })
             .setLngLat([resource.currentPosition.lng, resource.currentPosition.lat])
             .setDOMContent(popupEl)
             .addTo(mapInstance.current);
