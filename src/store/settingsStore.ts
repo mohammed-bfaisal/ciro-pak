@@ -21,12 +21,12 @@ interface SettingsState extends AppSettings {
 export const SETTINGS_STORAGE_KEY = 'ciro.settings.v1';
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  showTrafficLayer: true,
+  showTrafficLayer: false,
   showSignalHeatmap: true,
   showCrisisRadius: true,
   showResourceCoverage: true,
   enableWeatherUpdates: true,
-  enableTrafficUpdates: true,
+  enableTrafficUpdates: false,
   preferBackendData: true,
 };
 

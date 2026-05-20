@@ -4,12 +4,10 @@ import {
   Cloud,
   CloudOff,
   DatabaseZap,
-  Gauge,
   LocateFixed,
   Map,
   Radio,
   RefreshCw,
-  Route,
   ShieldCheck,
 } from 'lucide-react';
 import { fetchBackendHealth, type BackendHealth } from '../api/backendHealth';
@@ -36,12 +34,6 @@ const liveDataRows: Array<{
     description: 'Refresh weather signals through the backend-aware adapter.',
     icon: <Cloud size={16} />,
   },
-  {
-    key: 'enableTrafficUpdates',
-    title: 'Traffic updates',
-    description: 'Refresh Google road traffic around city arteries, active incidents, and moving routes.',
-    icon: <Gauge size={16} />,
-  },
 ];
 
 const mapRows: Array<{
@@ -50,12 +42,6 @@ const mapRows: Array<{
   description: string;
   icon: ReactNode;
 }> = [
-  {
-    key: 'showTrafficLayer',
-    title: 'Traffic layer',
-    description: 'Show Google traffic-aware road segments when the map overlay is available.',
-    icon: <Route size={16} />,
-  },
   {
     key: 'showSignalHeatmap',
     title: 'Signal heatmap',
