@@ -1,4 +1,5 @@
 import { useState, type ComponentType } from 'react';
+import { SeverityHudDonut } from '../charts/SeverityHudDonut';
 import {
   Activity,
   AlertTriangle,
@@ -99,6 +100,7 @@ export function DesktopOperationsRail({ onSelectCrisis }: DesktopOperationsRailP
               {live ? `${formatClock(live.elapsedMinutes)} shift time` : 'Idle shift clock'}
             </div>
           </div>
+          <SeverityHudDonut crises={crises} />
           <div className="rounded-lg px-2 py-1 text-xs font-semibold" style={{ background: colors.raised, color: colors.textPrimary }}>
             {simulationSpeed}x
           </div>
