@@ -40,7 +40,9 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
   const mapInstance     = useRef<maplibregl.Map | null>(null);
   const signalMarkersRef  = useRef<maplibregl.Marker[]>([]);
   const crisisMarkersRef  = useRef<maplibregl.Marker[]>([]);
+  const crisisElsRef      = useRef<Map<string, HTMLElement>>(new Map());
   const vehicleMarkersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
+  const prevResourceStatusRef = useRef<Map<string, string>>(new Map());
 
   const signals        = useSignalStore((s) => s.signals);
   const crises         = useCrisisStore((s) => s.crises);
@@ -466,10 +468,12 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     const map = mapInstance.current;
     crisisMarkersRef.current.forEach((m) => m.remove());
     crisisMarkersRef.current = [];
+    crisisElsRef.current.clear();
 
     crises.forEach((crisis) => {
       const color = getCrisisColor(crisis.type);
       const isSelectTarget = dispatchMode === 'manual' && selectedUnitId;
+      const assignedCount = useResourceStore.getState().resources.filter((r) => r.assignedCrisisId === crisis.id).length;
       const size = isSelectTarget ? 40 : 32;
 
       const el = document.createElement('div');
@@ -477,6 +481,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       el.innerHTML = `
         <div style="position:absolute;inset:0;border-radius:50%;background:${color}33;border:${isSelectTarget ? 3 : 2}px solid ${color};animation:pulse-ring 1.5s cubic-bezier(0.215,0.61,0.355,1) infinite"></div>
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${isSelectTarget ? 18 : 14}px;height:${isSelectTarget ? 18 : 14}px;border-radius:50%;background:${color};box-shadow:0 0 12px ${color};animation:pulse-dot 2s ease-in-out infinite"></div>
+        ${assignedCount > 0 ? `<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#1a1a1a;border:1px solid ${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${color};font-family:monospace">${assignedCount}</div>` : ''}
       `;
 
       el.onclick = async () => {
@@ -486,7 +491,6 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
           const fromLat = unit?.currentPosition.lat ?? crisis.location.lat;
           const fromLng = unit?.currentPosition.lng ?? crisis.location.lng;
 
-          // Fetch real road route; fall back to haversine ETA if OSRM unreachable
           const routeResult = await fetchRoute(
             fromLng,
             fromLat,
@@ -503,6 +507,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         }
       };
 
+      crisisElsRef.current.set(crisis.id, el);
       crisisMarkersRef.current.push(
         new maplibregl.Marker({ element: el, anchor: 'center' })
           .setLngLat([crisis.location.lng, crisis.location.lat])
@@ -510,6 +515,21 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       );
     });
   }, [crises, dispatchMode, selectedUnitId, preferBackendData]);
+
+  // Pulse crisis marker white when a resource reaches on_scene
+  useEffect(() => {
+    resources.forEach((resource) => {
+      const prev = prevResourceStatusRef.current.get(resource.id);
+      if (prev !== 'on_scene' && resource.status === 'on_scene' && resource.assignedCrisisId) {
+        const crisisEl = crisisElsRef.current.get(resource.assignedCrisisId);
+        if (crisisEl) {
+          crisisEl.classList.add('crisis-arrival-pulse');
+          setTimeout(() => crisisEl.classList.remove('crisis-arrival-pulse'), 3100);
+        }
+      }
+      prevResourceStatusRef.current.set(resource.id, resource.status);
+    });
+  }, [resources]);
 
   // Vehicle markers — full rebuild only when structure changes (status, selection, dispatchMode, count)
   // NOT on every tick — position updates are handled separately below.
@@ -600,6 +620,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     return () => {
       signalMarkersRef.current.forEach((m) => m.remove());
       crisisMarkersRef.current.forEach((m) => m.remove());
+      crisisElsRef.current.clear();
       vehicleMarkersRef.current.forEach((m) => m.remove());
     };
   }, []);
