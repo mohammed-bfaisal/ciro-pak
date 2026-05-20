@@ -11,6 +11,7 @@ import { getCrisisColor, getCredColor } from '../../constants/colors';
 import { createVehicleMarkerEl } from './VehicleMarker';
 import { initRouteLayer, updateRouteLayer } from './RouteLayer';
 import { buildTrafficLineFeatureCollection } from './trafficOverlay';
+import { runWhenStyleReady } from './mapOverlayLifecycle';
 import { haversineDistance } from '../../utils/geo';
 import { fetchRoute } from '../../api/routing';
 import { getMapTilePreloader, scheduleMapTilePreload } from '../../utils/mapTilePreloader';
@@ -67,7 +68,6 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
     const observer = new ResizeObserver(() => mapInstance.current?.resize());
     observer.observe(container);
     mapInstance.current.on('load', () => {
-      initRouteLayer(mapInstance.current!);
       const preloader = getMapTilePreloader();
       void preloader?.preloadCriticalMetadata();
       scheduleMapTilePreload(() => {
@@ -92,6 +92,16 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       essential: true,
     });
   }, [city]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+
+    return runWhenStyleReady(map, () => {
+      initRouteLayer(map);
+      updateRouteLayer(map, resources);
+    });
+  }, [resources]);
 
   // Fly to selected unit (bidirectional: panel → map)
   useEffect(() => {
@@ -128,12 +138,12 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       removeLayerAndSource(map, SIGNAL_LAYER_ID, SIGNAL_SOURCE_ID);
     };
 
-    if (!showSignalHeatmap || signals.length === 0) {
-      clearSignals();
-      return;
-    }
-
     const addSignals = () => {
+      if (!showSignalHeatmap || signals.length === 0) {
+        clearSignals();
+        return;
+      }
+
       const data = {
         type: 'FeatureCollection' as const,
         features: signals.map((s) => ({
@@ -189,12 +199,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       });
     };
 
-    if (map.isStyleLoaded()) addSignals();
-    else map.once('load', addSignals);
-
-    return () => {
-      map.off('load', addSignals);
-    };
+    return runWhenStyleReady(map, addSignals);
   }, [signals, showSignalHeatmap]);
 
   useEffect(() => {
@@ -237,11 +242,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       }
     };
 
-    if (map.isStyleLoaded()) updateCrisisRadius();
-    else map.once('load', updateCrisisRadius);
-    return () => {
-      map.off('load', updateCrisisRadius);
-    };
+    return runWhenStyleReady(map, updateCrisisRadius);
   }, [crises, showCrisisRadius]);
 
   useEffect(() => {
@@ -280,11 +281,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       }
     };
 
-    if (map.isStyleLoaded()) updateTrafficLayer();
-    else map.once('load', updateTrafficLayer);
-    return () => {
-      map.off('load', updateTrafficLayer);
-    };
+    return runWhenStyleReady(map, updateTrafficLayer);
   }, [trafficFlows, resources, showTrafficLayer]);
 
   useEffect(() => {
@@ -327,11 +324,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
       }
     };
 
-    if (map.isStyleLoaded()) updateResourceCoverage();
-    else map.once('load', updateResourceCoverage);
-    return () => {
-      map.off('load', updateResourceCoverage);
-    };
+    return runWhenStyleReady(map, updateResourceCoverage);
   }, [resources, showResourceCoverage]);
 
   // Crisis markers — dispatch-aware, rebuild on change

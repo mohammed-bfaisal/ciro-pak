@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type maplibregl from 'maplibre-gl';
-import { updateRouteLayer } from './RouteLayer';
+import { initRouteLayer, updateRouteLayer } from './RouteLayer';
 import type { Resource } from '../../types';
 import { ALL_CITIES } from '../../data/cities';
 import { getCityData } from '../../data/cityData';
@@ -13,6 +13,21 @@ interface CapturedRouteFeature {
 }
 
 describe('RouteLayer', () => {
+  it('restores the route layer when the GeoJSON source exists but the layer was removed by a style change', () => {
+    const addedLayers: string[] = [];
+    const map = {
+      getSource: () => ({ setData: () => undefined }),
+      getLayer: () => undefined,
+      addLayer: (layer: { id: string }) => {
+        addedLayers.push(layer.id);
+      },
+    } as unknown as maplibregl.Map;
+
+    initRouteLayer(map);
+
+    expect(addedLayers).toEqual(['unit-routes-layer']);
+  });
+
   it('leaves dispatch routes below traffic overlays after updating route data', () => {
     const source = { setData: () => undefined };
     const movedLayers: string[] = [];
