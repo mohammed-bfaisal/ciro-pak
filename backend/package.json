@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "test": "npm run build && node --test dist/config/*.test.js dist/lib/*.test.js"
+    "test": "npm run build && node --test dist/config/*.test.js dist/lib/*.test.js dist/routes/*.test.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

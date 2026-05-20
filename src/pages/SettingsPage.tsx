@@ -134,12 +134,12 @@ export function SettingsPage() {
             label="Backend"
             value={health ? 'Online' : backendConfigured ? 'Unavailable' : 'Not configured'}
             tone={health ? 'good' : backendConfigured ? 'warn' : 'muted'}
-            detail={checkedAt ? `Checked ${formatTime(checkedAt)}` : 'Not checked yet'}
+            detail={health ? formatBackendProviderDetail(health, checkedAt) : checkedAt ? `Checked ${formatTime(checkedAt)}` : 'Not checked yet'}
           />
           <StatusCard
             icon={<Cloud size={18} />}
             label="Weather proxy"
-            value={health?.features.weatherProxy ? 'Ready' : 'Fallback'}
+            value={health?.providers.weather === 'openweathermap' ? 'OpenWeatherMap' : 'Fallback'}
             tone={health?.features.weatherProxy ? 'good' : 'warn'}
             detail={settings.enableWeatherUpdates ? 'Updates enabled' : 'Updates disabled'}
           />
@@ -245,4 +245,9 @@ function formatTime(timestamp: string): string {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(timestamp));
+}
+
+function formatBackendProviderDetail(health: BackendHealth, checkedAt: string | null): string {
+  const checked = checkedAt ? `Checked ${formatTime(checkedAt)}` : 'Checked now';
+  return `${health.appVersion}; ${health.providers.traffic}/${health.providers.routing}; ${checked}`;
 }

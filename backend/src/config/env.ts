@@ -9,6 +9,8 @@ export interface BackendEnv {
   openrouterMaxTokens: number;
   openrouterSiteUrl?: string;
   openrouterAppTitle: string;
+  openrouterTtsModel?: string;
+  appVersion: string;
 }
 
 const DEFAULT_ALLOWED_ORIGINS = [
@@ -43,6 +45,8 @@ export function readEnv(source: NodeJS.ProcessEnv = process.env): BackendEnv {
     openrouterMaxTokens: parsePositiveInt(source.OPENROUTER_MAX_TOKENS, 240, 1000),
     openrouterSiteUrl: cleanOptional(source.OPENROUTER_SITE_URL),
     openrouterAppTitle: cleanOptional(source.OPENROUTER_APP_TITLE) ?? 'CIRO',
+    openrouterTtsModel: cleanOptional(source.OPENROUTER_TTS_MODEL),
+    appVersion: cleanOptional(source.CIRO_BACKEND_VERSION) ?? cleanOptional(source.K_REVISION) ?? 'local',
   };
 }
 

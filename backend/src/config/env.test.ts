@@ -27,3 +27,13 @@ test('readEnv reads Google Maps key with Google Routes alias fallback', () => {
     'maps-key',
   );
 });
+
+test('readEnv reads backend version and OpenRouter speech model metadata', () => {
+  const env = readEnv({
+    CIRO_BACKEND_VERSION: '2026.05.20',
+    OPENROUTER_TTS_MODEL: 'openai/tts-1',
+  });
+
+  assert.equal(env.appVersion, '2026.05.20');
+  assert.equal(env.openrouterTtsModel, 'openai/tts-1');
+});
