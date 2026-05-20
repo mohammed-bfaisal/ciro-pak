@@ -7,10 +7,12 @@ import { ResourcesPage } from './pages/ResourcesPage'
 import { TracePage } from './pages/TracePage'
 import { ComparePage } from './pages/ComparePage'
 import { SettingsPage } from './pages/SettingsPage'
+import { SessionCompleteBanner } from './components/hud/SessionCompleteBanner'
 
 function App() {
   return (
     <Shell>
+      <SessionCompleteBanner />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/signals" element={<SignalsPage />} />
