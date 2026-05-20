@@ -500,7 +500,7 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
         const typeIcon = CRISIS_TYPE_ICON[crisis.type] ?? '❓';
 
         const el = document.createElement('div');
-        el.style.cssText = `position:absolute;width:${size}px;height:${size}px;cursor:pointer`;
+        el.style.cssText = `position:absolute;width:${size}px;height:${size}px;cursor:pointer;overflow:visible`;
         if (isResolved) el.style.opacity = '0.35';
         const baseSize = 28;
         const baseOffset = (size - baseSize) / 2;
