@@ -15,6 +15,7 @@ import { haversineDistance } from '../utils/geo';
 import { fetchRoute } from '../api/routing';
 import type { AgentTraceEvent, City, Crisis, ImpactSnapshot, Resource, Signal } from '../types';
 import { getResources, getSignals } from '../data/cityData';
+import { buildDispatchBriefingPrompt, OPENROUTER_DISPATCH_SYSTEM_PROMPT } from './openRouterPrompts';
 
 const PHASE_DELAYS = {
   ingestion:   800,
@@ -259,7 +260,7 @@ async function addOpenRouterDispatchBriefing(city: City, crises: Crisis[], resou
   const trace = useTraceStore.getState();
   try {
     const briefing = await chatWithOpenRouter({
-      systemPrompt: 'You are a concise emergency dispatch advisor for a Pakistan disaster response dashboard. Return one operational paragraph. Do not mention API keys or implementation details.',
+      systemPrompt: OPENROUTER_DISPATCH_SYSTEM_PROMPT,
       prompt: buildDispatchBriefingPrompt(city, crises, resources),
       maxTokens: 160,
       temperature: 0.2,
@@ -283,35 +284,6 @@ async function addOpenRouterDispatchBriefing(city: City, crises: Crisis[], resou
   } catch (error) {
     trace.log(`OpenRouter dispatch briefing unavailable: ${error instanceof Error ? error.message : 'request failed'}`);
   }
-}
-
-function buildDispatchBriefingPrompt(city: City, crises: Crisis[], resources: Resource[]): string {
-  const crisisLines = crises
-    .slice(0, 6)
-    .map((crisis) => `- ${crisis.title} at ${crisis.location.label}; severity ${crisis.severity}; confidence ${Math.round(crisis.confidenceScore * 100)}%; population ${crisis.affectedPopulation}; status ${crisis.status}.`)
-    .join('\n');
-  const resourceLines = resources
-    .filter((resource) => resource.status === 'available')
-    .slice(0, 8)
-    .map((resource) => `- ${resource.label}; type ${resource.type}; capacity ${resource.capacity}; location ${resource.location.label}.`)
-    .join('\n');
-
-  return [
-    `City: ${cityLabel(city)}`,
-    `There are ${crises.length} active crises and ${resources.filter((resource) => resource.status === 'available').length} available response units.`,
-    'Active crises:',
-    crisisLines || '- None.',
-    'Available response units:',
-    resourceLines || '- None.',
-    'Give one short dispatch briefing covering priority, resource match, and operational risk.',
-  ].join('\n');
-}
-
-function cityLabel(city: City): string {
-  return city
-    .split('-')
-    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
-    .join(' ');
 }
 
 // ─── Legacy: full pipeline for backward compat ──────────────────────────────

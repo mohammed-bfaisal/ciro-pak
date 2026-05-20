@@ -62,7 +62,7 @@ describe('runAIDispatch OpenRouter integration', () => {
 
     expect(chatWithOpenRouter).toHaveBeenCalledOnce();
     expect(vi.mocked(chatWithOpenRouter).mock.calls[0]?.[0].prompt).toContain('Karachi');
-    expect(vi.mocked(chatWithOpenRouter).mock.calls[0]?.[0].prompt).toContain('active crises');
+    expect(vi.mocked(chatWithOpenRouter).mock.calls[0]?.[0].prompt).toContain('Active crises');
     expect(useTraceStore.getState().logs.some((log) => log.includes('OpenRouter dispatch briefing'))).toBe(true);
     expect(useResourceStore.getState().resources.some((resource) => resource.status === 'en_route')).toBe(true);
   });
