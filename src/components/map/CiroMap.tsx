@@ -27,6 +27,8 @@ const TRAFFIC_FLOW_LAYER_ID = 'traffic-flow-layer';
 const TRAFFIC_FLOW_LABEL_LAYER_ID = 'traffic-flow-label-layer';
 const RESOURCE_COVERAGE_SOURCE_ID = 'resource-coverage-source';
 const RESOURCE_COVERAGE_LAYER_ID = 'resource-coverage-layer';
+const SIGNAL_ATTR_SOURCE_ID = 'signal-attribution-source';
+const SIGNAL_ATTR_LAYER_ID = 'signal-attribution-layer';
 
 interface CiroMapProps {
   city: City;
@@ -253,6 +255,56 @@ export function CiroMap({ city, onCrisisClick }: CiroMapProps) {
 
     return runWhenStyleReady(map, addSignals);
   }, [signals, showSignalHeatmap]);
+
+  // Signal attribution lines — dashed lines from signal pins to their crisis cluster center
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    const map = mapInstance.current;
+
+    const updateAttributionLines = () => {
+      if (!showSignalHeatmap || crises.length === 0 || signals.length === 0) {
+        removeLayerAndSource(map, SIGNAL_ATTR_LAYER_ID, SIGNAL_ATTR_SOURCE_ID);
+        return;
+      }
+
+      const features: GeoJSON.Feature[] = [];
+      crises.forEach((crisis) => {
+        crisis.signalIds.forEach((signalId) => {
+          const signal = signals.find((s) => s.id === signalId);
+          if (!signal) return;
+          features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [signal.location.lng, signal.location.lat],
+                [crisis.location.lng, crisis.location.lat],
+              ],
+            },
+            properties: { color: getCrisisColor(crisis.type) },
+          });
+        });
+      });
+
+      const data: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features };
+      upsertGeoJsonSource(map, SIGNAL_ATTR_SOURCE_ID, data);
+      if (!map.getLayer(SIGNAL_ATTR_LAYER_ID)) {
+        map.addLayer({
+          id: SIGNAL_ATTR_LAYER_ID,
+          type: 'line',
+          source: SIGNAL_ATTR_SOURCE_ID,
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 1,
+            'line-opacity': 0.35,
+            'line-dasharray': [3, 4],
+          },
+        });
+      }
+    };
+
+    return runWhenStyleReady(map, updateAttributionLines);
+  }, [signals, crises, showSignalHeatmap]);
 
   useEffect(() => {
     if (!mapInstance.current) return;
