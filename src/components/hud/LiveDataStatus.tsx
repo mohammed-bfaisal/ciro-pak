@@ -3,6 +3,30 @@ import { colors } from '../../constants/colors';
 import { useLiveDataStore, type LiveDataStatus as LiveDataStatusValue } from '../../store/liveDataStore';
 import { formatTrafficMode } from '../../utils/liveDataStatusLabels';
 
+const STALE_MS = 5 * 60 * 1000;
+
+function isStale(updatedAt?: string) {
+  if (!updatedAt) return true;
+  return Date.now() - new Date(updatedAt).getTime() > STALE_MS;
+}
+
+function WeatherBadge({ status }: { status: LiveDataStatusValue }) {
+  if (status.state === 'disabled' || status.state === 'idle') return null;
+  const stale = isStale(status.updatedAt);
+  return (
+    <span
+      className="px-1 py-0.5 rounded text-[9px] font-bold tracking-wide"
+      style={{
+        background: stale ? 'rgba(251,191,36,0.12)' : 'rgba(52,211,153,0.12)',
+        color: stale ? colors.warning : colors.success,
+      }}
+      title={status.updatedAt ? `Weather updated ${new Date(status.updatedAt).toLocaleTimeString()}` : undefined}
+    >
+      {stale ? 'CACHED' : 'LIVE'}
+    </span>
+  );
+}
+
 export function LiveDataStatus() {
   const weatherStatus = useLiveDataStore((state) => state.weatherStatus);
   const trafficStatus = useLiveDataStore((state) => state.trafficStatus);
@@ -23,6 +47,7 @@ export function LiveDataStatus() {
       aria-label={`${formatTitle('Weather', weatherStatus)}. ${formatTitle('Traffic', trafficStatus)}.`}
     >
       <Icon size={13} />
+      <WeatherBadge status={weatherStatus} />
       <span className="hidden desktop:inline">
         {hasData
           ? `${liveCount} live / ${fallbackCount} fallback`
