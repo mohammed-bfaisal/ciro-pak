@@ -11,6 +11,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { SessionCompleteBanner } from './components/hud/SessionCompleteBanner'
 import { RecoveryToast } from './components/hud/RecoveryToast'
 import { RadioChatterPanel } from './components/hud/RadioChatterPanel'
+import { FirstRunTour } from './components/hud/FirstRunTour'
 import { useResourceStore } from './store/resourceStore'
 import { useSessionStore } from './store/sessionStore'
 import { useCityStore } from './store/cityStore'
@@ -66,6 +67,7 @@ function App() {
       <SessionCompleteBanner />
       <RecoveryToast />
       <RadioChatterPanel />
+      <FirstRunTour />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/signals" element={<SignalsPage />} />

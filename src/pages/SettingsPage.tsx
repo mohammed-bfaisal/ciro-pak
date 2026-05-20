@@ -200,18 +200,35 @@ export function SettingsPage() {
           ))}
         </SettingsSection>
 
-        <button
-          type="button"
-          onClick={settings.resetSettings}
-          className="h-11 rounded-lg text-sm font-semibold"
-          style={{
-            background: colors.raised,
-            color: colors.textSecondary,
-            border: `1px solid ${colors.borderDefault}`,
-          }}
-        >
-          Reset to defaults
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={settings.resetSettings}
+            className="flex-1 h-11 rounded-lg text-sm font-semibold"
+            style={{
+              background: colors.raised,
+              color: colors.textSecondary,
+              border: `1px solid ${colors.borderDefault}`,
+            }}
+          >
+            Reset to defaults
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              try { localStorage.removeItem('ciro.tour.v1.done'); } catch { /* noop */ }
+              window.location.reload();
+            }}
+            className="flex-1 h-11 rounded-lg text-sm font-semibold"
+            style={{
+              background: colors.raised,
+              color: colors.textSecondary,
+              border: `1px solid ${colors.borderDefault}`,
+            }}
+          >
+            Replay tour
+          </button>
+        </div>
       </div>
     </div>
   );
