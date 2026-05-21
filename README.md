@@ -99,6 +99,94 @@ Backend routes:
 
 If the backend or provider key is unavailable, the app falls back to mock weather, simulated traffic, OSRM routing, stable straight-line paths, or a safe AI-unavailable message.
 
+## Google Cloud Run Backend
+
+The `backend/` directory is a standalone Express/TypeScript service designed to run as a stateless Cloud Run container. Its only job is key custody — it holds all provider secrets server-side and proxies requests from the frontend and APK so no secret ever touches the client bundle or Android build.
+
+### How It Fits
+
+```
+React PWA / Capacitor APK
+        │
+        │  VITE_API_BASE_URL (single env var on the frontend)
+        ▼
+Cloud Run Service  (backend/)
+        │
+        ├── GET /api/weather/:city      → OpenWeatherMap
+        ├── GET /api/traffic/flow       → TomTom / mock fallback
+        ├── GET /api/route              → Google Routes API / OSRM fallback
+        ├── POST /api/openrouter/chat   → OpenRouter (Gemini, Mistral, etc.)
+        └── GET /api/health             → liveness probe
+```
+
+The frontend calls the backend only when `VITE_API_BASE_URL` is set. If the variable is absent or the backend is unreachable, every route silently falls back to deterministic mock data — the app and APK work with zero configuration.
+
+### Deploy to Cloud Run
+
+**1. Build and push the container**
+
+```bash
+cd backend
+gcloud builds submit --tag gcr.io/<YOUR_PROJECT_ID>/ciro-backend
+```
+
+**2. Deploy the service**
+
+```bash
+gcloud run deploy ciro-backend \
+  --image gcr.io/<YOUR_PROJECT_ID>/ciro-backend \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars PORT=8080,ALLOWED_ORIGINS=https://<YOUR_FRONTEND_DOMAIN> \
+  --set-secrets \
+    WEATHER_API_KEY=ciro-weather-key:latest,\
+    GOOGLE_MAPS_API_KEY=ciro-google-maps-key:latest,\
+    OPENROUTER_API_KEY=ciro-openrouter-key:latest
+```
+
+**3. Point the frontend at it**
+
+```bash
+# .env.production
+VITE_API_BASE_URL=https://ciro-backend-<hash>-uc.a.run.app
+```
+
+Then `npm run build` and deploy the `dist/` output to Vercel, Firebase Hosting, or any static host.
+
+### Secret Management
+
+All provider keys are stored in **Google Cloud Secret Manager** and injected as environment variables at container startup — they never appear in the Docker image, source code, or build artifacts.
+
+| Secret name (Cloud Secret Manager) | Injected env var | Used by |
+| --- | --- | --- |
+| `ciro-weather-key` | `WEATHER_API_KEY` | OpenWeatherMap |
+| `ciro-google-maps-key` | `GOOGLE_MAPS_API_KEY` | Google Routes API |
+| `ciro-openrouter-key` | `OPENROUTER_API_KEY` | OpenRouter LLM proxy |
+
+### CORS
+
+`ALLOWED_ORIGINS` accepts a comma-separated list. Set it to your Vercel/Firebase domain plus `http://localhost:5173` for local dev:
+
+```bash
+ALLOWED_ORIGINS=https://ciro.vercel.app,http://localhost:5173
+```
+
+Requests from the Capacitor APK arrive with `null` origin — the backend accepts those unconditionally since there is no secret in the response.
+
+### Fallback Chain
+
+| Provider | Primary | Fallback 1 | Fallback 2 |
+| --- | --- | --- | --- |
+| Routing | Google Routes API | OSRM (public) | Straight-line Haversine |
+| Weather | OpenWeatherMap | — | Static mock signal per city |
+| AI dispatch | OpenRouter | — | Static "AI unavailable" message |
+| Traffic | Live provider | — | Simulated congestion mock |
+
+The fallback is transparent to the user — the UI never shows an error, it just uses the next available data source.
+
+---
+
 ## Development
 
 ```bash
