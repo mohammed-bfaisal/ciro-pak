@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, MapPin, ChevronDown, Check, Settings } from 'lucide-react';
+import { MapPin, ChevronDown, Check, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { colors } from '../../constants/colors';
 import { useCityStore } from '../../store/cityStore';
@@ -42,9 +42,8 @@ export function TopBar() {
 
   return (
     <header
-      className="grid items-center px-4 border-b relative z-40"
+      className="top-bar grid items-center px-4 border-b relative z-40"
       style={{
-        height: 'var(--topbar-height)',
         gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
         background: 'rgba(8,8,8,0.9)',
         backdropFilter: 'blur(20px)',
@@ -54,7 +53,23 @@ export function TopBar() {
     >
       <div className="flex min-w-0 items-center gap-2">
         <div className="flex items-center gap-2">
-          <Activity size={20} style={{ color: colors.amber }} />
+          {/* Radar crosshair icon — matches APK launcher */}
+          <svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <rect width="48" height="48" rx="10" fill="#080808"/>
+            <circle cx="24" cy="24" r="18" stroke="#F59E0B" strokeWidth="1.2" strokeOpacity="0.35"/>
+            <line x1="24" y1="6"  x2="24" y2="10" stroke="#F59E0B" strokeWidth="1.2" strokeOpacity="0.35" strokeLinecap="round"/>
+            <line x1="24" y1="38" x2="24" y2="42" stroke="#F59E0B" strokeWidth="1.2" strokeOpacity="0.35" strokeLinecap="round"/>
+            <line x1="6"  y1="24" x2="10" y2="24" stroke="#F59E0B" strokeWidth="1.2" strokeOpacity="0.35" strokeLinecap="round"/>
+            <line x1="38" y1="24" x2="42" y2="24" stroke="#F59E0B" strokeWidth="1.2" strokeOpacity="0.35" strokeLinecap="round"/>
+            <circle cx="24" cy="24" r="11" stroke="#F59E0B" strokeWidth="1.6" strokeOpacity="0.7"/>
+            <line x1="24" y1="13" x2="24" y2="16" stroke="#F59E0B" strokeWidth="1.6" strokeOpacity="0.7" strokeLinecap="round"/>
+            <line x1="24" y1="32" x2="24" y2="35" stroke="#F59E0B" strokeWidth="1.6" strokeOpacity="0.7" strokeLinecap="round"/>
+            <line x1="13" y1="24" x2="16" y2="24" stroke="#F59E0B" strokeWidth="1.6" strokeOpacity="0.7" strokeLinecap="round"/>
+            <line x1="32" y1="24" x2="35" y2="24" stroke="#F59E0B" strokeWidth="1.6" strokeOpacity="0.7" strokeLinecap="round"/>
+            <circle cx="24" cy="24" r="5.5" stroke="#F59E0B" strokeWidth="1.8"/>
+            <circle cx="24" cy="24" r="2.2" fill="#F59E0B"/>
+            <circle cx="24" cy="24" r="2.2" fill="#FCD34D" fillOpacity="0.5"/>
+          </svg>
           <span className="font-display text-lg hidden tablet:inline" style={{ color: colors.textPrimary }}>
             CIRO
           </span>

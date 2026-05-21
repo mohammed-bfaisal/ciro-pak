@@ -276,6 +276,11 @@ body::before {
     padding-top: env(safe-area-inset-top);
   }
 
+  .top-bar {
+    height: calc(var(--topbar-height) + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+  }
+
   .bottom-nav {
     height: calc(var(--bottomnav-height) + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
@@ -297,7 +302,7 @@ body::before {
 @media (max-width: 768px) {
   :root {
     --topbar-height: 56px;
-    --bottomnav-height: 60px;
+    --bottomnav-height: 62px;
     --panel-width: 100vw;
   }
 
