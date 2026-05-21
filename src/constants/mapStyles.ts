@@ -1,6 +1,6 @@
 import { CITY_REGISTRY } from '../data/cities';
 
-export const DARK_STYLE = 'https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json';
+export const DARK_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
 export const CITY_COORDS = Object.fromEntries(
   Object.entries(CITY_REGISTRY).map(([city, metadata]) => [
